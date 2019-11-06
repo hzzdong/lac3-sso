@@ -116,6 +116,7 @@ public class AccountActivity extends BaseActivity<Account, IAccountDao> implemen
 			if (Strings.isBlank(entity.getPasswd())) {
 				throw new AccountException(AccountException.ARG_CODE_ACCOUNT, "密码不能为空！");
 			}
+			entity.setOldPasswds(entity.getPasswd());
 			entity.setPasswd(Securities.password4Md5Src(entity.getPasswd(), entity.getSalt()));
 		} else {
 			if (!Strings.isBlank(entity.getPasswd())) {

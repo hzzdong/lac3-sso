@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,12 +37,16 @@ public class LoginController {
 
 	@Autowired
 	private AccountKiss accountKiss;
+	
 	@Autowired
 	private YwUserKiss ywUserKiss;
+	
+	@Value("${oapi.appcode}")
+	protected String myAppCode;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String localLogin(HttpSession session, HttpServletRequest request, ModelMap modelMap) {
-		SessionUser obj = (SessionUser) Controllers.getSessionUser();
+		SessionUser obj = (SessionUser) Controllers.getSessionUser(myAppCode);
 		if (obj == null) {
 			return "page/login";
 		}
@@ -94,7 +99,7 @@ public class LoginController {
 			if (account != null) {
 				SessionUser su = ywUserKiss.assembleSessionUser(t, account.getAccount(), ywUserKiss.getMyAppCode());
 				if (su != null) {
-					Controllers.login(su);
+					Controllers.login(myAppCode, su);
 					Controllers.setSessionObject("pwdStrength", lvo.getPwdStrength());
 					// setClientInfo2Cache(lvo.getLoginName(), lvo.getClient());
 					// return WebUtils.makeSuccessResult(request.getContextPath() + getIndexUrl());

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.sso.pc.kiss.um.ApplicationKiss;
@@ -16,6 +17,9 @@ public class LacPermissionInterceptor extends PermissionInterceptor {
 
 	@Autowired
 	private ApplicationKiss applicationKiss;
+
+	@Value("${oapi.appcode}")
+	protected String myAppCode;
 
 	public LacPermissionInterceptor() {
 		super();
@@ -42,6 +46,11 @@ public class LacPermissionInterceptor extends PermissionInterceptor {
 			appUriRescodeMap.put(appId, thisRes);
 			return thisRes;
 		}
+	}
+
+	@Override
+	protected String getAppCode() {
+		return myAppCode;
 	}
 
 }

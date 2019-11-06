@@ -223,6 +223,7 @@
 			,#{entity.ico}
 			,#{entity.passwd}
 			,#{entity.salt}
+			,#{entity.lastLoginDate}
 			,#{entity.oldPasswds}
 			,#{entity.lastPasswdDate}
 			,#{entity.wechatOpenId}
