@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.ICustomerDao">
+
+	<sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime,u.agentId,u.agentName,u.areaId,u.areaName,u.code,u.name,
+		u.address,u.phone,u.birthday,u.accountBalance,u.adminName,u.adminAccount,u.passwd,u.salt,u.remark
+	</sql>
+	
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.Customer">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			dj_customer u
+		where 
+			u.id=#{id}
+	</select>
+	
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.Customer">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_customer u 
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid} 
+	</select>
+	
+	<select id="fetchByCode" resultType="com.linkallcloud.sso.domain.Customer">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			dj_customer u 
+		where 
+			u.code=#{code}
+	</select>
+	
+	<select id="fetchByAccount" resultType="com.linkallcloud.sso.domain.Customer">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			dj_customer u 
+		where 
+			u.adminAccount=#{account}
+	</select>
+	
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.Customer">
+		select
+			<include refid="Base_Column_List" />
+		from dj_customer u 
+		where u.status &lt;&gt; 9 and  u.id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.Customer">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_customer u 
+		WHERE
+			u.status &lt;&gt; 9 
+		    <if test="page.cnds!=null and page.cnds.agentId != null"> AND u.agentId = #{page.cnds.agentId}</if>
+		    <if test="page.cnds!=null and page.cnds.agentName != null"> AND u.agentName like #{page.cnds.agentName}</if>
+		    <if test="page.cnds!=null and page.cnds.areaId != null"> AND u.areaId = #{page.cnds.areaId}</if>
+		    <if test="page.cnds!=null and page.cnds.areaName != null"> AND u.areaName like #{page.cnds.areaName}</if>
+		    <if test="page.cnds!=null and page.cnds.code != null"> AND u.code = #{page.cnds.code}</if>
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name like #{page.cnds.name}</if>
+			<if test="page.cnds!=null and page.cnds.address != null"> AND u.address like #{page.cnds.address}</if>
+			<if test="page.cnds!=null and page.cnds.phone != null"> AND u.phone = #{page.cnds.phone}</if>
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.accountBalanceGe != null"> AND u.accountBalance &gt;= #{page.cnds.accountBalanceGe}</if>
+			<if test="page.cnds!=null and page.cnds.accountBalanceLe != null"> AND u.accountBalance &lt;= #{page.cnds.accountBalanceLe}</if>
+			<if test="page.cnds!=null and page.cnds.adminName != null"> AND u.adminName like #{page.cnds.adminName}</if>
+			<if test="page.cnds!=null and page.cnds.adminAccount != null"> AND u.adminAccount = #{page.cnds.adminAccount}</if>
+			<if test="page.cnds!=null and page.cnds.birthday != null"> AND u.birthday = #{page.cnds.birthday}</if>
+			<if test="page.cnds!=null and page.cnds.birthdayGe != null"> AND u.birthday &gt;= #{page.cnds.birthdayGe}</if>
+			<if test="page.cnds!=null and page.cnds.birthdayLe != null"> AND u.birthday &lt;= #{page.cnds.birthdayLe}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.Customer">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_customer u 
+		WHERE
+			u.status &lt;&gt; 9 
+		    <if test="page.cnds!=null and page.cnds.agentId != null"> AND u.agentId = #{page.cnds.agentId}</if>
+		    <if test="page.cnds!=null and page.cnds.agentName != null"> AND u.agentName like #{page.cnds.agentName}</if>
+		    <if test="page.cnds!=null and page.cnds.areaId != null"> AND u.areaId = #{page.cnds.areaId}</if>
+		    <if test="page.cnds!=null and page.cnds.areaName != null"> AND u.areaName like #{page.cnds.areaName}</if>
+		    <if test="page.cnds!=null and page.cnds.code != null"> AND u.code = #{page.cnds.code}</if>
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name like #{page.cnds.name}</if>
+			<if test="page.cnds!=null and page.cnds.address != null"> AND u.address like #{page.cnds.address}</if>
+			<if test="page.cnds!=null and page.cnds.phone != null"> AND u.phone = #{page.cnds.phone}</if>
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.accountBalanceGe != null"> AND u.accountBalance &gt;= #{page.cnds.accountBalanceGe}</if>
+			<if test="page.cnds!=null and page.cnds.accountBalanceLe != null"> AND u.accountBalance &lt;= #{page.cnds.accountBalanceLe}</if>
+			<if test="page.cnds!=null and page.cnds.adminName != null"> AND u.adminName like #{page.cnds.adminName}</if>
+			<if test="page.cnds!=null and page.cnds.adminAccount != null"> AND u.adminAccount = #{page.cnds.adminAccount}</if>
+			<if test="page.cnds!=null and page.cnds.birthday != null"> AND u.birthday = #{page.cnds.birthday}</if>
+			<if test="page.cnds!=null and page.cnds.birthdayGe != null"> AND u.birthday &gt;= #{page.cnds.birthdayGe}</if>
+			<if test="page.cnds!=null and page.cnds.birthdayLe != null"> AND u.birthday &lt;= #{page.cnds.birthdayLe}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.Customer">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_customer u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="query!=null and query.cnds!=null and query.cnds.agentId != null"> AND u.agentId = #{query.cnds.agentId}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.agentName != null"> AND u.agentName like #{query.cnds.agentName}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.areaId != null"> AND u.areaId = #{query.cnds.areaId}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.areaName != null"> AND u.areaName like #{query.cnds.areaName}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.code != null"> AND u.code = #{query.cnds.code}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.name != null"> AND u.name like #{query.cnds.name}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.code != null"> AND u.code = #{query.cnds.code}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.phone != null"> AND u.phone = #{query.cnds.phone}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.address != null"> AND u.address like #{query.cnds.address}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.nameEq != null"> AND u.name = #{query.cnds.nameEq}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.accountBalanceGe != null"> AND u.accountBalance &gt;= #{query.cnds.accountBalanceGe}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.accountBalanceLe != null"> AND u.accountBalance &lt;= #{query.cnds.accountBalanceLe}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.adminAccount != null"> AND u.adminAccount = #{query.cnds.adminAccount}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.adminName != null"> AND u.adminName like #{query.cnds.adminName}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.birthday != null"> AND u.birthday = #{query.cnds.birthday}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.birthdayGe != null"> AND u.birthday &gt;= #{query.cnds.birthdayGe}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.birthdayLe != null"> AND u.birthday &lt;= #{query.cnds.birthdayLe}</if>
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.Customer" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into dj_customer 
+			(uuid, status,createTime,updateTime,agentId,agentName,areaId,areaName,code,name,address,phone,birthday,accountBalance,adminName,adminAccount,passwd,salt,remark)
+		values
+			(#{entity.uuid},0,now(),now(),#{entity.agentId},#{entity.agentName},#{entity.areaId},#{entity.areaName},#{entity.code},#{entity.name},
+				#{entity.address},#{entity.phone},#{entity.birthday},#{entity.accountBalance},#{entity.adminName},#{entity.adminAccount},#{entity.passwd},#{entity.salt},#{entity.remark})
+	</insert>
+	
+	<update id="update">
+		update 
+			dj_customer 
+		set 
+			name=#{entity.name},address=#{entity.address},phone=#{entity.phone},birthday=#{entity.birthday},remark=#{entity.remark},updateTime=now()
+			<if test="entity.adminName != null"> ,adminName=#{entity.adminName}</if>
+			<if test="entity.agentName != null"> ,agentName=#{entity.agentName}</if>
+			<if test="entity.areaName != null"> ,areaName=#{entity.areaName}</if>
+			<if test="entity.passwd != null and entity.salt != null"> ,passwd=#{entity.passwd},salt=#{entity.salt}</if>
+		where 
+			id=#{entity.id} and uuid=#{entity.uuid}
+	</update>
+	
+	<delete id="delete">
+		update 
+			dj_customer 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+	
+	<delete id="deletes">
+		update 
+			dj_customer 
+		set
+			status=9,updateTime=now()
+		where 
+			id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</delete>
+
+	<update id="updateBalance">
+		update
+		dj_customer
+		set
+			accountBalance = accountBalance + #{fee}
+		where
+			id=#{customerId}
+	</update>
+
+	<update id="deductionFee">
+		UPDATE `video_sms`.`dj_customer`
+		SET `updateTime` = NOW(),
+		`accountBalance` = accountBalance - #{fee}
+		WHERE
+		(`id` = #{id});
+	</update>
+
+	<update id="updateStatus">
+		update
+			dj_customer
+		set
+			status=#{status},updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</update>
+	
+	<update id="updates">
+		update 
+			dj_customer 
+		set
+			status=#{status},updateTime=now()
+		where 
+			id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</update>
+	
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.IBlackListDao">
+
+    <sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime,u.mobile,u.remark
+	</sql>
+
+    <select id="fetchById" resultType="com.linkallcloud.sso.domain.BlackList">
+        select
+        <include refid="Base_Column_List" />
+        from
+        dj_blacklist u
+        where
+        u.id=#{id}
+    </select>
+
+    <select id="fetchByMobile" resultType="com.linkallcloud.sso.domain.BlackList">
+        select
+        <include refid="Base_Column_List" />
+        from
+        dj_blacklist u
+        where
+        u.mobile=#{mobile}
+    </select>
+
+    <select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.BlackList">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM
+        dj_blacklist u
+        WHERE
+        u.id = #{id} and u.uuid=#{uuid}
+    </select>
+
+    <select id="findByIds" resultType="com.linkallcloud.sso.domain.BlackList">
+        select
+        <include refid="Base_Column_List" />
+        from dj_blacklist u
+        where u.status &lt;&gt; 9 and  u.id in
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findPage" resultType="com.linkallcloud.sso.domain.BlackList">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM
+        dj_blacklist u
+        WHERE
+        u.status &lt;&gt; 9
+        <if test="page.cnds!=null and page.cnds.mobile != null"> AND u.mobile like #{page.cnds.mobile}</if>
+        <choose>
+            <when test="page.orders != null and page.orders.length > 0">
+                order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+            </when>
+            <otherwise>
+                order by u.id
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="find" resultType="com.linkallcloud.sso.domain.BlackList">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM
+        dj_blacklist u
+        WHERE
+        u.status &lt;&gt; 9
+        <if test="query!=null and query.cnds!=null and query.cnds.mobile != null"> AND u.mobile like #{query.cnds.mobile}</if>
+        <if test="query!=null and query.cnds!=null and query.cnds.remark != null"> AND u.remark like #{query.cnds.remark}</if>
+        <choose>
+            <when test="query != null and query.orders != null and query.orders.length > 0">
+                order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+            </when>
+            <otherwise>
+                order by u.id
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert" parameterType="com.linkallcloud.sso.domain.BlackList" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into dj_blacklist
+			(uuid, status,createTime,updateTime,mobile,remark)
+		values
+			(#{entity.uuid},#{entity.status},now(),now(),#{entity.mobile},#{entity.remark})
+	</insert>
+
+    <insert id="batchInsertBlackList">
+        insert into dj_blacklist
+            (uuid, status,createTime,updateTime,mobile,remark)
+        values
+        <foreach collection="entities" item="entity" index="index" separator=",">
+            (#{entity.uuid},#{entity.status},now(),now(),#{entity.mobile},#{entity.remark})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update
+        dj_blacklist
+        set
+        remark=#{entity.remark},updateTime=now()
+        <if test="entity.mobile != null"> ,mobile=#{entity.mobile}</if>
+        where
+        id=#{entity.id} and uuid=#{entity.uuid}
+    </update>
+
+    <delete id="delete">
+		update
+			dj_blacklist
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+
+</mapper>

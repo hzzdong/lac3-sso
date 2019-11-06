@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.linkallcloud</groupId>
+		<artifactId>lac3-sso</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>lac3-sso-iapi</artifactId>
+	<name>lac3-sso-iapi</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.linkallcloud</groupId>
+			<artifactId>lac3-core</artifactId>
+			<version>${lac3-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.linkallcloud</groupId>
+			<artifactId>lac3-handshake</artifactId>
+			<version>${lac3-handshake.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jeecg</groupId>
+			<artifactId>easypoi-annotation</artifactId>
+			<version>${easypoi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

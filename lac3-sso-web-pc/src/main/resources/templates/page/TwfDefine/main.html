@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>流程定义管理</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/css/bootstrap.min.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css" th:href="@{{path}/AdminLTE2410/bower_components/Ionicons/css/ionicons.min.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="plugins/iCheck/square/blue.css" th:href="@{{path}/AdminLTE2410/plugins/iCheck/square/blue.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="dist/css/AdminLTE.min.css" th:href="@{{path}/AdminLTE2410/dist/css/AdminLTE.min.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="dist/css/index.css" th:href="@{{path}/AdminLTE2410/dist/css/index.css(path=${static_server},v=${static_res_version})}">
+    <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css" th:href="@{{path}/AdminLTE2410/dist/css/skins/_all-skins.min.css(path=${static_server},v=${static_res_version})}">
+    <link href="plugins/ztree/css/zTreeStyle/zTreeStyle.css" th:href="@{{path}/AdminLTE2410/plugins/ztree/css/zTreeStyle/zTreeStyle.css(path=${static_server},v=${static_res_version})}" rel="stylesheet">
+    <link href="plugins/ztree/css/metroStyle/metroStyle.css" th:href="@{{path}/AdminLTE2410/plugins/ztree/css/metroStyle/metroStyle.css(path=${static_server},v=${static_res_version})}" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" th:href="@{{path}/AdminLTE2410/bower_components/fonts.googleapis/fonts.css(path=${static_server},v=${static_res_version})}">
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<section class="find-tools">
+    <div class="searchBox">
+        <div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;流程定义管理</div>
+        <div class="pull-right">
+            <ul>
+                <li><button class="btn-permed btn_twfdef_list btn btn-block btn-primary btn-sm" data-res="dj_def"><i class="fa fa-list"></i> 列表DEMO </button></li>
+                <li><button class="btn-permed btn_twfdef_add btn btn-block btn-primary btn-sm" data-res="dj_def"><i class="fa fa-plus"></i>&nbsp;新增流程定义 </button></li>
+                <li><button class="btn-superSearch btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button></li>
+                <li><button class="btn_twfdef_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button></li>
+                <li>
+                    <form id="f_twfdef_search" class="form-inline">
+                        <input type="text" id="name" name="name" oper="cn" stype="S" class="form-control form-search" placeholder="名称快速查询">
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="superSearch">
+        <form id="f_twfdef_search_s" class="form-inline">
+            <div class="form-group">
+                <label class="control-label">名称：</label>
+                <div class="control-inline">
+                    <input type="text" id="name" name="name" oper="cn" stype="S" class="form-control form-search" placeholder="流程定义名称">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">编码：</label>
+                <div class="control-inline">
+                    <input type="text" id="code" name="code" oper="eq" stype="S" class="form-control form-search" placeholder="流程定义编码">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">状态：</label>
+                <div class="control-inline">
+                    <select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
+                        <option value="">全部</option>
+                        <option value="0">启用状态</option>
+                        <option value="1">禁用状态</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary btn-sm btn_twfdef_search_s">查询</button>
+                <button type="reset" class="btn btn-default btn-sm">重置</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="content">
+    <table id="dt_twfdef" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        <tr>
+            <th>名称</th>
+            <th>编码</th>
+            <th>说明</th>
+            <th>归档类型</th>
+            <th>状态</th>
+            <th>操作</th>
+            <th>UUID</th>
+            <th>ID</th>
+        </tr>
+        </thead>
+    </table>
+</section>
+
+<script th:replace="page/base/global :: jsVar"></script>
+<script src="bower_components/jquery/dist/jquery.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/jquery-ui/jquery-ui.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery-ui/jquery-ui.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script>
+    $.widget.bridge('uibutton', $.ui.button);
+</script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/js/bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery-slimscroll/jquery.slimscroll.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/fastclick/lib/fastclick.js" th:src="@{{path}/AdminLTE2410/bower_components/fastclick/lib/fastclick.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="dist/js/adminlte.min.js" th:src="@{{path}/AdminLTE2410/dist/js/adminlte.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="dist/js/demo.js" th:src="@{{path}/AdminLTE2410/dist/js/demo.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="plugins/iCheck/icheck.min.js" th:src="@{{path}/AdminLTE2410/plugins/iCheck/icheck.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js" th:src="@{{path}/AdminLTE2410/bower_components/datatables.net/js/jquery.dataTables.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/ztree/js/jquery.ztree.all.min.js" th:src="@{{path}/AdminLTE2410/plugins/ztree/js/jquery.ztree.all.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/utils.js" th:src="@{{path}/lac/utils.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2.js" th:src="@{{path}/lac/lac2.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2Tab.js" th:src="@{{path}/lac/lac2Tab.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2Menu.js" th:src="@{{path}/lac/lac2Menu.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2FieldTree.js" th:src="@{{path}/lac/lac2FieldTree.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2Dialog.js" th:src="@{{path}/lac/lac2Dialog.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/lac2DataTables.js" th:src="@{{path}/lac/lac2DataTables.js(path=${static_server},v=${static_res_version})}"></script>
+<script>
+    var dtable4TwfDef, curRow4TwfDef;
+
+    function getCnds(){
+        return [{ field: "status", data: 0, op: "eq", type: "I" }];
+    }
+
+    $(function() {
+        initDataTable4TwfDef();
+        bindEvents4DataTable4TwfDef();
+    });
+
+    function bindEvents4DataTable4TwfDef() {
+        /* 快速查询 */
+        $(".btn_twfdef_search").on("click", function() {
+            $('.btn-superSearch').removeClass('active');
+            $('.superSearch').css('display','none');
+            $("#f_twfdef_search").search4DataTable(dtable4TwfDef);
+        });
+
+        $(".btn_twfdef_search_s").on("click", function() {
+            $("#f_twfdef_search_s").search4DataTable(dtable4TwfDef);
+        });
+
+        $('.btn-superSearch').on('click',function(){
+            $('.btn_twfdef_search').removeClass('active');
+            $(this).toggleClass('active');
+            if($(this).hasClass('active')){
+                $("#f_twfdef_search").hide();
+                $(".btn_twfdef_search").hide();
+            }else{
+                $("#f_twfdef_search").show();
+                $(".btn_twfdef_search").show();
+            }
+            $(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
+        });
+
+        $(".btn_twfdef_add").on("click", function() {
+            LAC.addRow4DataTable(dtable4TwfDef, ctx + '/TwfDefine/add', 'TwfDefine', '新增流程定义');
+        });
+
+        $(".btn_twfdef_list").on("click", function() {
+            LacTab.addTab({
+                id : "twfdef_list",
+                title : '流程实例不分页列表DEMO',
+                url : ctx + "/TwfDefine/list",
+                autoLink : true
+            });
+        });
+
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_edit', function(event) {
+            var tr = $(this).parents('tr');
+            var td0 = tr.children("td:first");
+            curRow4TwfDef = dtable4TwfDef.row(tr);
+            LAC.editCurRow4DataTable(curRow4TwfDef, ctx + '/TwfDefine/edit', 'TwfDefine', '编辑流程定义', td0);
+        });
+
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_del', function(event) {
+            curRow4TwfDef = dtable4TwfDef.row($(this).parents('tr'));
+            LAC.delete4DataTable(curRow4TwfDef, ctx + '/TwfDefine/delete');
+        });
+
+        //btn_twfdef_start
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_start', function(event) {
+            curRow4TwfDef = dtable4TwfDef.row($(this).parents('tr'));
+            var rowData = curRow4TwfDef.data();
+            LacTab.addTab({
+                id : "twfdef_start",
+                title : '启动流程实例',
+                url : ctx + "/TwfDefine/toStartInstance?id="+rowData.id+"&uuid="+rowData.uuid+"&code="+rowData.code,
+                autoLink : true,
+                callback : function(ret) {
+                    if(ret && ret.code=="0"){
+                        LAC.tip("启动流程实例成功！", "info");
+                    } else {
+                        LAC.tip(ret.message || "操作执行失败！！！", "error");
+                    }
+                }
+            });
+        });
+
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_1', function(event) {
+            LAC.confirm("我是confirm", function(ok){
+                if (ok) {
+                    alert("你点击的 确定 按钮");
+                } else {
+                    alert("你点击的 关闭 按钮");
+                }
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_2', function(event) {
+            LAC.showWarn("我是showWarn", function(ok){
+                alert("你点击的 关闭 按钮");
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_3', function(event) {
+            LAC.showError("我是showError", function(ok){
+                alert("你点击的 关闭 按钮");
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_4', function(event) {
+            LAC.showSuccess("我是showSuccess", function(ok){
+                alert("你点击的 关闭 按钮");
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_5', function(event) {
+            LAC.showInfo("我是showInfo", function(ok){
+                alert("你点击的 关闭 按钮");
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_6', function(event) {
+            LAC.tip("我是 info tip,测试一下", "info");
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_7', function(event) {
+            LAC.tip("我是 success tip,测试一下", "success");
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_8', function(event) {
+            LAC.tip("我是 warning tip,测试一下", "warning");
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_9', function(event) {
+            LAC.tip("我是 error tip,测试一下", "error");
+        });
+
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_10', function(event) {
+            var dlg = LAC.showModel({
+                id : "dlg_customer_select",
+                type : "common",// primary common
+                sizeCss : "modal-lg",
+                title : "选择客户",
+                url :  ctx + "/Customer/select?multi=true",
+                data : getCnds(),
+                method : "post",
+                callback : function(data) {
+                    alert("您选中的是：" + JSON2.stringify(data));
+                    LAC.closeModel("dlg_customer_select");
+                }
+            });
+        });
+        $('#dt_twfdef tbody').on('click', 'button.btn_twfdef_11', function(event) {
+            curRow4TwfDef = dtable4TwfDef.row($(this).parents('tr'));
+            var rowData = curRow4TwfDef.data();
+            var dlg = LAC.showModel({
+                id : "dlg_TwfDefine_add",
+                type : "common",// primary common
+                sizeCss : "modal-lg",
+                title : "新增",
+                url :  ctx + "/TwfDefine/edit2?id="+rowData.id+"&uuid="+rowData.uuid,
+                data : getCnds(),
+                method : "post",
+                callback : function(data) {
+                    alert("返回：" + JSON2.stringify(data));
+                    LAC.closeModel("dlg_TwfDefine_add");
+                    LAC.tip("保存成功！！！！！！！！！", "success");
+                    dtable4TwfDef.draw();
+                }
+            });
+        });
+
+    }
+
+    function initDataTable4TwfDef() {
+        dtable4TwfDef = $('#dt_twfdef').LacDTable(
+            {
+                order : [ [ 8, "desc" ] ],
+                url : ctx + "/TwfDefine/page",
+                autoSequence : true,
+                columns : [
+                    {
+                        "data" : "name",
+                        "width" : "150px"
+                    }, {
+                        "data" : "code",
+                        "width" : "150px"
+                    }, {
+                        "data" : "remark",
+                        "orderable" : false,
+                        "defaultContent" : ""
+                    }, {
+                        "data" : "fileType",
+                        "width" : "80px",
+                        "render" : function(data, type, row) {
+                            if (data == 0) {
+                                return '<span class="badge bg-green">自动归档</span>';
+                            } else if (data == 1) {
+                                return '<span class="badge bg-light-blue">手动归档</span>';
+                            } else {
+                                return "";
+                            }
+                        }
+                    }, {
+                        "data" : "status",
+                        "width" : "40px",
+                        "render" : function(data, type, row) {
+                            if (data == 0) {
+                                return '<span class="badge bg-green">正常</span>';
+                            } else if (data == 1) {
+                                return '<span class="badge bg-yellow">停用</span>';
+                            } else {
+                                return "";
+                            }
+                        }
+                    }, {
+                        "data" : null,
+                        "defaultContent" : "",
+                        "width" : "175px",
+                        "orderable" : false,
+                        "searchable" : false,
+                        "sClass" : "text-center",
+                        "render" : function(data, type, row) {
+                            var ret = '<button class="btn-permed btn_twfdef_start icon-btn" data-res="dj_def" title="启动流程实例" disabled="disabled"><i class="fa fa-paper-plane text-green"></i></button><button class="btn-permed btn_twfdef_edit icon-btn" data-res="dj_def" title="修改流程定义"><i class="fa fa-pencil text-green"></i></button><button class="btn-permed btn_twfdef_del icon-btn" data-res="dj_def" title="删除流程定义"><i class="fa fa-trash-o text-red"></i></button>';
+                            if(row.status == 0) {
+                                ret += '<button class="btn-permed btn_twfdef_1 icon-btn" data-res="dj_def" title="confirm"><i class="fa fa-gear text-light-blue"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_2 icon-btn" data-res="dj_def" title="showWarn"><i class="fa fa-gear text-yellow"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_3 icon-btn" data-res="dj_def" title="showError"><i class="fa fa-gear text-red"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_4 icon-btn" data-res="dj_def" title="showSuccess"><i class="fa fa-gear text-green"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_5 icon-btn" data-res="dj_def" title="showInfo"><i class="fa fa-gear text-aqua"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_6 icon-btn" data-res="dj_def" title="tip info"><i class="fa fa-comment-o text-aqua"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_7 icon-btn" data-res="dj_def" title="tip success"><i class="fa fa-comment-o text-green"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_8 icon-btn" data-res="dj_def" title="tip warning"><i class="fa fa-comment-o text-yellow"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_9 icon-btn" data-res="dj_def" title="tip error"><i class="fa fa-comment-o text-red"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_10 icon-btn" data-res="dj_def" title="showModel"><i class="fa fa-television text-green"></i></button>';
+                                ret += '<button class="btn-permed btn_twfdef_11 icon-btn" data-res="dj_def" title="showModel"><i class="fa fa-television text-yellow"></i></button>';
+                            } else {
+                                ret += '<button class="btn-permed btn_twfdef_20 icon-btn" data-res="dj_def" title="XXXX"><i class="fa fa-futbol-o text-green"></i></button>';
+                            }
+                            return ret;
+                        }
+                    }, {
+                        "data" : "uuid",
+                        "visible" : false
+                    }, {
+                        "data" : "id",
+                        "visible" : false
+                    } ],
+
+                initComplete : function(setting, json) {
+                    $(".btn-permed").permissionEnabled();
+                },
+                drawCallback : function(setting) {
+                    $(".btn-permed").permissionEnabled();
+                }
+            });
+
+    }
+</script>
+</body>
+</html>

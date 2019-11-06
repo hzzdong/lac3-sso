@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.ITwfDefineDao">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime,u.code,u.name,u.fileType,u.supervise,u.report,u.allocate,u.fieldGroupsDefine,u.remark
+	</sql>
+	
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			dj_define u 
+		where 
+			u.id=#{id}
+	</select>
+	
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_define u
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid} and u.status &lt;&gt; 9
+	</select>
+	
+	<select id="fetchByCode" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			dj_define u 
+		where 
+			u.code=#{code}
+	</select>
+	
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		select
+			<include refid="Base_Column_List" />
+		from dj_define u 
+		where u.status &lt;&gt; 9 and  u.id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_define u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.code != null"> AND u.code = #{page.cnds.code}</if>
+			<if test="page.cnds!=null and page.cnds.fileType != null"> AND u.fileType = #{page.cnds.fileType}</if>
+			<if test="page.cnds!=null and page.cnds.supervise != null"> AND u.supervise = #{page.cnds.supervise}</if>
+			<if test="page.cnds!=null and page.cnds.report != null"> AND u.report = #{page.cnds.report}</if>
+			<if test="page.cnds!=null and page.cnds.allocate != null"> AND u.allocate = #{page.cnds.allocate}</if>
+		    <if test="page.cnds!=null and page.cnds.name != null"> AND u.name like #{page.cnds.name}</if>
+		    <if test="page.cnds!=null and page.cnds.nameEq != null"> AND u.name = #{page.cnds.nameEq}</if>
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.TwfDefine">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			dj_define u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="query!=null and query.cnds!=null and query.cnds.code != null"> AND u.code = #{query.cnds.code}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.fileType != null"> AND u.fileType = #{query.cnds.fileType}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.supervise != null"> AND u.supervise = #{query.cnds.supervise}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.report != null"> AND u.report = #{query.cnds.report}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.allocate != null"> AND u.allocate = #{query.cnds.allocate}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.name != null"> AND u.name like #{query.cnds.name}</if>
+		    <if test="query!=null and query.cnds!=null and query.cnds.nameEq != null"> AND u.name = #{query.cnds.nameEq}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.TwfDefine" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into dj_define (uuid, status,createTime,updateTime,code,name,fileType,supervise,report,allocate,fieldGroupsDefine,remark)
+		values(#{entity.uuid},#{entity.status},now(),now(),#{entity.code},#{entity.name},#{entity.fileType},#{entity.supervise},#{entity.report},#{entity.allocate},#{entity.fieldGroupsDefine},#{entity.remark})
+	</insert>
+	
+	<update id="update">
+		update 
+			dj_define 
+		set 
+			name=#{entity.name},fileType=#{entity.fileType},supervise=#{entity.supervise},report=#{entity.report},allocate=#{entity.allocate},fieldGroupsDefine=#{entity.fieldGroupsDefine},remark=#{entity.remark}
+			<if test="entity.status != null"> ,status=#{entity.status}</if>
+			,updateTime=now()
+		where 
+			id=#{entity.id} and uuid=#{entity.uuid}
+	</update>
+	
+	<delete id="delete">
+		update 
+			dj_define 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+	
+</mapper>

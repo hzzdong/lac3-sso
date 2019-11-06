@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.9.RELEASE</version>
+	</parent>
+
+	<groupId>com.linkallcloud</groupId>
+	<artifactId>lac3-sso</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+
+	<name>Linkallcloud Project</name>
+	<description>Linkallcloud Project</description>
+
+	<modules>
+		<module>lac3-sso-iapi</module>
+		<module>lac3-sso-oapi</module>
+		<module>lac3-sso-server</module>
+		<module>lac3-sso-web-oapi</module>
+		<module>lac3-sso-web-portal</module>
+		<module>lac3-sso-web-pc</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>1.8</java.version>
+
+		<lac3-core.version>0.0.5</lac3-core.version>
+		<lac3-cache.version>0.0.5</lac3-cache.version>
+		<lac3-handshake.version>0.0.5</lac3-handshake.version>
+		<lac3-web.version>0.0.5</lac3-web.version>
+
+		<lac3-um.version>0.0.5</lac3-um.version>
+
+		<dubbo.version>2.7.3</dubbo.version>
+		<curator.version>4.2.0</curator.version>
+		<dubbo-spring-boot.version>2.7.3</dubbo-spring-boot.version>
+		<zookeeper.version>3.4.14</zookeeper.version>
+		<springloaded.version>1.2.8.RELEASE</springloaded.version>
+		<mybatis-spring-boot.version>2.1.0</mybatis-spring-boot.version>
+		<pagehelper-spring-boot.version>1.2.12</pagehelper-spring-boot.version>
+		<druid.version>1.1.20</druid.version>
+		<fastjson.version>1.2.62</fastjson.version>
+		<attoparser.version>2.0.5.RELEASE</attoparser.version>
+		<unbescape.version>1.1.6.RELEASE</unbescape.version>
+		<rocketmq.version>4.5.2</rocketmq.version>
+		<ognl.version>3.2.11</ognl.version>
+		<easypoi.version>2.4.0</easypoi.version>
+		<jxl.version>2.4.2</jxl.version>
+		<protobuf-java.version>3.10.0</protobuf-java.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>
