@@ -288,12 +288,15 @@
 		});
 
 		$('#dt_entity tbody').on('click', 'button.btn-entity-view', function(event) {
-			var tr = $(this).parents('tr');
-			var td0 = tr.children("td:first");
-			curRow = dtable.row(tr);
-			LAC.editCurRow4DataTable(curRow, ctx + '/AccountLock/view', 'AccountLock-view', '编辑锁', td0);
+			curRow = dtable.row($(this).parents('tr'));
+			var rd = curRow.data();
+			LacTab.addTab({
+	            id : "AccountLock-view",
+	            title : '查看账号锁详情',
+	            url : ctx + '/AccountLock/view?id='+rd.id+"&uuid="+rd.uuid,
+	        });
 		});
-
+		
 		$('#dt_entity tbody').on('click', 'button.btn-entity-status1', function(event) {
 			var tr = $(this).parents('tr');
 			var td0 = tr.children("td:first");

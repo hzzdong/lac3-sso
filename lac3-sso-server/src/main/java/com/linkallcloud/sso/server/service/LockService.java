@@ -14,7 +14,9 @@ import com.linkallcloud.core.query.Query;
 import com.linkallcloud.core.query.rule.Equal;
 import com.linkallcloud.core.service.BaseService;
 import com.linkallcloud.sso.activity.ILockActivity;
+import com.linkallcloud.sso.activity.ILockHisActivity;
 import com.linkallcloud.sso.domain.Lock;
+import com.linkallcloud.sso.domain.LockHis;
 import com.linkallcloud.sso.enums.LockReson;
 import com.linkallcloud.sso.enums.LockStatus;
 import com.linkallcloud.sso.service.ILockService;
@@ -26,9 +28,17 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	@Autowired
 	private ILockActivity lockActivity;
 
+	@Autowired
+	private ILockHisActivity lockHisActivity;
+
 	@Override
 	public ILockActivity activity() {
 		return lockActivity;
+	}
+
+	public void saveLockHis(Trace t, Lock entity) {
+		LockHis his = new LockHis(entity);
+		lockHisActivity.insert(t, his);
 	}
 
 	@Override
@@ -42,7 +52,10 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 
 		if (dbEntity == null) {
 			entity.setCount(1);
-			return super.save(t, entity);
+			super.save(t, entity);
+
+			saveLockHis(t, entity);
+			return entity;
 		} else {
 			if (LockStatus.Lock.getCode().equals(entity.getStatus())) {
 				if (LockStatus.Lock.getCode().equals(dbEntity.getStatus())) {
@@ -56,7 +69,10 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 			dbEntity.setReason(entity.getReason());
 			dbEntity.setRemark(entity.getRemark());
 			dbEntity.setStatus(entity.getStatus());
-			return super.save(t, dbEntity);
+			super.save(t, dbEntity);
+			
+			saveLockHis(t, dbEntity);
+			return dbEntity;
 		}
 	}
 
@@ -94,6 +110,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.Lock.getCode());
 				activity().update(t, dbEntity);
+				
+				saveLockHis(t, dbEntity);
 			}
 			return true;
 		}
@@ -112,6 +130,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.UnLock.getCode());
 				activity().update(t, dbEntity);
+				
+				saveLockHis(t, dbEntity);
 			}
 			return true;
 		}

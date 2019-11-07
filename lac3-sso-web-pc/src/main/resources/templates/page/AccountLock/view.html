@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css" th:href="@{{path}/AdminLTE2410/bower_components/Ionicons/css/ionicons.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css(path=${static_server},v=${static_res_version})}">
+  <link rel="stylesheet" href="bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="plugins/iCheck/all.css" th:href="@{{path}/AdminLTE2410/plugins/iCheck/all.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css" th:href="@{{path}/AdminLTE2410/plugins/iCheck/square/blue.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css(path=${static_server},v=${static_res_version})}">
@@ -26,9 +27,13 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" th:href="@{{path}/AdminLTE2410/bower_components/fonts.googleapis/fonts.css(path=${static_server},v=${static_res_version})}">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
-<div class="box box-outline box-info">
+<div class="box box-outline">
 	<div class="box-header with-border">
-		<h3 class="box-title">账号锁详情</h3>
+		<h3 class="box-title">账号[<span th:text="${entity.lockedTarget}"></span>]锁详情</h3>
+		<div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+        </div>
 	</div>
 	<div class="box-body">
 			<table class="table table-bordered">
@@ -58,6 +63,33 @@
 				</tbody>
 			</table>
 	</div>
+</div>
+
+<div class="box box-outline">
+	<div class="box-header with-border">
+		<h3 class="box-title">账号[<span th:text="${entity.lockedTarget}"></span>]锁/解锁历史</h3>
+		<div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+        </div>
+	</div>
+	<div class="box-body">
+		<table id="dt_entity" class="table table-bordered table-striped" style="width:100%">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>锁定目标</th>
+					<th>锁定类型</th>
+					<th>锁定次数</th>
+					<th>锁定操作</th>
+					<th>锁定状态</th>
+					<th>锁定时间</th>
+					<th>描述</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
 	<div class="box-footer">
 		<button id="btn_entity_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">关闭</button>
 	</div>
@@ -72,9 +104,14 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/js/bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery-slimscroll/jquery.slimscroll.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="bower_components/fastclick/lib/fastclick.js" th:src="@{{path}/AdminLTE2410/bower_components/fastclick/lib/fastclick.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/bootstrap-daterangepicker-3.0.5/moment.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-daterangepicker-3.0.5/moment.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="dist/js/adminlte.min.js" th:src="@{{path}/AdminLTE2410/dist/js/adminlte.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="dist/js/demo.js" th:src="@{{path}/AdminLTE2410/dist/js/demo.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="plugins/iCheck/icheck.min.js" th:src="@{{path}/AdminLTE2410/plugins/iCheck/icheck.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js" th:src="@{{path}/AdminLTE2410/bower_components/datatables.net/js/jquery.dataTables.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/ztree/js/jquery.ztree.all.min.js" th:src="@{{path}/AdminLTE2410/plugins/ztree/js/jquery.ztree.all.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/utils.js" th:src="@{{path}/lac/utils.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/lac2.js" th:src="@{{path}/lac/lac2.js(path=${static_server},v=${static_res_version})}"></script>
@@ -83,12 +120,129 @@
 <script src="../../lac/lac2FieldTree.js" th:src="@{{path}/lac/lac2FieldTree.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/lac2Dialog.js" th:src="@{{path}/lac/lac2Dialog.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/lac2DataTables.js" th:src="@{{path}/lac/lac2DataTables.js(path=${static_server},v=${static_res_version})}"></script>
-<script type="text/javascript">
+<script th:inline="javascript">
+
+	/*<![CDATA[*/
+	var lTarget = /*[[${entity.lockedTarget}]]*/'';
+	var lType = /*[[${entity.type}]]*/'';
+	/*]]>*/
+	
 	$(function() {
+		initDataTable();
 		$("#btn_entity_cancel").click(function() {
 			LacTab.closeThisTab();
 		});
 	});
+	
+	function initDataTable() {
+		dtable = $('#dt_entity').LacDTable(
+			{
+				order : [ [ 1, "desc" ] ],
+				url : ctx + "/LockHis/page",
+				autoSequence : true,
+				cnds: [{ field: "lockedTarget", data: lTarget, op: "eq", type: "S" },{ field: "type", data: lType, op: "eq", type: "I" }],
+				columns : [
+					{
+						"data" : "id",
+						"visible" : false
+					}, 
+					{
+						"data" : "lockedTarget",
+						"width" : "200px",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : "type",
+						"width" : "60px",
+						"render" : function(data, type, row) {
+							if (data == 1) {
+								return '<span class="badge bg-green">账号锁</span>';
+							} else if (data == 2) {
+								return '<span class="badge bg-blue">Ip锁</span>';
+							} else {
+								return "";
+							}
+						}
+					}, 
+					{
+						"data" : "count",
+						"width" : "60px",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : "reason",
+						"width" : "120px",
+						"render" : function(data, type, row) {
+							if (data == 1) {
+								return '<span class="badge bg-red">自动锁定</span>';
+							} else if (data == 2) {
+								return '<span class="badge bg-red">手工锁定</span>';
+							} else if (data == 21) {
+								return '<span class="badge bg-green">自动解锁(到期)</span>';
+							} else if (data == 22) {
+								return '<span class="badge bg-green">自动解锁(登录成功)</span>';
+							} else if (data == 23) {
+								return '<span class="badge bg-green">手工解锁</span>';
+							} else if (data == 24) {
+								return '<span class="badge bg-green">自助验证解锁</span>';
+							} else {
+								return "";
+							}
+						}
+					}, 
+					{
+						"data" : "status",
+						"width" : "60px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-red">已锁定</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-green">已解锁</span>';
+							} else {
+								return "";
+							}
+						}
+					}, 
+					{
+						"data" : "lockedTime",
+						"width" : "150px",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : "remark",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : null,
+						"defaultContent" : "",
+						"width" : "75px",
+						"orderable" : false,
+						"searchable" : false,
+						"sClass" : "text-center",
+						"render" : function(data, type, row) {
+							return '<button class="btn-permed btn-entity-view icon-btn" data-res="LockHis" title="查看锁/解锁历史详情"><i class="fa fa-eye text-green"></i></button>';
+						}
+					}],
+		
+				initComplete : function(setting, json) {
+					$(".btn-permed").permissionEnabled();
+				},
+				drawCallback : function(setting) {
+					$(".btn-permed").permissionEnabled();
+				}
+			});
+		
+		$('#dt_entity tbody').on('click', 'button.btn-entity-view', function(event) {
+			curRow = dtable.row($(this).parents('tr'));
+			var rd = curRow.data();
+			LacTab.addTab({
+	            id : "LockHis-view",
+	            title : '查看锁/解锁历史详情',
+	            url : ctx + '/LockHis/view?id='+rd.id+"&uuid="+rd.uuid,
+	        });
+		});
+
+	}
 </script>
 </body>
 </html>
