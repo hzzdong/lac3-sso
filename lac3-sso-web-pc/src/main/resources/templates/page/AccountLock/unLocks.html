@@ -1,0 +1,53 @@
+
+<div class="pad margin no-print">
+     <div class="callout callout-warning" style="margin-bottom: 0!important;">
+       <h4><i class="fa fa-info"></i> 注意:</h4>
+       本操作将立即解锁您已经选定的账号，解锁后账号将立即恢复正常操作，请慎重！.
+     </div>
+</div>
+
+<div class="box box-outline box-info">
+	<div class="box-header with-border">
+		<h3 class="box-title">解锁信息</h3>
+	</div>
+	<div class="box-body">
+		<form id="f_unLocks" class="form-horizontal">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="unLock_remark" class="col-sm-2 control-label">解锁说明*</label>
+						<div class="col-sm-10">
+							<textarea class="form-control validate[required,maxSize[255]]" rows="3" id="unLock_remark" name="unLock_remark" placeholder="请输入解锁说明..."></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="box-footer">
+		<button id="btn_unLonks_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">取消</button>
+		<button id="btn_unLocks" type="button" class="btn btn-primary pull-right" data-res="AccountLock">立即解锁</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function() {
+		var ret = { code:"1", data:""};
+		
+		$("#btn_unLonks_cancel").click(function() {
+			LAC.getModel("dlg_unLocks").getCallback()(ret);
+		});
+
+		$("#btn_unLocks").click(function() {
+			if ($('#f_unLocks').validationEngine('validate')) {
+				ret.code = "0";
+				ret.data = $('#unLock_remark').val();
+				LAC.getModel("dlg_unLocks").getCallback()(ret);
+			}
+		});
+
+		$("#f_unLocks").validationEngine("attach", { notShowPrompt : true }).bindValidationEngineHelper();
+	});
+</script>
+</body>
+</html>

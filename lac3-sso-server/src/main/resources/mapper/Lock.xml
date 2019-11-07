@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.ILockDao">
+
+	<sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime
+		,u.lockedTarget
+		,u.type
+		,u.count
+		,u.reason
+		,u.lockedTime
+		,u.operator
+		,u.remark
+	</sql>
+	
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.Lock">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_lock u
+		where 
+			u.id=#{id}
+	</select>
+	
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.Lock">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_lock u 
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid} 
+	</select>
+	
+	<select id="fetchByCode" resultType="com.linkallcloud.sso.domain.Lock">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_lock u 
+		where 
+			u.code=#{code}
+	</select>
+	
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.Lock">
+		select
+			<include refid="Base_Column_List" />
+		from tab_lock u 
+		where u.status &lt;&gt; 9 and  u.id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.Lock">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_lock u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTarget != null"> AND u.lockedTarget = #{page.cnds.lockedTarget}</if>
+			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
+			<if test="page.cnds!=null and page.cnds.count != null"> AND u.count = #{page.cnds.count}</if>
+			<if test="page.cnds!=null and page.cnds.reason != null"> AND u.reason = #{page.cnds.reason}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTime != null"> AND u.lockedTime = #{page.cnds.lockedTime}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTimeGe != null"> AND u.lockedTime &gt;= #{page.cnds.lockedTimeGe}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTimeLe != null"> AND u.lockedTime &lt;= #{page.cnds.lockedTimeLe}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.Lock">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_lock u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTarget != null"> AND u.lockedTarget = #{page.cnds.lockedTarget}</if>
+			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
+			<if test="page.cnds!=null and page.cnds.count != null"> AND u.count = #{page.cnds.count}</if>
+			<if test="page.cnds!=null and page.cnds.reason != null"> AND u.reason = #{page.cnds.reason}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTime != null"> AND u.lockedTime = #{page.cnds.lockedTime}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTimeGe != null"> AND u.lockedTime &gt;= #{page.cnds.lockedTimeGe}</if>
+			<if test="page.cnds!=null and page.cnds.lockedTimeLe != null"> AND u.lockedTime &lt;= #{page.cnds.lockedTimeLe}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.Lock">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_lock u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.lockedTarget != null"> AND u.lockedTarget = #{query.cnds.lockedTarget}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.type != null"> AND u.type = #{query.cnds.type}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.count != null"> AND u.count = #{query.cnds.count}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.reason != null"> AND u.reason = #{query.cnds.reason}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.lockedTime != null"> AND u.lockedTime = #{query.cnds.lockedTime}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.lockedTimeGe != null"> AND u.lockedTime &gt;= #{query.cnds.lockedTimeGe}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.lockedTimeLe != null"> AND u.lockedTime &lt;= #{query.cnds.lockedTimeLe}</if>
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.Lock" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_lock 
+			( uuid,status,createTime,updateTime
+			,lockedTarget
+			,type
+			,count
+			,reason
+			,lockedTime
+			,operator
+			,remark
+			)
+		values
+			(#{entity.uuid},#{entity.status},now(),now()
+			,#{entity.lockedTarget}
+			,#{entity.type}
+			,#{entity.count}
+			,#{entity.reason}
+			,#{entity.lockedTime}
+			,#{entity.operator}
+			,#{entity.remark}
+			)
+	</insert>
+	
+	<update id="update">
+		update 
+			tab_lock 
+		set 
+			updateTime=now()
+			,lockedTarget=#{entity.lockedTarget}
+			,type=#{entity.type}
+			,count=#{entity.count}
+			,reason=#{entity.reason}
+			,lockedTime=#{entity.lockedTime}
+			,remark=#{entity.remark}
+			<if test="entity.status != null"> ,status=#{entity.status}</if>
+		where 
+			id=#{entity.id} and uuid=#{entity.uuid}
+	</update>
+	
+	<delete id="delete">
+		update 
+			tab_lock 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+	
+	<delete id="deletes">
+		update 
+			tab_lock  
+		set
+			status=9,updateTime=now()
+		where 
+			id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</delete>
+
+	<update id="updateStatus">
+		update
+			tab_lock
+		set
+			status=#{status},updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</update>
+	
+	<update id="updates">
+		update 
+			tab_lock 
+		set
+			status=#{status},updateTime=now()
+		where 
+			id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</update>
+	
+</mapper>
