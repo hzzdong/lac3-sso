@@ -3,7 +3,7 @@ package com.linkallcloud.sso.exception;
 public class BlackListException extends SsoException {
 	private static final long serialVersionUID = 8392311663170392592L;
 
-	public static final String ARG_CODE_BLACKLIST = "e-balcklist";
+	public static final String ARG_CODE_BLACKLIST = "e-black";
 
 	public BlackListException() {
 		super(ARG_CODE_BLACKLIST, "黑名单错误");

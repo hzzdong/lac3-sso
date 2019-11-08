@@ -8,43 +8,43 @@ import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.sso.enums.LockBlackType;
 
 @Controller
-@RequestMapping(value = "/IpLock", method = RequestMethod.POST)
-@Module(name = "Ip锁")
-public class IpLockController extends LockController {
+@RequestMapping(value = "/IpBlack", method = RequestMethod.POST)
+@Module(name = "黑名单")
+public class IpBlackController extends BlackController {
 
 	@Override
-	protected LockBlackType getLockType() {
+	protected LockBlackType getBlackType() {
 		return LockBlackType.Ip;
 	}
 	
 	@Override
 	protected String getMainPage() {
-		return "page/IpLock/main";
+		return "page/IpBlack/main";
 	}
 
 	@Override
 	protected String getEditPage() {
-		return "page/IpLock/edit";
+		return "page/IpBlack/edit";
 	}
-	
+
 	@Override
 	protected String getViewPage() {
-		return "page/IpLock/view";
+		return "page/IpBlack/view";
 	}
 
 	@Override
-	protected String getUnLockPage() {
-		return "page/IpLock/unLock";
+	protected String getUnBlackPage() {
+		return "page/IpBlack/unBlack";
 	}
 
 	@Override
-	protected String getLocksPage() {
-		return "page/IpLock/locks";
+	protected String getBlacksPage() {
+		return "page/IpBlack/blacks";
 	}
 
 	@Override
-	protected String getunLocksPage() {
-		return "page/IpLock/unLocks";
+	protected String getunBlacksPage() {
+		return "page/IpBlack/unBlacks";
 	}
 
 }

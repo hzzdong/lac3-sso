@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>锁/解锁历史管理</title>
+  <title>账号黑名单管理</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/css/bootstrap.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
@@ -27,18 +27,18 @@
 <body class="hold-transition skin-blue sidebar-mini">
 	<section class="find-tools">
 		<div class="searchBox">
-			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;锁/解锁历史管理</div>
+			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;账号黑名单管理</div>
 			<div class="pull-right">
 				<ul>
-					<li>
-						<button class="btn-superSearch btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button>
-					</li>
-					<li>
-						<button class="btn_entity_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button>
-					</li>
+					<li><button class="btn-permed btn_entiy_locks btn btn-block btn-primary btn-sm" data-res="AccountBlack"><i class="fa fa-trash-o"></i>&nbsp;批量加黑</button></li>
+					<li><button class="btn-permed btn_entiy_unlocks btn btn-block btn-primary btn-sm" data-res="AccountBlack"><i class="fa fa-trash-o"></i>&nbsp;批量除黑</button></li>
+					<li><button class="btn-permed btn_entiy_add btn btn-block btn-primary btn-sm" data-res="AccountBlack"><i class="fa fa-plus"></i>&nbsp;新增黑名单</button></li>
+					<li><button class="btn-superSearch btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button></li>
+					<li><button class="btn_entity_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button></li>
 					<li>
 						<form id="f_entity_search" class="form-inline">
-							<input type="text" id="lockedTarget" name="lockedTarget" oper="eq" stype="S" class="form-control form-search" placeholder="账号/Ip快速查询">
+							<input type="text" id="blackTarget" name="blackTarget" oper="eq" stype="S" class="form-control form-search" placeholder="账号快速查询">
+							<input type="hidden" id="type" name="type" value="1"/>
 						</form>
 					</li>
 				</ul>
@@ -47,58 +47,41 @@
 
 		<div class="superSearch">
 			<form id="f_entity_search_s" class="form-inline">
+				<input type="hidden" id="type" name="type" value="1"/>
 				<div class="form-group">
-					<label class="control-label">账号/Ip：</label>
+					<label class="control-label">账号：</label>
 					<div class="control-inline">
-						<input type="text" id="lockedTarget" name="lockedTarget" oper="eq" stype="S" class="form-control form-search" placeholder="账号/Ip精确匹配">
+						<input type="text" id="blackTarget" name="blackTarget" oper="eq" stype="S" class="form-control form-search" placeholder="账号精确匹配">
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">类型：</label>
-					<div class="control-inline">
-						<select class="form-control form-search" id="type" name="type" oper="eq" stype="I">
-							<option value="">全部</option>
-							<option value="1">账号锁</option>
-							<option value="2">Ip锁</option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label">锁定次数：</label>
-					<div class="control-inline">
-						<input type="text" id="count" name="count" oper="eq" stype="S" class="form-control form-search" placeholder="锁定次数精确匹配">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label">锁定状态：</label>
+					<label class="control-label">状态：</label>
 					<div class="control-inline">
 						<select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
 							<option value="">全部</option>
-							<option value="0">已锁定</option>
-							<option value="1">已解锁</option>
+							<option value="0">已加黑</option>
+							<option value="1">已除黑</option>
 						</select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">锁定操作：</label>
+					<label class="control-label">加黑操作：</label>
 					<div class="control-inline">
 						<select class="form-control form-search" id="reason" name="reason" oper="eq" stype="I">
 							<option value="">全部</option>
-							<option value="1">自动锁定</option>
-							<option value="2">手工锁定</option>
-							<option value="21">自动解锁(到期)</option>
-							<option value="22">自动解锁(登录成功)</option>
-							<option value="23">手工解锁</option>
-							<option value="24">自助验证解锁</option>
+							<option value="1">自动加黑</option>
+							<option value="2">手工加黑</option>
+							<option value="21">手工除黑</option>
+							<option value="22">自助验证除黑</option>
 						</select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label>锁定/解锁时间范围:</label>
+					<label>加黑/除黑时间范围:</label>
 					<div class="input-group">
-						<input type="text" class="form-control pull-right" id="lockedTimePeriod" placeholder="请选择锁定时间">
-						<input type="hidden" id="lockedTimeGe" name="lockedTimeGe" oper="ge" stype="D">
-						<input type="hidden" id="lockedTimeLe" name="lockedTimeLe" oper="le" stype="D">
+						<input type="text" class="form-control pull-right" id="blackTimePeriod" placeholder="请选择锁定时间">
+						<input type="hidden" id="blackTimeGe" name="blackTimeGe" oper="ge" stype="D">
+						<input type="hidden" id="blackTimeLe" name="blackTimeLe" oper="le" stype="D">
 					</div>
 				</div>
 				<div class="form-group">
@@ -114,12 +97,10 @@
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>锁定目标</th>
-					<th>锁定类型</th>
-					<th>锁定次数</th>
-					<th>锁定操作</th>
-					<th>锁定状态</th>
-					<th>锁定时间</th>
+					<th>黑名单账号</th>
+					<th>加黑操作</th>
+					<th>状态</th>
+					<th>加黑/除黑时间</th>
 					<th>描述</th>
 					<th>操作</th>
 				</tr>
@@ -157,9 +138,9 @@
 
 	$(function() {
 			
-		$("#lockedTimeGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
-		$("#lockedTimeLe").val(moment().format('YYYY-MM-DD HH:mm:ss'));
-		$('#lockedTimePeriod').daterangepicker({
+		$("#blackTimeGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#blackTimeLe").val(moment().format('YYYY-MM-DD HH:mm:ss'));
+		$('#blackTimePeriod').daterangepicker({
 		    "ranges": {
 		    	  '今天': [moment(), moment()],
 	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -171,8 +152,8 @@
 		    "startDate": moment().subtract(6, 'days'),
 		    "endDate": moment()
 		}, function(start, end, label) {
-			$("#lockedTimeGe").val(start.format('YYYY-MM-DD'));
-			$("#lockedTimeLe").val(end.format('YYYY-MM-DD HH:mm:ss'));
+			$("#blackTimeGe").val(start.format('YYYY-MM-DD'));
+			$("#blackTimeLe").val(end.format('YYYY-MM-DD HH:mm:ss'));
 			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
 		});
 		
@@ -195,8 +176,8 @@
 		
 		$(".btn_entity_search_reset").on("click", function() {
 				
-			$("#lockedTimeGe").val("");
-			$("#lockedTimeLe").val("");
+			$("#blackTimeGe").val("");
+			$("#blackTimeLe").val("");
 			
 		});
 		
@@ -213,115 +194,196 @@
 		        $(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
 		    });
 
+		$(".btn_entiy_add").on("click", function() {		
+			LAC.addRow4DataTable(dtable, ctx + '/AccountBlack/add', 'AccountBlack-edit', '新增黑名单');
+		});
+		$('.btn_entiy_locks').on('click', function() {
+			var rows = dtable.rows('.selected').data();
+			if (rows && rows.length < 1) {
+				LAC.showWarn("请至少选择一行。");
+			} else {
+				var iduuids = {};
+				for (var i = 0; i < rows.length; i++) {
+					var rowData = rows[i];
+					iduuids[rowData.uuid] = rowData.id;
+				}
+				
+				LAC.showModel({
+					id : "dlg_blacks",
+					type : "common",
+					sizeCss : "modal-lg",
+					title : "批量加黑",
+					url :  ctx + "/AccountBlack/blacks",
+					method : "post",
+					callback : function(ret) {
+						if(ret.code == "0"){
+							LAC.ajax({
+			                    url: ctx + "/AccountBlack/blacksDo?remark="+ret.data,
+			                    data: JSON2.stringify(iduuids),
+			                    dataType: 'json',
+			                    contentType: "application/json; charset=utf-8",
+			                    success: function (ret) {
+			                        if(ret && ret.code=="0"){
+			                        	dtable.draw();
+			                            LAC.tip('操作成功!', 'success');
+			            			} else {
+			            				LAC.tip(ret.message || "操作执行失败！！！", "error");
+			            			}
+			                    }
+			                });
+						}
+						LAC.closeModel("dlg_blacks");
+					}
+				});
+			}
+		});
+		$('.btn_entiy_unlocks').on('click', function() {
+			var rows = dtable.rows('.selected').data();
+			if (rows && rows.length < 1) {
+				LAC.showWarn("请至少选择一行。");
+			} else {
+				var iduuids = {};
+				for (var i = 0; i < rows.length; i++) {
+					var rowData = rows[i];
+					iduuids[rowData.uuid] = rowData.id;
+				}
+				
+				LAC.showModel({
+					id : "dlg_unBlacks",
+					type : "common",
+					sizeCss : "modal-lg",
+					title : "批量除黑",
+					url :  ctx + "/AccountBlack/unBlacks",
+					method : "post",
+					callback : function(ret) {
+						if(ret.code == "0"){
+							LAC.ajax({
+			                    url: ctx + "/AccountBlack/unBlacksDo?remark="+ret.data,
+			                    data: JSON2.stringify(iduuids),
+			                    dataType: 'json',
+			                    contentType: "application/json; charset=utf-8",
+			                    success: function (ret) {
+			                        if(ret && ret.code=="0"){
+			                        	dtable.draw();
+			                            LAC.tip('操作成功!', 'success');
+			            			} else {
+			            				LAC.tip(ret.message || "操作执行失败！！！", "error");
+			            			}
+			                    }
+			                });
+						}
+						LAC.closeModel("dlg_unBlacks");
+					}
+				});
+			}
+		});
+
 		$('#dt_entity tbody').on('click', 'button.btn-entity-view', function(event) {
 			curRow = dtable.row($(this).parents('tr'));
 			var rd = curRow.data();
 			LacTab.addTab({
-	            id : "LockHis-view",
-	            title : '查看锁/解锁历史详情',
-	            url : ctx + '/LockHis/view?id='+rd.id+"&uuid="+rd.uuid,
+	            id : "AccountBlack-view",
+	            title : '查看黑名单详情',
+	            url : ctx + '/AccountBlack/view?id='+rd.id+"&uuid="+rd.uuid,
 	        });
 		});
+		
+		$('#dt_entity tbody').on('click', 'button.btn-entity-status1', function(event) {
+			var tr = $(this).parents('tr');
+			var td0 = tr.children("td:first");
+			curRow = dtable.row(tr);
+			LAC.editCurRow4DataTable(curRow, ctx + '/AccountBlack/unBlack', 'AccountBlack-unBlack', '立即除黑', td0);
+		});
 
+		$('#dt_entity tbody').on('click', 'button.btn-entity-status0', function(event) {
+			var tr = $(this).parents('tr');
+			var td0 = tr.children("td:first");
+			curRow = dtable.row(tr);
+			LAC.editCurRow4DataTable(curRow, ctx + '/AccountBlack/edit', 'AccountBlack-edit', '再次加黑', td0);
+		});
+		
 	}
 
 	function initDataTable() {
 		dtable = $('#dt_entity').LacDTable(
-						{
-							order : [ [ 1, "desc" ] ],
-							url : ctx + "/LockHis/page",
-							autoSequence : true,
-							columns : [
-								{
-									"data" : "id",
-									"visible" : false
-								}, 
-								{
-									"data" : "lockedTarget",
-									"width" : "200px",
-									"defaultContent" : ""
-								}, 
-								{
-									"data" : "type",
-									"width" : "60px",
-									"render" : function(data, type, row) {
-										if (data == 1) {
-											return '<span class="badge bg-green">账号锁</span>';
-										} else if (data == 2) {
-											return '<span class="badge bg-blue">Ip锁</span>';
-										} else {
-											return "";
-										}
-									}
-								}, 
-								{
-									"data" : "count",
-									"width" : "60px",
-									"defaultContent" : ""
-								}, 
-								{
-									"data" : "reason",
-									"width" : "120px",
-									"render" : function(data, type, row) {
-										if (data == 1) {
-											return '<span class="badge bg-red">自动锁定</span>';
-										} else if (data == 2) {
-											return '<span class="badge bg-red">手工锁定</span>';
-										} else if (data == 21) {
-											return '<span class="badge bg-green">自动解锁(到期)</span>';
-										} else if (data == 22) {
-											return '<span class="badge bg-green">自动解锁(登录成功)</span>';
-										} else if (data == 23) {
-											return '<span class="badge bg-green">手工解锁</span>';
-										} else if (data == 24) {
-											return '<span class="badge bg-green">自助验证解锁</span>';
-										} else {
-											return "";
-										}
-									}
-								}, 
-								{
-									"data" : "status",
-									"width" : "60px",
-									"render" : function(data, type, row) {
-										if (data == 0) {
-											return '<span class="badge bg-red">已锁定</span>';
-										} else if (data == 1) {
-											return '<span class="badge bg-green">已解锁</span>';
-										} else {
-											return "";
-										}
-									}
-								}, 
-								{
-									"data" : "lockedTime",
-									"width" : "150px",
-									"defaultContent" : ""
-								}, 
-								{
-									"data" : "remark",
-									"orderable" : false,
-									"defaultContent" : ""
-								}, 
-								{
-									"data" : null,
-									"defaultContent" : "",
-									"width" : "75px",
-									"orderable" : false,
-									"searchable" : false,
-									"sClass" : "text-center",
-									"render" : function(data, type, row) {
-										return '<button class="btn-permed btn-entity-view icon-btn" data-res="LockHis" title="查看锁/解锁历史详情"><i class="fa fa-eye text-green"></i></button>';
-									}
-								}],
-					
-							initComplete : function(setting, json) {
-								$(".btn-permed").permissionEnabled();
-							},
-							drawCallback : function(setting) {
-								$(".btn-permed").permissionEnabled();
+			{
+				order : [ [ 1, "desc" ] ],
+				url : ctx + "/AccountBlack/page",
+				autoCheckBox : true,
+				columns : [
+					{
+						"data" : "id",
+						"visible" : false
+					}, 
+					{
+						"data" : "blackTarget",
+						"width" : "200px",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : "reason",
+						"width" : "100px",
+						"render" : function(data, type, row) {
+							if (data == 1) {
+								return '<span class="badge bg-red">自动加黑</span>';
+							} else if (data == 2) {
+								return '<span class="badge bg-red">手工加黑</span>';
+							} else if (data == 21) {
+								return '<span class="badge bg-green">手工除黑</span>';
+							} else if (data == 22) {
+								return '<span class="badge bg-green">自助验证除黑</span>';
+							} else {
+								return "";
 							}
-						});
+						}
+					}, 
+					{
+						"data" : "status",
+						"width" : "100px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-red">已加黑</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-green">已除黑</span>';
+							} else {
+								return "";
+							}
+						}
+					}, 
+					{
+						"data" : "blackTime",
+						"width" : "150px",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : "remark",
+						"defaultContent" : ""
+					}, 
+					{
+						"data" : null,
+						"defaultContent" : "",
+						"width" : "75px",
+						"orderable" : false,
+						"searchable" : false,
+						"sClass" : "text-center",
+						"render" : function(data, type, row) {
+							var ret = '<button class="btn-permed btn-entity-view icon-btn" data-res="AccountBlack" title="查看详情"><i class="fa fa-eye text-green"></i></button>';
+							if (row.status == 0) {
+								ret += '<button class="btn-permed btn-entity-status1 icon-btn" data-res="AccountBlack" title="立即除黑"><i class="fa fa-lock text-yellow"></i></button>';
+							} else if (row.status == 1){
+								ret += '<button class="btn-permed btn-entity-status0 icon-btn" data-res="AccountBlack" title="再次加黑"><i class="fa fa-unlock text-yellow"></i></button>';
+							}
+							return ret;
+						}
+					}],
+		
+				initComplete : function(setting, json) {
+					$(".btn-permed").permissionEnabled();
+				},
+				drawCallback : function(setting) {
+					$(".btn-permed").permissionEnabled();
+				}
+			});
 
 	}
 </script>

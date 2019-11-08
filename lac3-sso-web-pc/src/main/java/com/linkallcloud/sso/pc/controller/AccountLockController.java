@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.linkallcloud.core.busilog.annotation.Module;
-import com.linkallcloud.sso.enums.LockType;
+import com.linkallcloud.sso.enums.LockBlackType;
 
 @Controller
 @RequestMapping(value = "/AccountLock", method = RequestMethod.POST)
@@ -13,8 +13,8 @@ import com.linkallcloud.sso.enums.LockType;
 public class AccountLockController extends LockController {
 
 	@Override
-	protected LockType getLockType() {
-		return LockType.AccountLock;
+	protected LockBlackType getLockType() {
+		return LockBlackType.Account;
 	}
 
 	@Override

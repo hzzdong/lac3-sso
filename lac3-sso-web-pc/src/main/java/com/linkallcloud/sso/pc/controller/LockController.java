@@ -24,7 +24,7 @@ import com.linkallcloud.core.query.rule.desc.StringRuleDescriptor;
 import com.linkallcloud.sso.domain.Lock;
 import com.linkallcloud.sso.enums.LockReson;
 import com.linkallcloud.sso.enums.LockStatus;
-import com.linkallcloud.sso.enums.LockType;
+import com.linkallcloud.sso.enums.LockBlackType;
 import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.web.controller.BaseLController;
 
@@ -38,7 +38,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 		return lockManager;
 	}
 
-	protected abstract LockType getLockType();
+	protected abstract LockBlackType getLockType();
 
 	@Override
 	protected Page<Lock> doFindPage(WebPage webPage, Trace t, AppVisitor av) {
@@ -48,10 +48,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 
 	@Override
 	protected Lock doGet(Long parentId, String parentClass, Long id, String uuid, Trace t, AppVisitor av) {
-		LockType type = null;
-		if (id == null) {
-			type = getLockType();
-		}
+		LockBlackType type = getLockType();
 		Lock entity = super.doGet(parentId, parentClass, id, uuid, t, av);
 		if (id == null) {
 			entity.setType(type.getCode());
@@ -74,7 +71,6 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 		entity.setCount(1);
 		entity.setLockedTime(new Date());
 		entity.setOperator(av != null ? av.getName() : "");
-		entity.setStatus(LockStatus.Lock.getCode());
 		return super.doSave(entity, t, av);
 	}
 

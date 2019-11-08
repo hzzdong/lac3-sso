@@ -7,7 +7,7 @@ import com.linkallcloud.core.domain.Domain;
 import com.linkallcloud.core.domain.annotation.ShowName;
 import com.linkallcloud.sh.tuils.Dates;
 import com.linkallcloud.sso.enums.LockReson;
-import com.linkallcloud.sso.enums.LockType;
+import com.linkallcloud.sso.enums.LockBlackType;
 
 @ShowName(value = "锁", logFields = "id,lockedTarget")
 public class Lock extends Domain {
@@ -43,7 +43,7 @@ public class Lock extends Domain {
 		if (type < 1) {
 			return "";
 		} else {
-			return LockType.get(type).getMessage();
+			return LockBlackType.get(type).getMessage();
 		}
 	}
 

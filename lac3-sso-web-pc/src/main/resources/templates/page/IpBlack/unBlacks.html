@@ -1,0 +1,53 @@
+
+<div class="pad margin no-print">
+     <div class="callout callout-warning" style="margin-bottom: 0!important;">
+       <h4><i class="fa fa-info"></i> 注意:</h4>
+       本操作将立即解除您已经选定的Ip的黑名单，除黑后Ip将立即恢复正常操作，请慎重！.
+     </div>
+</div>
+
+<div class="box box-outline box-info">
+	<div class="box-header with-border">
+		<h3 class="box-title">黑名单信息</h3>
+	</div>
+	<div class="box-body">
+		<form id="f_unBlacks_ip" class="form-horizontal">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="unBlack_ip_remark" class="col-sm-2 control-label">除黑说明*</label>
+						<div class="col-sm-10">
+							<textarea class="form-control validate[required,maxSize[255]]" rows="3" id="unBlack_ip_remark" name="unBlack_ip_remark" placeholder="请输入除黑说明..."></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="box-footer">
+		<button id="btn_unBlacks_ip_ip_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">取消</button>
+		<button id="btn_unBlacks_ip" type="button" class="btn btn-primary pull-right" data-res="AccountBlack">立即除黑</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function() {
+		var ret = { code:"1", data:""};
+		
+		$("#btn_unBlacks_ip_ip_cancel").click(function() {
+			LAC.getModel("dlg_unBlacks_ip").getCallback()(ret);
+		});
+
+		$("#btn_unBlacks_ip").click(function() {
+			if ($('#f_unBlacks_ip').validationEngine('validate')) {
+				ret.code = "0";
+				ret.data = $('#unBlack_ip_remark').val();
+				LAC.getModel("dlg_unBlacks_ip").getCallback()(ret);
+			}
+		});
+
+		$("#f_unBlacks_ip").validationEngine("attach", { notShowPrompt : true }).bindValidationEngineHelper();
+	});
+</script>
+</body>
+</html>

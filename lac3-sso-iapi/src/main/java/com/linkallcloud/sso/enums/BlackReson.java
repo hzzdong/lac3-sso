@@ -2,14 +2,14 @@ package com.linkallcloud.sso.enums;
 
 import com.linkallcloud.core.enums.EnumBase;
 
-public enum LockType implements EnumBase<Integer> {
+public enum BlackReson implements EnumBase<Integer> {
 
-	AccountLock(1, "账号锁"), IpLock(2, "Ip锁");
+	BlackByLock(1, "自动加黑"), BlackByHand(2, "手工加黑"), UnBlackByHand(21, "手工除黑"), UnBlackBySelfAuth(22, "自助验证除黑");
 
 	private Integer code;
 	private String message;
 
-	LockType(Integer code, String message) {
+	BlackReson(Integer code, String message) {
 		this.code = code;
 		this.message = message;
 	}
@@ -24,8 +24,8 @@ public enum LockType implements EnumBase<Integer> {
 		return message;
 	}
 
-	public static LockType get(Integer code) {
-		for (LockType ul : values()) {
+	public static BlackReson get(Integer code) {
+		for (BlackReson ul : values()) {
 			if (ul.getCode().equals(code)) {
 				return ul;
 			}
