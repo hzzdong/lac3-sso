@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.ISysSetupDao">
+
+	<sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime
+		,u.code
+		,u.name
+		,u.value
+		,u.remark
+	</sql>
+	
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.SysSetup">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_sys_setup u
+		where 
+			u.id=#{id}
+	</select>
+	
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.SysSetup">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_sys_setup u 
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid} 
+	</select>
+	
+	<select id="fetchByCode" resultType="com.linkallcloud.sso.domain.SysSetup">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_sys_setup u 
+		where 
+			u.code=#{code}
+	</select>
+	
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.SysSetup">
+		select
+			<include refid="Base_Column_List" />
+		from tab_sys_setup u 
+		where u.status &lt;&gt; 9 and  u.id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.SysSetup">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_sys_setup u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.code != null"> AND u.code = #{page.cnds.code}</if>
+			<if test="page.cnds!=null and page.cnds.nameEq != null"> AND u.name = #{page.cnds.nameEq}</if>
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name like #{page.cnds.name}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.SysSetup">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_sys_setup u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.code != null"> AND u.code = #{page.cnds.code}</if>
+			<if test="page.cnds!=null and page.cnds.nameEq != null"> AND u.name = #{page.cnds.nameEq}</if>
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name like #{page.cnds.name}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.SysSetup">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_sys_setup u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.code != null"> AND u.code = #{query.cnds.code}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.nameEq != null"> AND u.name = #{query.cnds.nameEq}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.name != null"> AND u.name = #{query.cnds.name}</if>
+				
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.SysSetup" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_sys_setup 
+			( uuid,status,createTime,updateTime
+			,code
+			,name
+			,value
+			,remark
+			)
+		values
+			(#{entity.uuid},0,now(),now()
+			,#{entity.code}
+			,#{entity.name}
+			,#{entity.value}
+			,#{entity.remark}
+			)
+	</insert>
+	
+	<update id="update">
+		update 
+			tab_sys_setup 
+		set 
+			updateTime=now()
+			,code=#{entity.code}
+			,name=#{entity.name}
+			,value=#{entity.value}
+			,remark=#{entity.remark}
+		where 
+			id=#{entity.id} and uuid=#{entity.uuid}
+	</update>
+	
+	<delete id="delete">
+		update 
+			tab_sys_setup 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+
+	<update id="updateStatus">
+		update
+			tab_sys_setup
+		set
+			status=#{status},updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</update>
+	
+</mapper>
