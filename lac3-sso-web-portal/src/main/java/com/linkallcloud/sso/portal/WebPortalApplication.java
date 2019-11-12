@@ -23,96 +23,84 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.linkallcloud.sso.portal.aop.LacPermissionInterceptor;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
 import com.linkallcloud.web.support.TraceArgumentResolver;
 
 @EnableDubbo(multipleConfig = true)
 @Configuration
-@SpringBootApplication(scanBasePackages = {"com.linkallcloud.sso.portal"})
+@SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.portal" })
 public class WebPortalApplication implements WebMvcConfigurer {
 
-    @Value("${lac.static.server}")
-    private String staticServer;
+	@Value("${lac.static.server}")
+	private String staticServer;
 
-    @Value("${lac.static.res.version}")
-    private String staticResourceVersion;
+	@Value("${lac.static.res.version}")
+	private String staticResourceVersion;
 
-    @Bean
-    public LacEnvInterceptor getLacEnvInterceptor() {
-        return new LacEnvInterceptor() {
-            @Override
-            protected String getStaticServer() {
-                return staticServer;
-            }
+	@Bean
+	public LacEnvInterceptor getLacEnvInterceptor() {
+		return new LacEnvInterceptor() {
+			@Override
+			protected String getStaticServer() {
+				return staticServer;
+			}
 
-            @Override
-            protected String getResourceVersion() {
-                return staticResourceVersion;
-            }
-        };
-    }
+			@Override
+			protected String getResourceVersion() {
+				return staticResourceVersion;
+			}
+		};
+	}
 
-    @Bean
-    public LacPermissionInterceptor getLacPermissionInterceptor() {
-        return new LacPermissionInterceptor();
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
+		envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
+		envpi.addPathPatterns("/**");
+		WebMvcConfigurer.super.addInterceptors(registry);
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
-        envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
-        envpi.addPathPatterns("/**");
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(new AppVisitorArgumentResolver());
+		resolvers.add(new TraceArgumentResolver());
+		WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+	}
 
-        InterceptorRegistration pi = registry.addInterceptor(getLacPermissionInterceptor());
-        pi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**", "/login/**", "/verifyCode",
-                "/exit", "/unsupport", "/error", "/pub/**", "/face/**");
-        pi.addPathPatterns("/**");
+	@Bean
+	public HttpMessageConverters fastJsonHttpMessageConverters() {
+		FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+		FastJsonConfig fastJsonConfig = new FastJsonConfig();
+		fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+		fastConverter.setFastJsonConfig(fastJsonConfig);
+		return new HttpMessageConverters(fastConverter);
+	}
 
-        WebMvcConfigurer.super.addInterceptors(registry);
-    }
+	@Bean
+	public CookieSerializer cookieSerializer() {
+		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+		serializer.setCookieName("MYSESSION");
+		serializer.setCookiePath("/");
+		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+		return serializer;
+	}
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AppVisitorArgumentResolver());
-        resolvers.add(new TraceArgumentResolver());
-        WebMvcConfigurer.super.addArgumentResolvers(resolvers);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(WebPortalApplication.class, args);
+	}
 
-    @Bean
-    public HttpMessageConverters fastJsonHttpMessageConverters() {
-        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
-        fastConverter.setFastJsonConfig(fastJsonConfig);
-        return new HttpMessageConverters(fastConverter);
-    }
-
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setCookieName("MYSESSION");
-        serializer.setCookiePath("/");
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
-        return serializer;
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(WebPortalApplication.class, args);
-    }
-
-    /**
-     * 文件上传配置
-     */
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-    	MultipartConfigFactory factory = new MultipartConfigFactory();
-        // 单个文件最大
-        factory.setMaxFileSize(DataSize.parse("10240KB")); // KB,MB
-        // 设置总上传数据总大小
-        factory.setMaxRequestSize(DataSize.parse("102400KB"));
-        return factory.createMultipartConfig();
-    }
+	/**
+	 * 文件上传配置
+	 */
+	@Bean
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		// 单个文件最大
+		factory.setMaxFileSize(DataSize.parse("10240KB")); // KB,MB
+		// 设置总上传数据总大小
+		factory.setMaxRequestSize(DataSize.parse("102400KB"));
+		return factory.createMultipartConfig();
+	}
 
 }

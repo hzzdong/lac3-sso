@@ -16,12 +16,47 @@ import com.linkallcloud.sso.service.ISysSetupService;
 @Module(name = "系统设置")
 public class SysSetupManager extends BaseManager<SysSetup, ISysSetupService> implements ISysSetupManager {
 
-    @Autowired
-    private ISysSetupService sysSetupService;
+	@Autowired
+	private ISysSetupService sysSetupService;
 
-    @Override
-    protected ISysSetupService service() {
-        return sysSetupService;
-    }
+	@Override
+	protected ISysSetupService service() {
+		return sysSetupService;
+	}
+
+	@Override
+	public SysSetup fetchByCode(Trace t, String code) {
+		return service().fetchByCode(t, code);
+	}
+
+	@Override
+	public SysSetup getErrorTimesCount4AccountLock(Trace t) {
+		return service().getErrorTimesCount4AccountLock(t);
+	}
+
+	@Override
+	public SysSetup getPeriod4AccountLock(Trace t) {
+		return service().getPeriod4AccountLock(t);
+	}
+
+	@Override
+	public SysSetup getLockTimesCount4AccountLock(Trace t) {
+		return service().getLockTimesCount4AccountLock(t);
+	}
+
+	@Override
+	public SysSetup getErrorTimesCount4IpLock(Trace t) {
+		return service().getErrorTimesCount4IpLock(t);
+	}
+
+	@Override
+	public SysSetup getPeriod4IpLock(Trace t) {
+		return service().getPeriod4IpLock(t);
+	}
+
+	@Override
+	public SysSetup getLockTimesCount4IpLock(Trace t) {
+		return service().getLockTimesCount4IpLock(t);
+	}
 
 }

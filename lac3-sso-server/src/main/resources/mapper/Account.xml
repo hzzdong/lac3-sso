@@ -276,11 +276,11 @@
 			id=#{id} and uuid=#{uuid}
 	</update>
 	
-	<update id="updateLastLoginTime">
+	<update id="updateLastLoginDate">
 		update 
 			tab_account 
 		set 
-			lastLoginTime=now()
+			lastLoginDate=now()
 		where 
 			id=#{id}
 	</update>

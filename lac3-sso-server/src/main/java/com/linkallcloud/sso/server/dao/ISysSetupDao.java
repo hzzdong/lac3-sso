@@ -8,4 +8,6 @@ import com.linkallcloud.sso.domain.SysSetup;
 
 public interface ISysSetupDao extends IDao<SysSetup> {
 
+	SysSetup fetchByCode(@Param("t") Trace t, @Param("code") String code);
+
 }

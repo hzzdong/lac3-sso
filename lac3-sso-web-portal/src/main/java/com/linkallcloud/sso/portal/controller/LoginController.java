@@ -30,7 +30,7 @@ import com.linkallcloud.web.utils.Controllers;
 import com.linkallcloud.web.vc.SessionValidateCode;
 
 @Controller
-@RequestMapping
+@RequestMapping(value = "/local", method = RequestMethod.POST)
 @Module(name = "用户登录")
 public class LoginController {
 	private static final Log log = Logs.get();

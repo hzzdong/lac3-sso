@@ -29,4 +29,9 @@ public class SysSetupActivity extends BaseActivity<SysSetup, ISysSetupDao> imple
 		}
 	}
 
+	@Override
+	public SysSetup fetchByCode(Trace t, String code) {
+		return dao().fetchByCode(t, code);
+	}
+
 }
