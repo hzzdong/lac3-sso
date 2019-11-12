@@ -114,6 +114,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
+			<artifactId>lac3-cache</artifactId>
+			<version>${lac3-cache.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-web</artifactId>
 			<version>${lac3-web.version}</version>
 		</dependency>

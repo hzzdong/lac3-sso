@@ -12,7 +12,7 @@ import com.linkallcloud.sso.portal.ticket.Ticket;
  *  - Tickets can expire based on cache-specific rules.
  *
  */
-public interface TicketCache {
+public interface TicketCache<T extends Ticket> {
 
   /** 
    * Adds a new Ticket to the cache, returning a String identifier
@@ -23,13 +23,13 @@ public interface TicketCache {
    *   - The ticket cache must ensure that once a ticket expires,
    *     its identifier does not return a valid ticket.
    */
-  String addTicket(Ticket t) throws TicketException;
+  String addTicket(T t) throws TicketException;
 
   /**
    * Retrieves a Ticket based on a ticket identifier String.  If the
    * identifier matches no current ticket, returns null.
    */
-  Ticket getTicket(String ticketId);
+  T getTicket(String ticketId);
 
   /**
    * Deletes a ticket given a ticket identifier String.  (Implementations

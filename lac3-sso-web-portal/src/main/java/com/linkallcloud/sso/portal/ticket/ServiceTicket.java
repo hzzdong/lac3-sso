@@ -8,7 +8,7 @@ public class ServiceTicket extends Ticket {
   //*********************************************************************
   // Private, ticket state
 
-  private TicketGrantingTicket grantor;
+  private GrantingTicket grantor;
   private String service;
   private boolean fromNewLogin;
 
@@ -16,7 +16,7 @@ public class ServiceTicket extends Ticket {
   // Constructor
 
   /** Constructs a new, immutable service ticket. */
-  public ServiceTicket(TicketGrantingTicket t,
+  public ServiceTicket(GrantingTicket t,
       String service, boolean fromNewLogin) {
     this.grantor = t;
     this.service = service;
@@ -57,7 +57,7 @@ public class ServiceTicket extends Ticket {
   }
 
   /** Returns the ticket's grantor. */
-  public TicketGrantingTicket getGrantor() {
+  public GrantingTicket getGrantor() {
     return grantor;
   }
 }
