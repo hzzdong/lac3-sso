@@ -1,12 +1,13 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
 import com.linkallcloud.sso.portal.ticket.Ticket;
+import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketCache;
 
 /**
  * Represents a cache of tickets, each of which may be retrieved only once. That
  * is, retrieval entails deletion. Expiration also occurs for inactivity.
  */
-public abstract class OTUTicketCache<T extends Ticket> extends ActiveTicketCache<T> {
+public abstract class OTUTicketCache<T extends Ticket, C extends RedisTicketCache<T>> extends ActiveTicketCache<T, C> {
 
 	public OTUTicketCache() {
 		super();

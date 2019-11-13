@@ -2,12 +2,14 @@ package com.linkallcloud.sso.portal.ticket.cache;
 
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.ticket.ServiceTicket;
+import com.linkallcloud.sso.portal.ticket.cache.redis.RedisServiceTicketCache;
 import com.linkallcloud.sso.portal.utils.Util;
 
 /**
@@ -15,13 +17,13 @@ import com.linkallcloud.sso.portal.utils.Util;
  * or PTs.
  */
 @Component
-public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
-
-	// *********************************************************************
-	// Constants
+public class ServiceTicketCache extends OTUTicketCache<ServiceTicket, RedisServiceTicketCache> {
 
 	/** Length of random ticket identifiers. */
 	private static final int TICKET_ID_LENGTH = 20;
+
+	@Autowired
+	private RedisServiceTicketCache stCache;
 
 	@Value("${lac.sso.st.timeout:300}")
 	private int tolerance;
@@ -33,7 +35,7 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 	/** Generates and returns a new, unique ticket ID */
 	protected String newTicketId() {
 		// determine appropriate ticketId prefix
-		String prefix = "ST";
+		String prefix = getTicketPrefix();
 
 		// produce the random identifier
 		byte[] b = new byte[TICKET_ID_LENGTH];
@@ -42,7 +44,7 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 		String ticketId = prefix + "-" + getSerialNumber() + "-" + Util.toPrintable(b);
 
 		// make sure the identifier isn't already used
-		if (ticketCache.get(ticketId) != null)
+		if (getCache().get(ticketId) != null)
 			return newTicketId(); // tail-recurse
 		else
 			return ticketId;
@@ -51,18 +53,18 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 	/** Stores the given ticket, associating it with the given identifier. */
 	protected void storeTicket(String ticketId, ServiceTicket t) throws TicketException {
 		// make sure the ticket is valid and new
-		if (ticketCache.get(ticketId) != null)
+		if (getCache().get(ticketId) != null)
 			throw new DuplicateTicketException();
 //		if (!t.getClass().equals(ticketType))
 //			throw new InvalidTicketException("got " + t.getClass() + "; needed " + ticketType);
 
 		// if it's okay, then store it
-		ticketCache.put(ticketId, t, getTolerance());
+		getCache().put(ticketId, t, getTolerance());
 	}
 
 	/** Retrieves the ticket with the given identifier. */
 	protected ServiceTicket retrieveTicket(String ticketId) {
-		ServiceTicket o = ticketCache.get(ticketId);
+		ServiceTicket o = getCache().get(ticketId);
 		if (o == null || !o.isValid())
 			return null;
 		else
@@ -71,17 +73,22 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 
 	/** Removes the ticket from the cache. */
 	public void deleteTicket(String ticketId) {
-		ticketCache.remove(ticketId);
-	}
-
-	/** Returns the current ticket serial number (for monitoring) */
-	public int getSerialNumber() {
-		return ticketCache.increment("ST");
+		getCache().remove(ticketId);
 	}
 
 	@Override
 	protected int getTolerance() {
 		return tolerance;
+	}
+
+	@Override
+	protected RedisServiceTicketCache getCache() {
+		return stCache;
+	}
+
+	@Override
+	public String getTicketPrefix() {
+		return "ST";
 	}
 
 }

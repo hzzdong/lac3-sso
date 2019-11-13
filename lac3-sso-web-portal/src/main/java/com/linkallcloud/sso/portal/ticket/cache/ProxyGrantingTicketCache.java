@@ -1,12 +1,17 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.portal.ticket.cache.redis.RedisProxyGrantingTicketCache;
 
 @Component
-public class ProxyGrantingTicketCache extends GrantorCache<ProxyGrantingTicket> {
+public class ProxyGrantingTicketCache extends GrantorCache<ProxyGrantingTicket, RedisProxyGrantingTicketCache> {
+
+	@Autowired
+	private RedisProxyGrantingTicketCache pgtCache;
 
 	@Value("${lac.sso.pgt.timeout:7200}")
 	private int tolerance;
@@ -16,18 +21,18 @@ public class ProxyGrantingTicketCache extends GrantorCache<ProxyGrantingTicket> 
 	}
 
 	@Override
-	protected String getTicketPrefix() {
+	public String getTicketPrefix() {
 		return "PGT";
-	}
-
-	@Override
-	protected int getSerialNumber() {
-		return ticketCache.increment("PGT");
 	}
 
 	@Override
 	protected int getTolerance() {
 		return tolerance;
+	}
+
+	@Override
+	protected RedisProxyGrantingTicketCache getCache() {
+		return pgtCache;
 	}
 
 }

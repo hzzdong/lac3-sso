@@ -37,6 +37,7 @@ import com.linkallcloud.sso.portal.ticket.ServiceTicket;
 import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.portal.ticket.cache.LoginTicketCache;
 import com.linkallcloud.sso.portal.ticket.cache.ServiceTicketCache;
+import com.linkallcloud.sso.portal.utils.IParams;
 
 @Controller
 @RequestMapping
@@ -44,30 +45,12 @@ import com.linkallcloud.sso.portal.ticket.cache.ServiceTicketCache;
 public class Login extends BaseController {
 	private static final Log log = Logs.get();
 
-	// *********************************************************************
-	// Constants
-
-	// cookie IDs
-	private static final String PRIVACY_ID = "SSOPRIVACY";
-
-	// parameters
-//	private static final String SERVICE = "service";
-//	private static final String RENEW = "renew";
-//	private static final String GATEWAY = "gateway";
-
-	// *********************************************************************
-
-	// *********************************************************************
-	// Private state
-
 	@Autowired
 	private ServiceTicketCache stCache;
 	@Autowired
 	private LoginTicketCache ltCache;
 	@Autowired
 	private DbPasswordHandler handler;
-	// private String loginForm, genericSuccess, serviceSuccess, confirmService,
-	// redirect;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(@RequestParam(value = "from", required = false) String appCode,
@@ -314,7 +297,7 @@ public class Login extends BaseController {
 			throws ServletException {
 		if (!Strings.isBlank(warn)) {
 			// send the cookie if it's requested
-			Cookie privacy = new Cookie(PRIVACY_ID, "enabled");
+			Cookie privacy = new Cookie(IParams.PRIVACY_ID, "enabled");
 			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
 				privacy.setSecure(true);
 			}
@@ -323,7 +306,7 @@ public class Login extends BaseController {
 			response.addCookie(privacy);
 		} else if (privacyRequested(request)) {
 			// delete the cookie if it's there but *not* requested this time
-			Cookie privacy = new Cookie(PRIVACY_ID, "disabled");
+			Cookie privacy = new Cookie(IParams.PRIVACY_ID, "disabled");
 			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
 				privacy.setSecure(true);
 			}
@@ -340,7 +323,7 @@ public class Login extends BaseController {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (int i = 0; i < cookies.length; i++)
-				if (cookies[i].getName().equals(PRIVACY_ID) && cookies[i].getValue().equals("enabled"))
+				if (cookies[i].getName().equals(IParams.PRIVACY_ID) && cookies[i].getValue().equals("enabled"))
 					return true;
 		}
 		return false;

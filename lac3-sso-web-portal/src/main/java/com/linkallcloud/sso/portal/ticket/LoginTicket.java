@@ -1,13 +1,13 @@
 package com.linkallcloud.sso.portal.ticket;
 
 /**
-  * LoginTicket has no internal state.  It is a dummy ticket that allows
-  * the one-time-use cache functions to be used with "login tickets."
-  */
+ * LoginTicket has no internal state. It is a dummy ticket that allows the
+ * one-time-use cache functions to be used with "login tickets."
+ */
 
 public class LoginTicket extends Ticket {
 
-    public String getUsername() {
-	return null;
-    }
+	public String getUsername() {
+		return null;
+	}
 }

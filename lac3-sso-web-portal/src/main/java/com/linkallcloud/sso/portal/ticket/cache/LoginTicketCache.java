@@ -2,12 +2,14 @@ package com.linkallcloud.sso.portal.ticket.cache;
 
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.ticket.LoginTicket;
+import com.linkallcloud.sso.portal.ticket.cache.redis.RedisLoginTicketCache;
 import com.linkallcloud.sso.portal.utils.Util;
 
 /**
@@ -20,10 +22,13 @@ import com.linkallcloud.sso.portal.utils.Util;
  * only hold LoginTickets.
  */
 @Component
-public class LoginTicketCache extends OTUTicketCache<LoginTicket> {
+public class LoginTicketCache extends OTUTicketCache<LoginTicket, RedisLoginTicketCache> {
 
 	/** Length of random ticket identifiers. */
 	private static final int TICKET_ID_LENGTH = 20;
+	
+	@Autowired
+	protected RedisLoginTicketCache ticketCache;
 
 	@Value("${lac.sso.lt.timeout:86400}")
 	private int tolerance;
@@ -39,7 +44,7 @@ public class LoginTicketCache extends OTUTicketCache<LoginTicket> {
 	/** Generates and returns a new, unique ticket ID */
 	protected String newTicketId() {
 		// determine appropriate ticketId prefix
-		String prefix = "LT";
+		String prefix = getTicketPrefix();
 
 		// produce the random identifier
 		byte[] b = new byte[TICKET_ID_LENGTH];
@@ -48,7 +53,7 @@ public class LoginTicketCache extends OTUTicketCache<LoginTicket> {
 		String ticketId = prefix + "-" + getSerialNumber() + "-" + Util.toPrintable(b);
 
 		// make sure the identifier isn't already used
-		if (ticketCache.get(ticketId) != null)
+		if (getCache().get(ticketId) != null)
 			return newTicketId(); // tail-recurse
 		else
 			return ticketId;
@@ -57,32 +62,37 @@ public class LoginTicketCache extends OTUTicketCache<LoginTicket> {
 	/** Stores the given ticket, associating it with the given identifier. */
 	protected void storeTicket(String ticketId, LoginTicket t) throws TicketException {
 		// make sure the ticket is valid and new
-		if (ticketCache.get(ticketId) != null){
+		if (getCache().get(ticketId) != null){
 			throw new DuplicateTicketException();
 		}
 
 		// if it's okay, then store it
-		ticketCache.put(ticketId, t, getTolerance());
+		getCache().put(ticketId, t, getTolerance());
 	}
 
 	/** Retrieves the ticket with the given identifier. */
 	protected LoginTicket retrieveTicket(String ticketId) {
-		return ticketCache.get(ticketId);
+		return getCache().get(ticketId);
 	}
 
 	/** Removes the ticket from the cache. */
 	public void deleteTicket(String ticketId) {
-		ticketCache.remove(ticketId);
-	}
-
-	/** Returns the current ticket serial number (for monitoring) */
-	public int getSerialNumber() {
-		return ticketCache.increment("LT");
+		getCache().remove(ticketId);
 	}
 
 	@Override
 	protected int getTolerance() {
 		return tolerance;
+	}
+
+	@Override
+	protected RedisLoginTicketCache getCache() {
+		return ticketCache;
+	}
+
+	@Override
+	public String getTicketPrefix() {
+		return "LT";
 	}
 
 }

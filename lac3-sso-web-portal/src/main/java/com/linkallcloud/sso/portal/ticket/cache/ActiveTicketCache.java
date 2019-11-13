@@ -1,19 +1,14 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.ticket.Ticket;
-import com.linkallcloud.sso.portal.utils.RedisTicketCache;
+import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketCache;
 
 /**
  * Represents a cache of tickets that each expire after a configurable period of
  * inactivity (i.e., not being retrieved).
  */
-public abstract class ActiveTicketCache<T extends Ticket> implements TicketCache<T> {
-
-	@Autowired
-	protected RedisTicketCache ticketCache;
+public abstract class ActiveTicketCache<T extends Ticket, C extends RedisTicketCache<T>> implements TicketCache<T> {
 
 	/** Generates and returns a new, unique ticket ID */
 	protected abstract String newTicketId();
@@ -26,6 +21,8 @@ public abstract class ActiveTicketCache<T extends Ticket> implements TicketCache
 
 	/** Number of seconds after which the current cache will expire tickets. */
 	protected abstract int getTolerance();
+
+	protected abstract C getCache();
 
 	@Override
 	public synchronized String addTicket(T t) throws TicketException {
@@ -41,8 +38,9 @@ public abstract class ActiveTicketCache<T extends Ticket> implements TicketCache
 		return retrieveTicket(ticketId);
 	}
 
-	public ActiveTicketCache() {
-		super();
+	@Override
+	public int getSerialNumber() {
+		return getCache().increment(getTicketPrefix());
 	}
 
 }
