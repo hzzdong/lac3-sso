@@ -2,6 +2,7 @@ package com.linkallcloud.sso.portal.ticket.cache;
 
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
@@ -22,7 +23,8 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 	/** Length of random ticket identifiers. */
 	private static final int TICKET_ID_LENGTH = 20;
 
-	private int tolerance = 300;
+	@Value("${lac.sso.st.timeout:300}")
+	private int tolerance;
 
 	public ServiceTicketCache() {
 		super();
@@ -55,7 +57,7 @@ public class ServiceTicketCache extends OTUTicketCache<ServiceTicket> {
 //			throw new InvalidTicketException("got " + t.getClass() + "; needed " + ticketType);
 
 		// if it's okay, then store it
-		ticketCache.put(ticketId, t, tolerance);
+		ticketCache.put(ticketId, t, getTolerance());
 	}
 
 	/** Retrieves the ticket with the given identifier. */

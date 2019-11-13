@@ -1,5 +1,6 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
@@ -7,7 +8,8 @@ import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 @Component
 public class TicketGrantingTicketCache extends GrantorCache<TicketGrantingTicket> {
 
-	private int tolerance = 7200;
+	@Value("${lac.sso.tgt.timeout:7200}")
+	private int tolerance;
 
 	public TicketGrantingTicketCache() {
 		super();

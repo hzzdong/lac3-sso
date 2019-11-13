@@ -60,8 +60,9 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	public List<String> getProxies() {
 		List<String> l = new ArrayList<String>();
 		l.add(getProxyService());
-		if (parent.getGrantor() instanceof ProxyGrantingTicket) {
-			ProxyGrantingTicket p = (ProxyGrantingTicket) parent.getGrantor();
+		GrantingTicket grantor = parent.getGrantor();
+		if (grantor instanceof ProxyGrantingTicket) {
+			ProxyGrantingTicket p = (ProxyGrantingTicket) grantor;
 			l.addAll(p.getProxies());
 		}
 		return l;

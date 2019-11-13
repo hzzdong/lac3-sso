@@ -2,6 +2,7 @@ package com.linkallcloud.sso.portal.ticket.cache;
 
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
@@ -15,7 +16,8 @@ public class ProxyTicketCache extends OTUTicketCache<ProxyTicket> {
 	/** Length of random ticket identifiers. */
 	private static final int TICKET_ID_LENGTH = 20;
 
-	private int tolerance = 300;
+	@Value("${lac.sso.pt.timeout:300}")
+	private int tolerance;
 
 	public ProxyTicketCache() {
 		super();
