@@ -35,4 +35,8 @@ public class ProxyGrantingTicketCache extends GrantorCache<ProxyGrantingTicket, 
 		return pgtCache;
 	}
 
+	public int getPGTIOUSerialNumber() {
+		return getCache().increment("PGTIOU");
+	}
+
 }

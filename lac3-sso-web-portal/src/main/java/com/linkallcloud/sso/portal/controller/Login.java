@@ -188,7 +188,7 @@ public class Login extends BaseController {
 			TicketGrantingTicket t, String from, String serviceId, boolean first) throws ServletException, IOException {
 		try {
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(t, serviceId, first);
+				ServiceTicket st = new ServiceTicket(t, from, serviceId, first);
 				String token = stCache.addTicket(st);
 				modelMap.put("from", from);
 				modelMap.put("serviceId", serviceId);
@@ -249,7 +249,7 @@ public class Login extends BaseController {
 		result.put("code", "0");
 		try {
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(t, serviceId, first);
+				ServiceTicket st = new ServiceTicket(t, from, serviceId, first);
 				String token = stCache.addTicket(st);
 
 				result.put("from", from);

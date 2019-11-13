@@ -1,16 +1,32 @@
 package com.linkallcloud.sso.portal.ticket;
 
+import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.oapi.enums.MappingType;
+
 public class ActiveTicket<G extends GrantingTicket> extends Ticket {
 
 	private G grantor;
-	private String service;
 	private boolean fromNewLogin;
 
+	private SimpleService service;
+	private String siteUser;
+	private int siteMaping;// 账号映射类型：MappingType
+
 	/** Constructs a new, immutable service ticket. */
-	public ActiveTicket(G t, String service, boolean fromNewLogin) {
+	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin) {
 		this.grantor = t;
-		this.service = service;
 		this.fromNewLogin = fromNewLogin;
+		this.service = new SimpleService(service, appCode);
+		this.siteMaping = MappingType.Unified.getCode();
+		this.siteUser = t.getUsername();
+	}
+
+	/** Constructs a new, immutable service ticket. */
+	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin, String siteUser, int siteMaping) {
+		this(t, appCode, service, fromNewLogin);
+		this.siteUser = siteUser;
+		this.siteMaping = siteMaping == MappingType.Mapping.getCode().intValue() ? siteMaping
+				: MappingType.Unified.getCode();
 	}
 
 	@Override
@@ -18,9 +34,14 @@ public class ActiveTicket<G extends GrantingTicket> extends Ticket {
 		return grantor.getUsername();
 	}
 
+	/** Retrieves the ticket's app code. */
+	public String getAppCode() {
+		return service.getCode();
+	}
+
 	/** Retrieves the ticket's service. */
 	public String getService() {
-		return service;
+		return service.getId();
 	}
 
 	/**
@@ -44,6 +65,24 @@ public class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	/** Returns the ticket's grantor. */
 	public G getGrantor() {
 		return grantor;
+	}
+
+	public String getSiteUser() {
+		if (siteMaping != MappingType.Mapping.getCode().intValue()) {
+			return getGrantor().getUsername();
+		} else {
+			return siteUser;
+		}
+	}
+
+	public int getSiteMaping() {
+		return siteMaping;
+	}
+
+	public void setSite(int siteMaping, String siteUser) {
+		this.siteMaping = siteMaping == MappingType.Mapping.getCode().intValue() ? siteMaping
+				: MappingType.Unified.getCode();
+		this.siteUser = siteUser;
 	}
 
 }
