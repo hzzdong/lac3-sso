@@ -25,6 +25,7 @@
 		<module>lac3-sso-web-oapi</module>
 		<module>lac3-sso-web-portal</module>
 		<module>lac3-sso-web-pc</module>
+		<module>lac3-sso-client</module>
 	</modules>
 
 	<properties>
