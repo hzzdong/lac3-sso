@@ -74,6 +74,7 @@ public class Login extends BaseController {
 		// unless RENEW is set, let the user through to the service.
 		// otherwise, fall through and we'll be handled by authentication
 		// below. Note that tgt is still active.
+
 		if (tgt != null && Strings.isBlank(renew)) {
 			return grantForService(request, response, modelMap, tgt, appCode, appUrl, false);
 		}
@@ -205,7 +206,7 @@ public class Login extends BaseController {
 					} else {
 						modelMap.put("first", "false");
 						String gourl = serviceId;
-						gourl = WebUtils.urlAppend(gourl, "token", token);
+						gourl = WebUtils.urlAppend(gourl, "ticket", token);
 						gourl = WebUtils.urlAppend(gourl, "first", "false");
 						modelMap.put("go", gourl);
 						return "goservice";
@@ -213,7 +214,7 @@ public class Login extends BaseController {
 				} else {
 					modelMap.put("first", "true");
 					String gourl = serviceId;
-					gourl = WebUtils.urlAppend(gourl, "token", token);
+					gourl = WebUtils.urlAppend(gourl, "ticket", token);
 					gourl = WebUtils.urlAppend(gourl, "first", "true");
 					modelMap.put("go", gourl);
 					return "goservice";

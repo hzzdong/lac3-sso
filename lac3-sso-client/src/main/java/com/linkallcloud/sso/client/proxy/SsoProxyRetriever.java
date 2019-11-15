@@ -62,7 +62,7 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 	@Override
 	public String getProxyTicketIdFor(final String proxyGrantingTicketId, final Service targetService) {
 
-		final String url = constructUrl(proxyGrantingTicketId, targetService.getId(), targetService.getCode());
+		final String url = constructUrl(proxyGrantingTicketId, targetService.getUrl(), targetService.getCode());
 		String response = null;
 		if (url.startsWith("https")) {
 			response = HttpClientFactory.me(true).get(url);

@@ -5,6 +5,10 @@ public class GrantingTicket extends Ticket {
 	private String username;
 	private boolean expired;
 
+	public GrantingTicket() {
+		super();
+	}
+
 	public GrantingTicket(String username) {
 		this.username = username;
 		this.expired = false;
@@ -13,6 +17,14 @@ public class GrantingTicket extends Ticket {
 	@Override
 	public String getUsername() {
 		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setExpired(boolean expired) {
+		this.expired = expired;
 	}
 
 	/**

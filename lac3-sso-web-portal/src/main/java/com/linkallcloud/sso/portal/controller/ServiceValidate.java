@@ -35,7 +35,7 @@ public class ServiceValidate extends BaseController {
 	private ServiceTicketCache stCache;
 
 	@ResponseBody
-	@RequestMapping(value = "/serviceValidate", method = RequestMethod.POST)
+	@RequestMapping(value = "/serviceValidate")
 	public Object serviceValidate(@RequestParam(value = "from", required = false) String appCode,
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "ticket", required = false) String ticket,
@@ -51,7 +51,7 @@ public class ServiceValidate extends BaseController {
 			ServiceTicket st = stCache.getTicket(ticket);
 			if (st == null) {
 				return validationFailure(INVALID_TICKET, "ticket '" + ticket + "' not recognized");
-			} else if (!st.getService().equals(appUrl) || !st.getAppCode().equals(appCode)) {
+			} else if (!st.getAppServiceUrl().equals(appUrl) || !st.getAppCode().equals(appCode)) {
 				return validationFailure(INVALID_SERVICE, "ticket '" + ticket + "' does not match supplied service");
 			} else if ("true".equals(renew) && !st.isFromNewLogin()) {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");

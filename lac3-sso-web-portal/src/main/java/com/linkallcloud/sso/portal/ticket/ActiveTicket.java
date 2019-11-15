@@ -1,47 +1,53 @@
 package com.linkallcloud.sso.portal.ticket;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.principal.SimpleService;
-import com.linkallcloud.sso.oapi.enums.MappingType;
 
-public class ActiveTicket<G extends GrantingTicket> extends Ticket {
+public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 
-	private G grantor;
+	// private G grantor;
 	private boolean fromNewLogin;
 
 	private SimpleService service;
 	private String siteUser;
 	private int siteMaping;// 账号映射类型：MappingType
 
+	public ActiveTicket() {
+		super();
+	}
+
 	/** Constructs a new, immutable service ticket. */
-	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin) {
-		this.grantor = t;
+	public ActiveTicket(G grantor, String appCode, String service, boolean fromNewLogin) {
+		this.setGrantor(grantor);
 		this.fromNewLogin = fromNewLogin;
 		this.service = new SimpleService(service, appCode);
-		this.siteMaping = MappingType.Unified.getCode();
-		this.siteUser = t.getUsername();
+		this.siteMaping = AccountMapping.Unified.getCode();
+		this.siteUser = grantor.getUsername();
 	}
 
 	/** Constructs a new, immutable service ticket. */
 	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin, String siteUser, int siteMaping) {
 		this(t, appCode, service, fromNewLogin);
 		this.siteUser = siteUser;
-		this.siteMaping = siteMaping == MappingType.Mapping.getCode().intValue() ? siteMaping
-				: MappingType.Unified.getCode();
+		this.siteMaping = siteMaping == AccountMapping.Mapping.getCode().intValue() ? siteMaping
+				: AccountMapping.Unified.getCode();
 	}
 
+	@JSONField(serialize = false)
 	@Override
 	public String getUsername() {
-		return grantor.getUsername();
+		return getGrantor() == null ? "" : getGrantor().getUsername();
 	}
 
-	/** Retrieves the ticket's app code. */
+	@JSONField(serialize = false)
 	public String getAppCode() {
-		return service.getCode();
+		return service == null ? "" : service.getCode();
 	}
 
-	/** Retrieves the ticket's service. */
-	public String getService() {
-		return service.getId();
+	@JSONField(serialize = false)
+	public String getAppServiceUrl() {
+		return service == null ? "" : service.getUrl();
 	}
 
 	/**
@@ -59,16 +65,16 @@ public class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	 * returned by getService() at the present point in time, false otherwise.
 	 */
 	public boolean isValid() {
-		return (!grantor.isExpired());
+		return (!getGrantor().isExpired());
 	}
 
 	/** Returns the ticket's grantor. */
-	public G getGrantor() {
-		return grantor;
-	}
+	public abstract G getGrantor();
+
+	public abstract void setGrantor(G grantor);
 
 	public String getSiteUser() {
-		if (siteMaping != MappingType.Mapping.getCode().intValue()) {
+		if (siteMaping != AccountMapping.Mapping.getCode().intValue()) {
 			return getGrantor().getUsername();
 		} else {
 			return siteUser;
@@ -80,9 +86,25 @@ public class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	}
 
 	public void setSite(int siteMaping, String siteUser) {
-		this.siteMaping = siteMaping == MappingType.Mapping.getCode().intValue() ? siteMaping
-				: MappingType.Unified.getCode();
+		this.siteMaping = siteMaping == AccountMapping.Mapping.getCode().intValue() ? siteMaping
+				: AccountMapping.Unified.getCode();
 		this.siteUser = siteUser;
+	}
+
+	public SimpleService getService() {
+		return service;
+	}
+
+	public void setService(SimpleService service) {
+		this.service = service;
+	}
+
+	public void setSiteUser(String siteUser) {
+		this.siteUser = siteUser;
+	}
+
+	public void setSiteMaping(int siteMaping) {
+		this.siteMaping = siteMaping;
 	}
 
 }

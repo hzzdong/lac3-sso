@@ -31,6 +31,10 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	// *********************************************************************
 	// Constructor
 
+	public ProxyGrantingTicket() {
+		super();
+	}
+
 	/** Constructs a new, immutable ProxyGrantingTicket. */
 	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtAppCode, String pgtUrl) {
 		super(parent.getUsername());
@@ -57,6 +61,18 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 */
 	public SimpleService getProxyService() {
 		return proxyId;
+	}
+
+	public SimpleService getProxyId() {
+		return proxyId;
+	}
+
+	public void setProxyId(SimpleService proxyId) {
+		this.proxyId = proxyId;
+	}
+
+	public void setParent(ActiveTicket<?> parent) {
+		this.parent = parent;
 	}
 
 	/** Retrieves trust chain. */

@@ -87,7 +87,7 @@ public abstract class AbstractUrlBasedTicketValidator implements TicketValidator
 	 */
 	protected final String getEncodedService(final Service service) {
 		try {
-			return URLEncoder.encode(service.getId(), "UTF-8");
+			return URLEncoder.encode(service.getUrl(), "UTF-8");
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

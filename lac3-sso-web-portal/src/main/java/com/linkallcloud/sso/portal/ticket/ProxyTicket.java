@@ -9,6 +9,12 @@ import com.linkallcloud.core.principal.SimpleService;
  */
 public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 
+	private ProxyGrantingTicket grantor;
+
+	public ProxyTicket() {
+		super();
+	}
+
 	/** Constructs a new, immutable proxy ticket. */
 	public ProxyTicket(ProxyGrantingTicket t, String appCode, String service, String siteUser, int siteMaping) {
 		super(t, appCode, service, false, siteUser, siteMaping);
@@ -27,6 +33,16 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	/** Retrieves the proxy ticket's lineage -- its chain of "trust." */
 	public List<SimpleService> getProxies() {
 		return getGrantor().getProxies();
+	}
+
+	@Override
+	public ProxyGrantingTicket getGrantor() {
+		return grantor;
+	}
+
+	@Override
+	public void setGrantor(ProxyGrantingTicket grantor) {
+		this.grantor = grantor;
 	}
 
 }

@@ -10,7 +10,7 @@ import com.linkallcloud.sso.portal.ticket.ServiceTicket;
 @Component
 public class RedisServiceTicketCache extends RedisTicketCache<ServiceTicket> {
 
-	@Resource
+	@Resource(name = "redisSTTemplate")
 	private RedisTemplate<String, ServiceTicket> redisSTTemplate;
 
 	@Override

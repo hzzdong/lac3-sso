@@ -32,7 +32,7 @@ public class Proxy extends BaseController {
 	private ProxyTicketCache ptCache;
 
 	@ResponseBody
-	@RequestMapping(value = "/proxy", method = RequestMethod.POST)
+	@RequestMapping(value = "/proxy")
 	public Object proxy(@RequestParam(value = "pgt", required = false) String pgtId,
 			@RequestParam(value = "targetAppCode", required = false) String targetAppCode,
 			@RequestParam(value = "targetService", required = false) String targetService, HttpServletRequest request,

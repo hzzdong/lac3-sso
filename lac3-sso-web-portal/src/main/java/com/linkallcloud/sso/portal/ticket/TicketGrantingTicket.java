@@ -8,6 +8,10 @@ package com.linkallcloud.sso.portal.ticket;
  */
 public class TicketGrantingTicket extends GrantingTicket {
 
+	public TicketGrantingTicket() {
+		super();
+	}
+
 	public TicketGrantingTicket(String username) {
 		super(username);
 	}

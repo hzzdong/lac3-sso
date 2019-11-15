@@ -1,8 +1,8 @@
 package com.linkallcloud.sso.oapi.dto;
 
 import com.linkallcloud.core.dto.Result;
+import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.principal.Principal;
-import com.linkallcloud.sso.oapi.enums.MappingType;
 
 public class ServiceAuthenticationResult extends Result<String> implements Principal {
 	private static final long serialVersionUID = 3323906180281674154L;
@@ -27,10 +27,10 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 	public ServiceAuthenticationResult(String user, String siteUser, int siteMaping) {
 		this(user);
 		this.siteId = siteUser;
-		if (MappingType.Mapping.getCode().intValue() == siteMaping) {
+		if (AccountMapping.Mapping.getCode().intValue() == siteMaping) {
 			this.appingType = siteMaping;
 		} else {
-			this.appingType = MappingType.Unified.getCode();
+			this.appingType = AccountMapping.Unified.getCode();
 		}
 	}
 

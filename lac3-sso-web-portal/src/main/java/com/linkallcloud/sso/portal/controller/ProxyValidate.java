@@ -32,7 +32,7 @@ public class ProxyValidate extends BaseController {
 	private ProxyTicketCache ptCache;
 
 	@ResponseBody
-	@RequestMapping(value = "/proxyValidate", method = RequestMethod.POST)
+	@RequestMapping(value = "/proxyValidate")
 	public Object proxyValidate(@RequestParam(value = "from", required = false) String appCode,
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "ticket", required = false) String ticket,
