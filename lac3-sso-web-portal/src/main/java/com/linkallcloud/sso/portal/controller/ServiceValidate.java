@@ -66,7 +66,8 @@ public class ServiceValidate extends BaseController {
 	}
 
 	private ServiceAuthenticationResult validationSuccess(ServiceTicket st, String pgtIOU) {
-		ServiceAuthenticationResult result = new ServiceAuthenticationResult(st.getUsername());
+		ServiceAuthenticationResult result = new ServiceAuthenticationResult(st.getUsername(), st.getSiteUser(),
+				st.getSiteMaping());
 		if (!Strings.isBlank(pgtIOU)) {
 			result.setProxyGrantingTicket(pgtIOU);
 		}

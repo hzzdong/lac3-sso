@@ -1,15 +1,8 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.AbstractSSOFilter.java 
- *
- * 2011-6-15
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,16 +13,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import com.linkallcloud.core.lang.Lang;
+import com.linkallcloud.core.log.Log;
+import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.sso.client.util.CommonUtils;
 
 /**
  * Abstract class that contains common functionality amongst SSO filters.
  * <p/>
- * You must specify the serverName (format: hostname:port) or the serviceUrl. If you specify both, the serviceUrl is
- * used over the serverName.
+ * You must specify the serverName (format: hostname:port) or the serviceUrl. If
+ * you specify both, the serviceUrl is used over the serverName.
  * 
  * 2011-6-15
  * 
@@ -37,166 +30,202 @@ import com.linkallcloud.sso.client.util.CommonUtils;
  * 
  */
 public abstract class AbstractSSOFilter implements Filter {
+	protected final Log log = Logs.get();
 
-    /**
-     * Constant string representing the ticket parameter.
-     */
-    public static final String PARAM_TICKET = "ticket";
+	// 不过滤的uri
+	protected List<String> notFilterResources = Lang.list("/static/", "/js/", "/css/", "/images/", "/img/", ".jpg",
+			".png", ".jpeg", ".js", ".css", "/imageValidate", "/verifyCode", "/exit", "/nnl/", "/unsupport", "/error",
+			"/pub/");
 
-    /**
-     * Constant representing where we flag a gatewayed request in the session.
-     */
-    public static final String CONST_GATEWAY = "_sso_gateway_";
+	/**
+	 * Constant string representing the ticket parameter.
+	 */
+	public static final String PARAM_TICKET = "ticket";
 
-    /**
-     * Instance of Commons Logging.
-     */
-    protected final Log log = LogFactory.getLog(this.getClass());
+	/**
+	 * Constant representing where we flag a gatewayed request in the session.
+	 */
+	public static final String CONST_GATEWAY = "_sso_gateway_";
 
-    /**
-     * The name of the server in the following format: <hostname>:<port> where port is optional if its a standard port.
-     */
-    private final String serverName;
+	/**
+	 * The name of the server in the following format: <hostname>:<port> where port
+	 * is optional if its a standard port.
+	 */
+	private final String serverName;
 
-    protected final String siteCode;
+	protected final String siteCode;
 
-    /**
-     * The exact service url to match to.
-     */
-    private final String serviceUrl;
+	/**
+	 * The exact service url to match to.
+	 */
+	private final String serviceUrl;
 
-    /**
-     * Whether to store the entry in session or not. Defaults to true.
-     */
-    private final boolean useSession;
+	/**
+	 * Whether to store the entry in session or not. Defaults to true.
+	 */
+	private final boolean useSession;
 
-    /**
-     * 
-     * @param siteCode
-     * @param serverName
-     * @param serviceUrl
-     */
-    protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl) {
-        this(siteCode, serverName, serviceUrl, true);
-    }
+	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl) {
+		this(siteCode, serverName, serviceUrl, true, null, false);
+	}
 
-    /**
-     * 
-     * @param siteCode
-     * @param serverName
-     * @param serviceUrl
-     * @param useSession
-     */
-    protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl,
-            final boolean useSession) {
-        CommonUtils.assertTrue(CommonUtils.isNotBlank(serverName) || CommonUtils.isNotBlank(serviceUrl),
-                "either serverName or serviceUrl must be set");
+	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl,
+			List<String> ignoreRes) {
+		this(siteCode, serverName, serviceUrl, true, ignoreRes, false);
+	}
 
-        this.siteCode = siteCode;
-        this.serverName = serverName;
-        this.serviceUrl = serviceUrl;
-        this.useSession = useSession;
+	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl,
+			final boolean useSession, List<String> ignoreRes, boolean override) {
+		CommonUtils.assertTrue(CommonUtils.isNotBlank(serverName) || CommonUtils.isNotBlank(serviceUrl),
+				"either serverName or serviceUrl must be set");
 
-        log.info("Site code set to: " + this.siteCode + ";Service Name set to: " + this.serverName
-                + "; Service Url  set to: " + this.serviceUrl + "Use Session set to: " + this.useSession);
-    }
+		this.siteCode = siteCode;
+		this.serverName = serverName;
+		this.serviceUrl = serviceUrl;
+		this.useSession = useSession;
 
-    public final void destroy() {
-        // nothing to do
-    }
+		log.info("Site code set to: " + this.siteCode + ";Service Name set to: " + this.serverName
+				+ "; Service Url  set to: " + this.serviceUrl + "Use Session set to: " + this.useSession);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
-     * javax.servlet.FilterChain)
-     */
-    @Override
-    public final void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
-            final FilterChain filterChain) throws IOException, ServletException {
-        doFilterInternal((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
-    }
+		if (ignoreRes != null && ignoreRes.size() > 0) {
+			if (override) {
+				this.notFilterResources = ignoreRes;
+			} else {
+				for (String res : ignoreRes) {
+					boolean exist = false;
+					for (String uri : notFilterResources) {
+						if (uri.equals(res)) {
+							exist = true;
+							break;
+						}
+					}
+					if (!exist) {
+						this.notFilterResources.add(res);
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * 
-     * @param request
-     * @param response
-     * @param filterChain
-     * @throws IOException
-     * @throws ServletException
-     */
-    protected abstract void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain filterChain) throws IOException, ServletException;
+	public final void destroy() {
+		// nothing to do
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        // nothing to do here
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
+	@Override
+	public final void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
+			final FilterChain filterChain) throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-    /**
-     * Constructs a service url from the HttpServletRequest or from the given serviceUrl. Prefers the serviceUrl
-     * provided if both a serviceUrl and a serviceName.
-     * 
-     * @param request
-     *            the HttpServletRequest
-     * @param response
-     *            the HttpServletResponse
-     * @return the service url to use.
-     * @throws UnsupportedEncodingException
-     */
-    protected final String constructServiceUrl(final HttpServletRequest request, final HttpServletResponse response)
-            throws UnsupportedEncodingException {
-        if (CommonUtils.isNotBlank(this.serviceUrl)) {
-            return this.serviceUrl;// response.encodeURL(this.serviceUrl);
-        }
+		String uri = request.getRequestURI();
+		if (needFiltered(uri)) {
+			doFilterInternal(request, response, filterChain);
+		} else {
+			filterChain.doFilter(request, response);
+		}
 
-        final StringBuffer buffer = new StringBuffer();
+	}
 
-        synchronized (buffer) {
-            buffer.append(request.isSecure() ? "https://" : "http://");
-            buffer.append(this.serverName);
-            buffer.append(request.getRequestURI());
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param filterChain
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	protected abstract void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+			FilterChain filterChain) throws IOException, ServletException;
 
-            if (CommonUtils.isNotBlank(request.getQueryString())) {
-                final int location = request.getQueryString().indexOf(PARAM_TICKET + "=");
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 */
+	@Override
+	public void init(final FilterConfig filterConfig) throws ServletException {
+		// nothing to do here
+	}
 
-                if (location == 0) {
-                    final String returnValue = buffer.toString();// response.encodeURL(buffer.toString());
-                    if (log.isDebugEnabled()) {
-                        log.debug("serviceUrl generated: " + returnValue);
-                    }
-                    return returnValue;
-                }
+	/**
+	 * 是否需要过滤
+	 *
+	 * @param uri
+	 * @return
+	 */
+	private boolean needFiltered(String uri) {
+		for (String s : notFilterResources) {
+			if (uri.indexOf(s) != -1) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-                buffer.append("?");
+	/**
+	 * Constructs a service url from the HttpServletRequest or from the given
+	 * serviceUrl. Prefers the serviceUrl provided if both a serviceUrl and a
+	 * serviceName.
+	 * 
+	 * @param request  the HttpServletRequest
+	 * @param response the HttpServletResponse
+	 * @return the service url to use.
+	 * @throws UnsupportedEncodingException
+	 */
+	protected final String constructServiceUrl(final HttpServletRequest request, final HttpServletResponse response)
+			throws UnsupportedEncodingException {
+		if (CommonUtils.isNotBlank(this.serviceUrl)) {
+			return this.serviceUrl;// response.encodeURL(this.serviceUrl);
+		}
 
-                if (location == -1) {
-                    buffer.append(request.getQueryString());
-                } else if (location > 0) {
-                    final int actualLocation = request.getQueryString().indexOf("&" + PARAM_TICKET + "=");
+		final StringBuffer buffer = new StringBuffer();
 
-                    if (actualLocation == -1) {
-                        buffer.append(request.getQueryString());
-                    } else if (actualLocation > 0) {
-                        buffer.append(request.getQueryString().substring(0, actualLocation));
-                    }
-                }
-            }
-        }
+		synchronized (buffer) {
+			buffer.append(request.isSecure() ? "https://" : "http://");
+			buffer.append(this.serverName);
+			buffer.append(request.getRequestURI());
 
-        final String returnValue = buffer.toString();// response.encodeURL(buffer.toString());
-        if (log.isDebugEnabled()) {
-            log.debug("serviceUrl generated: " + returnValue);
-        }
-        return returnValue;
-    }
+			if (CommonUtils.isNotBlank(request.getQueryString())) {
+				final int location = request.getQueryString().indexOf(PARAM_TICKET + "=");
 
-    protected final boolean isUseSession() {
-        return this.useSession;
-    }
+				if (location == 0) {
+					final String returnValue = buffer.toString();// response.encodeURL(buffer.toString());
+					if (log.isDebugEnabled()) {
+						log.debug("serviceUrl generated: " + returnValue);
+					}
+					return returnValue;
+				}
+
+				buffer.append("?");
+
+				if (location == -1) {
+					buffer.append(request.getQueryString());
+				} else if (location > 0) {
+					final int actualLocation = request.getQueryString().indexOf("&" + PARAM_TICKET + "=");
+
+					if (actualLocation == -1) {
+						buffer.append(request.getQueryString());
+					} else if (actualLocation > 0) {
+						buffer.append(request.getQueryString().substring(0, actualLocation));
+					}
+				}
+			}
+		}
+
+		final String returnValue = buffer.toString();// response.encodeURL(buffer.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("serviceUrl generated: " + returnValue);
+		}
+		return returnValue;
+	}
+
+	protected final boolean isUseSession() {
+		return this.useSession;
+	}
 }

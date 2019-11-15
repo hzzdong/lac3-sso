@@ -267,14 +267,14 @@ public class Login extends BaseController {
 					} else {
 						result.put("first", "false");
 						String gourl = serviceId;
-						gourl = WebUtils.urlAppend(gourl, "token", token);
+						gourl = WebUtils.urlAppend(gourl, "ticket", token);
 						gourl = WebUtils.urlAppend(gourl, "first", "false");
 						result.put("go", gourl);// "page/service";
 					}
 				} else {
 					result.put("first", "true");
 					String gourl = serviceId;
-					gourl = WebUtils.urlAppend(gourl, "token", token);
+					gourl = WebUtils.urlAppend(gourl, "ticket", token);
 					gourl = WebUtils.urlAppend(gourl, "first", "true");
 					result.put("go", gourl);// "page/service";
 				}

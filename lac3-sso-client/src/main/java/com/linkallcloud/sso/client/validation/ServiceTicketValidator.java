@@ -1,31 +1,17 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.validation.ServiceTicketValidator.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.validation;
 
-import com.linkallcloud.core.json.Json;
+import com.alibaba.fastjson.JSON;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.principal.SimplePrincipal;
 import com.linkallcloud.sso.client.proxy.ProxyGrantingTicketStorage;
 import com.linkallcloud.sso.client.proxy.ProxyRetriever;
-import com.linkallcloud.sso.client.response.ErrorResponse;
-import com.linkallcloud.sso.client.response.STResponse;
-import com.linkallcloud.sso.client.response.ServiceResponse;
 import com.linkallcloud.sso.client.util.CommonUtils;
+import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
 
 /**
  * Implementation of TicketValidator that follows the SSO protocol without
  * proxying.
- * 
- * 2011-6-15
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
@@ -45,23 +31,10 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 	 */
 	private final ProxyRetriever proxyRetriever;
 
-	/**
-	 * 
-	 * @param ssoServerUrl
-	 * @param renew
-	 */
 	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew) {
 		this(ssoServerUrl, renew, null, null, null);
 	}
 
-	/**
-	 * 
-	 * @param ssoServerUrl
-	 * @param renew
-	 * @param proxyCallbackUrl
-	 * @param proxyGrantingTicketStorage
-	 * @param proxyRetriever
-	 */
 	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew, final Service proxyCallbackUrl,
 			final ProxyGrantingTicketStorage proxyGrantingTicketStorage, final ProxyRetriever proxyRetriever) {
 		super(ssoServerUrl, renew);
@@ -75,12 +48,6 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 		this.proxyRetriever = proxyRetriever;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.zj.pubinfo.sso.client.validation.AbstractUrlBasedTicketValidator#
-	 * constructURL(java.lang.String, cn.zj.pubinfo.principal.Service)
-	 */
 	@Override
 	protected String constructURL(final String ticketId, final Service service) {
 		return getSsoServerUrl() + getValidationUrlName() + "?ticket=" + ticketId + (isRenew() ? "&renew=true" : "")
@@ -88,56 +55,34 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 				+ (this.proxyCallbackUrl != null ? "&pgtUrl=" + getEncodedService(this.proxyCallbackUrl) : "");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.zj.pubinfo.sso.client.validation.AbstractUrlBasedTicketValidator#
-	 * parseResponse(java.lang.String)
-	 */
+	protected String getValidationUrlName() {
+		return "/serviceValidate";
+	}
+
 	@Override
 	protected final Assertion parseResponse(final String response) throws ValidationException {
-		ServiceResponse sr = parseSSOResponse(response);
-		if (sr == null) {
+		ServiceAuthenticationResult result = parseResult(response);
+		if (result == null) {
 			log.debug("Validation of ticket failed, response:" + response);
 			throw new ValidationException("No principal found.");
-		} else if (sr instanceof ErrorResponse) {
-			ErrorResponse er = (ErrorResponse) sr;
-			log.debug("Validation of ticket failed: " + er.getErrorCode() + "," + er.getErrorMessage());
-			throw new ValidationException(er.getErrorMessage());
+		} else if (!"0".equals(result.getCode())) {
+			log.debug("Validation of ticket failed: " + result.getCode() + "," + result.getMessage());
+			throw new ValidationException(result.getMessage());
 		} else {
-			STResponse str = (STResponse) sr;
-			return getValidAssertionInternal(response, str);
+			return getValidAssertionInternal(response, result);
 		}
 	}
 
-	/**
-	 * 把SSO验证返回结果转换成ServiceResponse对象
-	 * 
-	 * @param response
-	 * @return ServiceResponse
-	 */
-	protected ServiceResponse parseSSOResponse(final String response) {
-		ServiceResponse result = null;
-		if (response != null && response.length() > 0) {
-			if (response.indexOf("errorCode") != -1 && response.indexOf("errorMessage") != -1) {
-				result = Json.fromJson(ErrorResponse.class, response);
-			} else {
-				result = Json.fromJson(STResponse.class, response);
-			}
-		}
-		return result;
+	protected ServiceAuthenticationResult parseResult(final String response) {
+		return JSON.parseObject(response, ServiceAuthenticationResult.class);
 	}
 
-	protected String getValidationUrlName() {
-		return "serviceValidate.pi";
+	protected Assertion getValidAssertionInternal(final String response, final ServiceAuthenticationResult str)
+			throws ValidationException {
+		return getAssertionBasedOnProxyGrantingTicketIou(str);
 	}
 
-	/**
-	 * 
-	 * @param str
-	 * @return Assertion
-	 */
-	protected final Assertion getAssertionBasedOnProxyGrantingTicketIou(final STResponse str) {
+	protected final Assertion getAssertionBasedOnProxyGrantingTicketIou(final ServiceAuthenticationResult str) {
 		if (CommonUtils.isNotBlank(str.getProxyGrantingTicket())) {
 			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()), null,
 					this.proxyRetriever, this.proxyGrantingTicketStorage == null ? null
@@ -145,18 +90,6 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 		} else {
 			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()));
 		}
-	}
-
-	/**
-	 * 
-	 * @param response
-	 * @param str
-	 * @return Assertion
-	 * @throws ValidationException
-	 */
-	protected Assertion getValidAssertionInternal(final String response, final STResponse str)
-			throws ValidationException {
-		return getAssertionBasedOnProxyGrantingTicketIou(str);
 	}
 
 }

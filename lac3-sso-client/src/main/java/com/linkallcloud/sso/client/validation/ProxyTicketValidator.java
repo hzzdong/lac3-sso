@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.linkallcloud.core.json.Json;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
@@ -24,6 +25,8 @@ import com.linkallcloud.sso.client.response.PTResponse;
 import com.linkallcloud.sso.client.response.STResponse;
 import com.linkallcloud.sso.client.response.ServiceResponse;
 import com.linkallcloud.sso.client.util.CommonUtils;
+import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
+import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
 
 /**
  * Implementation of the TicketValidator interface that knows how to handle
@@ -102,22 +105,16 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 		this.acceptAnyProxy = acceptAnyProxy;
 	}
 
-	protected String getValidationUrlName() {
-		return "proxyValidate.pi";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.zj.pubinfo.sso.client.validation.ServiceTicketValidator#
-	 * getValidAssertionInternal(java.lang.String,
-	 * cn.zj.pubinfo.sso.response.STResponse)
-	 */
 	@Override
-	protected Assertion getValidAssertionInternal(final String response, final STResponse str)
+	protected String getValidationUrlName() {
+		return "/proxyValidate";
+	}
+	
+	@Override
+	protected Assertion getValidAssertionInternal(final String response, final ServiceAuthenticationResult str)
 			throws ValidationException {
-		if (str != null && str instanceof PTResponse) {
-			PTResponse ptr = (PTResponse) str;
+		if (str != null && str instanceof ProxyAuthenticationResult) {
+			ProxyAuthenticationResult ptr = (ProxyAuthenticationResult) str;
 
 			final List<SimpleService> proxies = ptr.getProxies();
 			// this means there was nothing in the proxy chain, which is okay
@@ -140,24 +137,9 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 		throw new InvalidProxyChainValidationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * cn.zj.pubinfo.sso.cilent.ServiceTicketValidator#parseSSOResponse(java.lang.
-	 * String)
-	 */
 	@Override
-	protected ServiceResponse parseSSOResponse(final String response) {
-		ServiceResponse result = null;
-		if (response != null && response.length() > 0) {
-			if (response.indexOf("errorCode") != -1 && response.indexOf("errorMessage") != -1) {
-				result = Json.fromJson(ErrorResponse.class, response);
-			} else {
-				result = Json.fromJson(PTResponse.class, response);
-			}
-		}
-		return result;
+	protected ServiceAuthenticationResult parseResult(String response) {
+		return JSON.parseObject(response, ProxyAuthenticationResult.class);
 	}
 
 }

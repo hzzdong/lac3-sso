@@ -63,7 +63,7 @@ public class ProxyValidate extends BaseController {
 	}
 
 	private ProxyAuthenticationResult validationSuccess(ProxyTicket pt, String pgtIOU) {
-		ProxyAuthenticationResult result = new ProxyAuthenticationResult(pt.getUsername());
+		ProxyAuthenticationResult result = new ProxyAuthenticationResult(pt.getUsername(),pt.getSiteUser(),pt.getSiteMaping());
 		if (!Strings.isBlank(pgtIOU)) {
 			result.setProxyGrantingTicket(pgtIOU);
 		}
