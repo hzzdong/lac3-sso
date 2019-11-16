@@ -6,6 +6,21 @@ $(function() {
 		increaseArea : '20%' // optional
 	});
 	
+	function refreshImageCode(){
+		var $cc = $("#vcodeImage")
+		var src = $cc.attr("src");
+		var index = src.indexOf("?");
+		$cc.attr("src",(index>=0)?(src.substring(0,index) + getTimestamp("?")):(src + getTimestamp("?")));
+	}
+
+	function getTimestamp(connetor) {
+		return connetor+"t="+(new Date()).getTime();
+	}
+	
+	$(".refresh-code").on('click', function() {
+		refreshImageCode();
+	});
+	
 
 	$("body").keydown(function() {
 		if (event.keyCode == "13") {// keyCode=13是回车键
@@ -21,10 +36,13 @@ $(function() {
 	$('#btn_login').on('click', function() {
 		var username = $.trim($("#username").val());
 		var password = $.trim($("#password").val());
-		// var vcode = $.trim($("#vcode").val());
-		var rememberMe = $("#rememberMe").is(":checked") ? 1 : 0;
+		var vcode = $.trim($("#vcode").val());
+		var rememberMe = $("#rememberMe").is(":checked") ? "true" : "false";
 
-		if (username == "") {
+		if (vcode == "") {
+			showErrorInfo("验证码不能为空，请重新输入！");
+			$("#vcode").focus();
+		} else if (username == "") {
 			showErrorInfo("用户登录帐号不能为空，请重新输入！");
 			$("#username").focus();
 		} else if (password == "") {
@@ -46,7 +64,7 @@ $(function() {
 				lt : $("#lt").val(),
 				warn : $("#warn").val(),
 				pwdStrength: pwdStrength,
-				vcode : base_path,
+				vcode : vcode,
 				rememberMe : rememberMe
 			};
 			$.ajax({
@@ -61,6 +79,7 @@ $(function() {
 		        		window.location.href = ret.go;
 					} else {
 						$("#lt").val(ret.lt);
+						refreshImageCode();
 						showErrorInfo(ret.message || "您的账号无法登陆，请联系管理员。");
 		        	}
 				}

@@ -13,6 +13,7 @@ import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.portal.utils.IParams;
+import com.linkallcloud.web.utils.Controllers;
 
 @Controller
 @RequestMapping
@@ -42,7 +43,7 @@ public class Logout extends BaseController {
 				}
 			}
 		}
-		return "logout";
+		return Controllers.redirect("/login");
 	}
 
 	/** Destroys the browser's TGC. */

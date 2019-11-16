@@ -251,7 +251,7 @@ h1 {
 .w3ls-login form {
     max-width: 500px;
     margin: 0 5vw;
-    padding: 3.5vw;
+    padding: 3.0vw;
     border-width: 5px 0;
     box-sizing: border-box;
     display: flex;
@@ -262,7 +262,7 @@ h1 {
 .agile-field-error {
     flex-basis: 100%;
     -webkit-flex-basis: 100%;
-    margin-top: -1.5em;
+    margin-top: -1.0em;
     margin-bottom: 0.5em;
     text-align: left;
     color:#F00;
@@ -270,7 +270,7 @@ h1 {
 .agile-field-txt {
     flex-basis: 100%;
     -webkit-flex-basis: 100%;
-    margin-bottom: 1.5em;
+    margin-bottom: 1.0em;
 }
 .w3ls-login input[type="email"], .w3ls-login input[type="password"] {
     width: 100%;
@@ -280,7 +280,7 @@ h1 {
     font-size: 17px;
     letter-spacing: 0.5px;
     /* line-height: 25px; */
-    padding: 12px;
+    padding: 10px;
     box-sizing: border-box;
     border: none;
     /* border-bottom: 1px solid #929191; */
@@ -288,6 +288,57 @@ h1 {
     font-family: 'Catamaran', sans-serif;
     /* background: transparent; */
 }
+
+.w3ls-login input[type="vcode-input"]{
+    width: 50%;
+    color: #fff;
+    outline: none;
+    background: rgba(0, 0, 0, 0.32);
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    /* line-height: 25px; */
+    padding: 10px;
+    box-sizing: border-box;
+    border: none;
+    /* border-bottom: 1px solid #929191; */
+    -webkit-appearance: none;
+    font-family: 'Catamaran', sans-serif;
+    /* background: transparent; */
+    float:left;
+}
+.w3ls-login .vcode-img{
+    width: 90px;
+    height: 42px;
+    color: #fff;
+    outline: none;
+    background: rgba(0, 0, 0, 0.32);
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    /* line-height: 25px; */
+    padding: 0 0;
+    box-sizing: border-box;
+    border: none;
+    /* border-bottom: 1px solid #929191; */
+    -webkit-appearance: none;
+    font-family: 'Catamaran', sans-serif;
+    /* background: transparent; */
+    float:left;
+}
+.w3ls-login .tip{
+    width: 90px;
+    height: 42px;
+    color: #fff;
+    outline: none;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    padding: 8px 5px;
+    box-sizing: border-box;
+    border: none;
+    -webkit-appearance: none;
+    font-family: 'Catamaran', sans-serif;
+    float:left;
+}
+
 .w3ls-login ::-webkit-input-placeholder {
     color: #eee;    
  } 
@@ -312,7 +363,7 @@ label.check {
 
 .agile_label {
     text-align: left;
-    margin: 10px 0 0;
+    margin: -10px 0 0;
 }
 
 .w3ls-login.w3l-sub {

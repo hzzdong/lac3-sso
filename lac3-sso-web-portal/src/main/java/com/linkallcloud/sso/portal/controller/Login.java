@@ -38,6 +38,7 @@ import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.portal.ticket.cache.LoginTicketCache;
 import com.linkallcloud.sso.portal.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.sso.portal.utils.IParams;
+import com.linkallcloud.sso.portal.utils.LacSessionValidateCode;
 
 @Controller
 @RequestMapping
@@ -51,6 +52,9 @@ public class Login extends BaseController {
 	private LoginTicketCache ltCache;
 	@Autowired
 	private DbPasswordHandler handler;
+
+	@Autowired
+	private LacSessionValidateCode sessionValidateCode;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(@RequestParam(value = "from", required = false) String appCode,
@@ -102,6 +106,10 @@ public class Login extends BaseController {
 			throw new ServletException(ex);
 		}
 
+		// get remember me
+		String me = getRememberMe(request);
+		modelMap.put("me", me);
+
 		return "login";
 	}
 
@@ -112,7 +120,10 @@ public class Login extends BaseController {
 			@RequestParam(value = "username", required = false) String username,
 			@RequestParam(value = "password", required = false) String password,
 			@RequestParam(value = "lt", required = false) String lt,
-			@RequestParam(value = "warn", required = false) String warn, HttpServletRequest request,
+			@RequestParam(value = "vcode", required = false) String vcode,
+			@RequestParam(value = "warn", required = false) String warn,
+			@RequestParam(value = "pwdStrength", required = false) String pwdStrength,
+			@RequestParam(value = "rememberMe", required = false) String rememberMe, HttpServletRequest request,
 			HttpServletResponse response, Trace t)
 			throws ServletException, SiteException, IOException, AccountException, InvalidTicketException {
 		// avoid caching (in the stupidly numerous ways we must)
@@ -141,14 +152,14 @@ public class Login extends BaseController {
 					tgt = sendTgc(trustedUsername, request, response);
 				}
 				sendPrivacyCookie(warn, request, response);
-				return authSuccess(request, tgt, appCode, appUrl, true);
+				return authSuccess(request, tgt, appCode, appUrl, true, pwdStrength);
 			} else {
 				// failure: nothing else to be done
 				return authFailure("TrustHandler", "无法验证用户");
 			}
 		} else if (handler instanceof PasswordHandler && username != null && password != null && lt != null) {
 			// do we have a valid login ticket?
-			if (ltCache.getTicket(lt) != null) {
+			if (ltCache.getTicket(lt) != null && sessionValidateCode.validate(request, response, vcode)) {
 				// do we have a valid username and password?
 				try {
 					Account account = handler.authenticate(t, request, username, password);
@@ -163,8 +174,12 @@ public class Login extends BaseController {
 						// and send a new one
 						tgt = sendTgc(username, request, response);
 					}
+
+					// set remember me
+					setRememberMe(rememberMe, username, request, response);
+
 					sendPrivacyCookie(warn, request, response);
-					return authSuccess(request, tgt, appCode, appUrl, true);
+					return authSuccess(request, tgt, appCode, appUrl, true, pwdStrength);
 				} catch (Throwable e) {
 					// failure: record failed password authentication
 					return authFailure("Account", "登录名或者密码错误");
@@ -173,7 +188,7 @@ public class Login extends BaseController {
 				// horrible way of logging, I know
 				log.error("Invalid login ticket from " + request.getRemoteAddr());
 				// failure: record invalid login ticket
-				return authFailure("LoginTicke", "无效的登录票据");
+				return authFailure("Lt-VCODE", "验证码错误，请重新输入");
 			}
 		}
 
@@ -245,7 +260,7 @@ public class Login extends BaseController {
 	 * conveying generic success.
 	 */
 	private Map<String, String> authSuccess(HttpServletRequest request, TicketGrantingTicket t, String from,
-			String serviceId, boolean first) throws ServletException, IOException {
+			String serviceId, boolean first, String pwdStrength) throws ServletException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
 		try {
@@ -328,5 +343,34 @@ public class Login extends BaseController {
 					return true;
 		}
 		return false;
+	}
+
+	private String getRememberMe(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (null != cookies) {
+			for (int i = 0; i < cookies.length; i++) {
+				Cookie c = cookies[i];
+				if (IParams.REMEMBER_COOKIE.equals(c.getName())) {
+					return c.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	private void setRememberMe(String remember, String userName, HttpServletRequest request,
+			HttpServletResponse response) {
+		try {
+			Cookie cookie = new Cookie(IParams.REMEMBER_COOKIE, userName);
+			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
+				cookie.setSecure(true);
+			}
+			cookie.setMaxAge("true".equalsIgnoreCase(remember) ? (60 * 60 * 24 * 365) : 0);
+			cookie.setPath(request.getContextPath());
+			cookie.setHttpOnly(true);
+			response.addCookie(cookie);
+		} catch (Throwable e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 }
