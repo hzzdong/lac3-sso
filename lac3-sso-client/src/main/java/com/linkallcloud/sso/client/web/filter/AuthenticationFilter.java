@@ -52,21 +52,25 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 	 */
 	private final String proxyCallbackUrl;
 
-	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServerLoginUrl) {
-		this(siteCode, serverName, ssoServerLoginUrl, null);
+	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServer) {
+		this(siteCode, serverName, ssoServer, null);
 	}
 
-	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServerLoginUrl,
+	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServer,
 			final List<String> ignoreRes) {
-		this(siteCode, serverName, null, true, ssoServerLoginUrl, null, false, false, ignoreRes, false);
+		this(siteCode, serverName, null, true, ssoServer, null, false, false, ignoreRes, false);
 	}
 
 	public AuthenticationFilter(String siteCode, String serverName, String serviceUrl, boolean useSession,
-			String ssoServerLoginUrl, String proxyCallbackUrl, boolean renew, boolean gateway, List<String> ignoreRes,
+			String ssoServer, String proxyCallbackUrl, boolean renew, boolean gateway, List<String> ignoreRes,
 			boolean override) {
 		super(siteCode, serverName, serviceUrl, useSession, ignoreRes, override);
-		CommonUtils.assertNotNull(ssoServerLoginUrl, "the SSO Server Login URL cannot be null.");
-		this.ssoServerLoginUrl = ssoServerLoginUrl;
+		CommonUtils.assertNotNull(ssoServer, "the SSO Server Login URL cannot be null.");
+		if (ssoServer.endsWith("/login")) {
+			this.ssoServerLoginUrl = ssoServer;
+		} else {
+			this.ssoServerLoginUrl = ssoServer + "/login";
+		}
 		this.proxyCallbackUrl = proxyCallbackUrl;
 		this.renew = renew;
 		this.gateway = gateway;

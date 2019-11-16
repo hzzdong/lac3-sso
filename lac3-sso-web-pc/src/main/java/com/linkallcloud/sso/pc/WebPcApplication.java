@@ -5,13 +5,16 @@ import java.util.List;
 import javax.servlet.MultipartConfigElement;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.unit.DataSize;
@@ -23,7 +26,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.linkallcloud.sso.pc.aop.LacPermissionInterceptor;
+import com.linkallcloud.sso.pc.aop.LoginFilter;
+import com.linkallcloud.sso.pc.aop.PermissionInterceptor;
+import com.linkallcloud.sso.pc.kiss.um.YwUserKiss;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
 import com.linkallcloud.web.support.TraceArgumentResolver;
@@ -38,6 +43,15 @@ public class WebPcApplication implements WebMvcConfigurer {
 
     @Value("${lac.static.res.version}")
     private String staticResourceVersion;
+    
+    @Value("${oapi.appcode}")
+	private String myAppCode;
+    
+    @Value("${lac.lf.loginUrl:/login}")
+	private String localLoginUrl;
+
+	@Autowired
+	private YwUserKiss ywUserKiss;
 
     @Bean
     public LacEnvInterceptor getLacEnvInterceptor() {
@@ -55,20 +69,32 @@ public class WebPcApplication implements WebMvcConfigurer {
     }
 
     @Bean
-    public LacPermissionInterceptor getLacPermissionInterceptor() {
-        return new LacPermissionInterceptor();
+    public PermissionInterceptor getPermissionInterceptor() {
+        return new PermissionInterceptor();
     }
+    
+    @Bean
+	@Order(1)
+	public FilterRegistrationBean<LoginFilter> loginFilterReg() {
+		FilterRegistrationBean<LoginFilter> frb = new FilterRegistrationBean<LoginFilter>();
+		frb.setFilter(new LoginFilter(myAppCode, ywUserKiss, localLoginUrl));
+		frb.addUrlPatterns("/*");
+		frb.setName("LoginFilter");
+		return frb;
+	}
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
         envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
         envpi.addPathPatterns("/**");
+        envpi.order(4);
 
-        InterceptorRegistration pi = registry.addInterceptor(getLacPermissionInterceptor());
+        InterceptorRegistration pi = registry.addInterceptor(getPermissionInterceptor());
         pi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**", "/login/**", "/verifyCode",
                 "/exit", "/unsupport", "/error", "/pub/**", "/face/**");
         pi.addPathPatterns("/**");
+        pi.order(5);
 
         WebMvcConfigurer.super.addInterceptors(registry);
     }

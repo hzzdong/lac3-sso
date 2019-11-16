@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.sso.pc.kiss.um.ApplicationKiss;
-import com.linkallcloud.web.interceptors.PermissionInterceptor;
+import com.linkallcloud.web.interceptors.AbstractPermissionInterceptor;
 
-public class LacPermissionInterceptor extends PermissionInterceptor {
+public class PermissionInterceptor extends AbstractPermissionInterceptor {
 
 	private static Map<Long, Map<String, String[]>> appUriRescodeMap = new HashMap<>();
 
@@ -19,22 +19,14 @@ public class LacPermissionInterceptor extends PermissionInterceptor {
 	private ApplicationKiss applicationKiss;
 
 	@Value("${oapi.appcode}")
-	protected String myAppCode;
+	private String myAppCode;
 
-	public LacPermissionInterceptor() {
+	public PermissionInterceptor() {
 		super();
 	}
 
-	public LacPermissionInterceptor(List<String> ignoreRes, boolean override, String login, String noPermission) {
-		super(ignoreRes, override, login, noPermission);
-	}
-
-	public LacPermissionInterceptor(List<String> ignoreRes, boolean override) {
+	public PermissionInterceptor(List<String> ignoreRes, boolean override) {
 		super(ignoreRes, override);
-	}
-
-	public LacPermissionInterceptor(String login, String noPermission) {
-		super(login, noPermission);
 	}
 
 	@Override
