@@ -169,24 +169,14 @@
 	</update>
 	
 	<delete id="delete">
-		update 
-			tab_lock 
-		set
-			status=9,updateTime=now()
-		where
-			id=#{id} and uuid=#{uuid}
+		delete from tab_lock where id=#{id} and uuid=#{uuid}
 	</delete>
 	
 	<delete id="deletes">
-		update 
-			tab_lock  
-		set
-			status=9,updateTime=now()
-		where 
-			id in
-			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
-				#{id}
-			</foreach>
+		delete from tab_lock where id in
+		<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+			#{id}
+		</foreach>
 	</delete>
 
 	<update id="updateStatus">

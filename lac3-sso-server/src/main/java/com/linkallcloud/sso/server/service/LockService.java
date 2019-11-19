@@ -211,16 +211,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 		blackCache(t, b);
 		blackActivity.autoBlack(t, b);
 
-		// 重置锁定次数
-		l.setStatus(LockStatus.UnLock.getCode());
-		l.setReason(LockReson.UnLockByTime.getCode());
-		l.setCount(0);
-		l.setErr(0);
-		l.setLockedTime(new Date());
-		l.setOperator("系统");
-		l.setRemark("连续锁定次数超过设定数，自动拉黑解锁");
-		lockCache(t, l);
-		activity().update(t, l);
+		// 解锁，移除锁定表
+		removeLock(t, l, LockReson.UnLockByTime.getCode(), "连续锁定次数超过设定数，自动拉黑解锁");
 	}
 
 	private void autoUnLock(Trace t, Lock l) {
@@ -234,81 +226,96 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	@Override
-	public void dealAutoLock(Trace t, boolean success, String account, String ip, String remark, LockConfig config) {
-		dealAccountAutoLock(t, success, account, remark, config);
-		dealIpAutoLock(t, success, ip, remark, config);
+	public void dealAuthAutoLock(Trace t, boolean success, String account, String ip, String remark,
+			LockConfig config) {
+		dealAuthAutoLockByType(t, success, LockBlackType.Account.getCode(), account, remark, config);
+		dealAuthAutoLockByType(t, success, LockBlackType.Ip.getCode(), ip, remark, config);
 	}
 
-	private void dealIpAutoLock(Trace t, boolean success, String ip, String remark, LockConfig config) {
-		int errCount = config.getIpErrCount();
-		Lock ipLock = fetchExistLock(t, LockBlackType.Ip.getCode(), ip, null);
-		if (ipLock != null) {
-			if (LockStatus.UnLock.getCode().equals(ipLock.getStatus())) {// unlock status
-				if (!success) {
-					if (ipLock.getErr() >= errCount - 1) {// 到达累计连续错误次数设定值
-						ipLock.setStatus(LockStatus.Lock.getCode());
-						ipLock.setLockedTime(new Date());
-						ipLock.setCount(ipLock.getCount() + 1);
-						ipLock.setErr(0);
-						ipLock.setReason(LockReson.LockByLoginFailure.getCode());
-						ipLock.setOperator("系统");
-						ipLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
-						lockCache(t, ipLock);
-						super.update(t, ipLock);
-					} else {
-						ipLock.setErr(ipLock.getErr() + 1);
-						ipLock.setReason(LockReson.LockByLoginFailure.getCode());
-						ipLock.setOperator("系统");
-						ipLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
-						super.update(t, ipLock);
-					}
+	private void dealAuthAutoLockByType(Trace t, boolean success, int type, String lockedTarget, String remark,
+			LockConfig config) {
+		List<Lock> entities = findExistLocks(t, type, lockedTarget, null);
+		if (success) {
+			if (entities != null && !entities.isEmpty()) {
+				for (Lock accountLock : entities) {
+					removeLock(t, accountLock, LockReson.UnLockByLoginSuccess.getCode(), remark);
 				}
-			} else {// lock status
-				log.error("############## 警告！警告！警告：有人在Ip锁定状态进行登录尝试，请尽快联系管理员处理。 ##############");
 			}
 		} else {
-			if (!success) {
-				Lock entity = new Lock(LockBlackType.Ip.getCode(), ip, LockStatus.UnLock.getCode(), 0, 1,
+			if (entities != null && !entities.isEmpty()) {
+				boolean first = true;
+				for (Lock l : entities) {
+					if (first) {
+						first = false;
+						if (l.getErr() >= config.getAccountErrCount() - 1) {// 到达累计连续错误次数设定值
+							lockIncrement(t, l, remark);
+						} else {
+							lockIncrementErr(t, l, remark);
+						}
+					} else {
+						removeLock(t, l, LockReson.UnLockByLoginSuccess.getCode(), remark);
+					}
+				}
+			} else {
+				Lock entity = new Lock(type, lockedTarget, LockStatus.UnLock.getCode(), 0, 1,
 						LockReson.LockByLoginFailure.getCode(), "系统", Strings.isBlank(remark) ? "登录验证失败" : remark);
-				super.insert(t, entity);
+				activity().insert(t, entity);
 			}
 		}
 	}
 
-	private void dealAccountAutoLock(Trace t, boolean success, String account, String remark, LockConfig config) {
-		int errCount = config.getAccountErrCount();
-		Lock accountLock = fetchExistLock(t, LockBlackType.Account.getCode(), account, null);
-		if (accountLock != null) {
-			if (LockStatus.UnLock.getCode().equals(accountLock.getStatus())) {// unlock status
-				if (!success) {
-					if (accountLock.getErr() >= errCount - 1) {// 到达累计连续错误次数设定值
-						accountLock.setStatus(LockStatus.Lock.getCode());
-						accountLock.setLockedTime(new Date());
-						accountLock.setCount(accountLock.getCount() + 1);
-						accountLock.setErr(0);
-						accountLock.setReason(LockReson.LockByLoginFailure.getCode());
-						accountLock.setOperator("系统");
-						accountLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
-						lockCache(t, accountLock);
-						super.update(t, accountLock);
-					} else {
-						accountLock.setErr(accountLock.getErr() + 1);
-						accountLock.setReason(LockReson.LockByLoginFailure.getCode());
-						accountLock.setOperator("系统");
-						accountLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
-						super.update(t, accountLock);
-					}
-				}
-			} else {// lock status
-				log.error("############## 警告！警告！警告：有人在账号锁定状态进行登录尝试，请尽快联系管理员处理。 ##############");
-			}
-		} else {
-			if (!success) {
-				Lock entity = new Lock(LockBlackType.Account.getCode(), account, LockStatus.UnLock.getCode(), 0, 1,
-						LockReson.LockByLoginFailure.getCode(), "系统", Strings.isBlank(remark) ? "登录验证失败" : remark);
-				super.insert(t, entity);
-			}
-		}
+	/**
+	 * 锁定次数加1
+	 * 
+	 * @param t
+	 * @param entity
+	 * @param remark
+	 */
+	private void lockIncrementErr(Trace t, Lock entity, String remark) {
+		entity.setErr(entity.getErr() + 1);
+		entity.setReason(LockReson.LockByLoginFailure.getCode());
+		entity.setOperator("系统");
+		entity.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
+		activity().update(t, entity);
+	}
+
+	/**
+	 * 锁定次数加1
+	 * 
+	 * @param t
+	 * @param entity
+	 * @param remark
+	 */
+	private void lockIncrement(Trace t, Lock entity, String remark) {
+		entity.setStatus(LockStatus.Lock.getCode());
+		entity.setLockedTime(new Date());
+		entity.setCount(entity.getCount() + 1);
+		entity.setErr(0);
+		entity.setReason(LockReson.LockByLoginFailure.getCode());
+		entity.setOperator("系统");
+		entity.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
+		lockCache(t, entity);
+		activity().update(t, entity);
+	}
+
+	/**
+	 * 解锁，移除锁定表中记录
+	 * 
+	 * @param t
+	 * @param entity
+	 * @param reson
+	 * @param remark
+	 */
+	private void removeLock(Trace t, Lock entity, int reson, String remark) {
+		entity.setStatus(LockStatus.UnLock.getCode());
+		entity.setLockedTime(new Date());
+		entity.setCount(0);
+		entity.setErr(0);
+		entity.setReason(reson);
+		entity.setOperator("系统");
+		entity.setRemark(Strings.isBlank(remark) ? "登录验证成功" : remark);
+		lockCache(t, entity);
+		activity().remove(t, entity);
 	}
 
 }

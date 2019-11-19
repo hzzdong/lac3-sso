@@ -21,6 +21,6 @@ public interface ILockService extends IService<Lock> {
 	void load2Cache(Trace t);
 	void autoUnLockBlack(Trace t, LockConfig config);
 	void check(Trace t, String lockedTarget) throws LockException;
-	void dealAutoLock(Trace t, boolean success, String account, String ip, String remark, LockConfig config);
+	void dealAuthAutoLock(Trace t, boolean success, String account, String ip, String remark, LockConfig config);
 
 }

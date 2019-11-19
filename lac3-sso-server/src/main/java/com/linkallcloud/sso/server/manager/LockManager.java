@@ -49,7 +49,7 @@ public class LockManager extends BaseManager<Lock, ILockService> implements ILoc
 
 	@Override
 	public void dealAutoLock(Trace t, boolean success, String account, String ip, String remark) {
-		service().dealAutoLock(t, success, account, ip, remark, lockConfigure.loadLockConfig(t));
+		service().dealAuthAutoLock(t, success, account, ip, remark, lockConfigure.loadLockConfig(t));
 	}
 
 }
