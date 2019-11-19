@@ -11,7 +11,9 @@ import com.linkallcloud.core.dto.AppVisitor;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.manager.BaseManager;
 import com.linkallcloud.sso.domain.Lock;
+import com.linkallcloud.sso.exception.LockException;
 import com.linkallcloud.sso.manager.ILockManager;
+import com.linkallcloud.sso.server.configure.LockConfigure;
 import com.linkallcloud.sso.service.ILockService;
 
 @Service(interfaceClass = ILockManager.class, version = "${dubbo.service.version}")
@@ -19,13 +21,16 @@ import com.linkallcloud.sso.service.ILockService;
 @Module(name = "锁")
 public class LockManager extends BaseManager<Lock, ILockService> implements ILockManager {
 
-    @Autowired
-    private ILockService lockService;
+	@Autowired
+	private ILockService lockService;
 
-    @Override
-    protected ILockService service() {
-        return lockService;
-    }
+	@Autowired
+	private LockConfigure lockConfigure;
+
+	@Override
+	protected ILockService service() {
+		return lockService;
+	}
 
 	@Override
 	public boolean locks(Trace t, Map<String, Long> uuidIds, String remark, AppVisitor av) {
@@ -35,6 +40,16 @@ public class LockManager extends BaseManager<Lock, ILockService> implements ILoc
 	@Override
 	public boolean unLocks(Trace t, Map<String, Long> uuidIds, String remark, AppVisitor av) {
 		return service().unLocks(t, uuidIds, remark, av);
+	}
+
+	@Override
+	public void check(Trace t, String lockedTarget) throws LockException {
+		service().check(t, lockedTarget);
+	}
+
+	@Override
+	public void dealAutoLock(Trace t, boolean success, String account, String ip) {
+		service().dealAutoLock(t, success, account, ip, lockConfigure.loadLockConfig(t));
 	}
 
 }

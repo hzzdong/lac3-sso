@@ -14,12 +14,27 @@ public class Black extends Domain {
 	private static final long serialVersionUID = 5750266573536145328L;
 
 	private String blackTarget;// 加黑目标
-	private int type;// 加黑类型
+	private int type;// 加黑类型LockBlackType
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date blackTime;// 加黑时间
 	private int reason;// 加黑原因
 	private String operator;// 操作者
 	private String remark;// 描述
+
+	public Black() {
+		super();
+	}
+
+	public Black(int type, String blackTarget, int status, int reason, String operator, String remark) {
+		super();
+		this.status = status;
+		this.type = type;
+		this.blackTarget = blackTarget;
+		this.blackTime = new Date();
+		this.reason = reason;
+		this.operator = operator;
+		this.remark = remark;
+	}
 
 	public String getBlackTarget() {
 		return blackTarget;

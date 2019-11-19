@@ -1,4 +1,4 @@
-package com.linkallcloud.sso.portal.ticket.cache.redis;
+package com.linkallcloud.sso.portal.redis.ticket;
 
 import javax.annotation.Resource;
 

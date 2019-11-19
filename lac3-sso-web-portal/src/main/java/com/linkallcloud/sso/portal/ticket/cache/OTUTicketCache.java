@@ -1,7 +1,7 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
+import com.linkallcloud.sso.portal.redis.ticket.RedisTicketCache;
 import com.linkallcloud.sso.portal.ticket.Ticket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketCache;
 
 /**
  * Represents a cache of tickets, each of which may be retrieved only once. That

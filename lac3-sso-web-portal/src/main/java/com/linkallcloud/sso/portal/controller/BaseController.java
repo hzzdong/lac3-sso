@@ -8,6 +8,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -19,6 +20,8 @@ import com.linkallcloud.core.www.utils.HttpClientFactory;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.exception.AppException;
 import com.linkallcloud.sso.exception.ArgException;
+import com.linkallcloud.sso.manager.IBlackManager;
+import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.sso.portal.exception.SiteException;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.kiss.um.ApplicationKiss;
@@ -49,6 +52,24 @@ public abstract class BaseController {
 	@Autowired
 	protected ApplicationKiss applicationKiss;
 
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	protected IBlackManager blackManager;
+
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	protected ILockManager lockManager;
+
+	public void checkBlackAndLock(Trace t, String account, String ip) {
+		if (!Strings.isBlank(account)) {
+			blackManager.check(t, account);
+			lockManager.check(t, account);
+		}
+
+		if (!Strings.isBlank(ip)) {
+			blackManager.check(t, ip);
+			lockManager.check(t, ip);
+		}
+	}
+
 	/**
 	 * avoid caching (in the stupidly numerous ways we must)
 	 * 
@@ -74,7 +95,7 @@ public abstract class BaseController {
 	 * @return boolean
 	 * @throws SiteException
 	 */
-	protected void checkSitePass(Trace t, String appCode, String appUrl) throws SiteException {
+	protected void checkSiteCanPass(Trace t, String appCode, String appUrl) throws SiteException {
 		if (Strings.isBlank(appCode) && Strings.isBlank(appUrl)) {// 都为空，直接登录SSO方式
 			return;
 		} else if (!Strings.isBlank(appCode) && !Strings.isBlank(appUrl)) {// 都不为空
@@ -87,7 +108,7 @@ public abstract class BaseController {
 			}
 			throw new SiteException(AppException.ERROR_CODE_APP, "应用检查失败，可能是应用状态异常或者应用域名/ip未设置白名单");
 		} else {// 一个为空，一个不为空，参数填写错误
-			throw new SiteException(ArgException.ARG_CODE_ARG, "方法(checkSite)参数fromSite,siteServiceUrl都不能为空");
+			throw new SiteException(ArgException.ARG_CODE_ARG, "方法(checkSite)参数from,siteServiceUrl都不能为空");
 		}
 	}
 

@@ -10,6 +10,7 @@ CREATE TABLE `tab_lock` (
 	          `lockedTarget` varchar(255) DEFAULT NULL COMMENT '锁定目标',
 	          `type` int(11) NOT NULL DEFAULT '0' COMMENT '锁定类型',
 	          `count` int(11) NOT NULL DEFAULT '0' COMMENT '锁定次数',
+	          `err` int(11) NOT NULL DEFAULT '0' COMMENT '错误次数',
 	          `reason` int(255) NOT NULL DEFAULT '0' COMMENT '锁定原因',
 	          `lockedTime` datetime DEFAULT NULL COMMENT '锁定时间',
 	          `operator` varchar(255) DEFAULT NULL COMMENT '操作员',

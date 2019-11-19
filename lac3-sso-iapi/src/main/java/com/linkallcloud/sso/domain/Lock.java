@@ -6,8 +6,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.domain.Domain;
 import com.linkallcloud.core.domain.annotation.ShowName;
 import com.linkallcloud.sh.tuils.Dates;
-import com.linkallcloud.sso.enums.LockReson;
 import com.linkallcloud.sso.enums.LockBlackType;
+import com.linkallcloud.sso.enums.LockReson;
 
 @ShowName(value = "锁", logFields = "id,lockedTarget")
 public class Lock extends Domain {
@@ -16,6 +16,7 @@ public class Lock extends Domain {
 	private String lockedTarget;// 锁定目标
 	private int type;// 锁定类型
 	private int count;// 锁定次数
+	private int err;// 错误次数
 	private int reason;// 锁定原因
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date lockedTime;// 锁定时间
@@ -25,6 +26,30 @@ public class Lock extends Domain {
 	public Lock() {
 		super();
 		this.lockedTime = new Date();
+	}
+
+	public Lock(int type, String lockedTarget, int status, int count, int err, int reason, String operator,
+			String remark) {
+		super();
+		this.status = status;
+		this.lockedTime = new Date();
+		this.type = type;
+		this.lockedTarget = lockedTarget;
+		this.count = count;
+		this.err = err;
+		this.reason = reason;
+		this.operator = operator;
+		this.remark = remark;
+	}
+
+	/**
+	 * 锁定周期是否结束
+	 * 
+	 * @param period 单位：分钟
+	 * @return
+	 */
+	public boolean isPeriodOver(int period) {
+		return Dates.addMinute(lockedTime, period).before(new Date());
 	}
 
 	public String getLockedTarget() {
@@ -57,6 +82,14 @@ public class Lock extends Domain {
 
 	public void setCount(int count) {
 		this.count = count;
+	}
+
+	public int getErr() {
+		return err;
+	}
+
+	public void setErr(int err) {
+		this.err = err;
 	}
 
 	public int getReason() {

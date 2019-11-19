@@ -4,8 +4,8 @@ import java.security.SecureRandom;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
 import com.linkallcloud.sso.portal.exception.TicketException;
+import com.linkallcloud.sso.portal.redis.ticket.RedisTicketCache;
 import com.linkallcloud.sso.portal.ticket.GrantingTicket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketCache;
 import com.linkallcloud.sso.portal.utils.Util;
 
 /**

@@ -70,7 +70,7 @@ public class Login extends BaseController {
 		response.setDateHeader("Expires", -1);
 
 		// The servie can pass?
-		checkSitePass(t, appCode, appUrl);
+		checkSiteCanPass(t, appCode, appUrl);
 
 		// check to see whether we've been sent a valid TGC
 		TicketGrantingTicket tgt = getTgc(request);
@@ -80,7 +80,7 @@ public class Login extends BaseController {
 		// below. Note that tgt is still active.
 
 		if (tgt != null && Strings.isBlank(renew)) {
-			return grantForService(request, response, modelMap, tgt, appCode, appUrl, false);
+			return grantForService(t, request, response, modelMap, tgt, appCode, appUrl, false);
 		}
 
 		// if not, but if we're passed "gateway", then simply bounce back
@@ -89,7 +89,7 @@ public class Login extends BaseController {
 				modelMap.put("serviceId", appUrl);
 				return "redirect";
 			} else {
-				return grantForService(request, response, modelMap, tgt, appCode, appUrl, false);
+				return grantForService(t, request, response, modelMap, tgt, appCode, appUrl, false);
 			}
 		}
 
@@ -131,8 +131,11 @@ public class Login extends BaseController {
 		response.setHeader("Cache-Control", "no-store");
 		response.setDateHeader("Expires", -1);
 
+		// blacklist and lock check
+		checkBlackAndLock(t, username, WebUtils.getIpAddress(request));
+
 		// The servie can pass?
-		checkSitePass(t, appCode, appUrl);
+		checkSiteCanPass(t, appCode, appUrl);
 
 		TicketGrantingTicket tgt = getTgc(request);
 
@@ -152,10 +155,10 @@ public class Login extends BaseController {
 					tgt = sendTgc(trustedUsername, request, response);
 				}
 				sendPrivacyCookie(warn, request, response);
-				return authSuccess(request, tgt, appCode, appUrl, true, pwdStrength);
+				return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
 			} else {
 				// failure: nothing else to be done
-				return authFailure("TrustHandler", "无法验证用户");
+				return authFailure(t, request, username, "TrustHandler", "无法验证用户");
 			}
 		} else if (handler instanceof PasswordHandler && username != null && password != null && lt != null) {
 			// do we have a valid login ticket?
@@ -179,20 +182,20 @@ public class Login extends BaseController {
 					setRememberMe(rememberMe, username, request, response);
 
 					sendPrivacyCookie(warn, request, response);
-					return authSuccess(request, tgt, appCode, appUrl, true, pwdStrength);
+					return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
 				} catch (Throwable e) {
 					// failure: record failed password authentication
-					return authFailure("Account", "登录名或者密码错误");
+					return authFailure(t, request, username, "Account", "登录名或者密码错误");
 				}
 			} else {
 				// horrible way of logging, I know
 				log.error("Invalid login ticket from " + request.getRemoteAddr());
 				// failure: record invalid login ticket
-				return authFailure("Lt-VCODE", "验证码错误，请重新输入");
+				return authFailure(t, request, username, "Lt-VCODE", "验证码错误，请重新输入");
 			}
 		}
 
-		return authFailure("Account", "登录名或者密码错误");
+		return authFailure(t, request, username, "Account", "登录名或者密码错误");
 	}
 
 	/**
@@ -200,11 +203,14 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private String grantForService(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
-			TicketGrantingTicket t, String from, String serviceId, boolean first) throws ServletException, IOException {
+	private String grantForService(Trace t, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
+			TicketGrantingTicket tgt, String from, String serviceId, boolean first)
+			throws ServletException, IOException {
 		try {
+			lockManager.dealAutoLock(t, true, tgt.getUsername(), WebUtils.getIpAddress(request));
+
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(t, from, serviceId, first);
+				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
 				String token = stCache.addTicket(st);
 				modelMap.put("from", from);
 				modelMap.put("serviceId", serviceId);
@@ -242,7 +248,10 @@ public class Login extends BaseController {
 		}
 	}
 
-	private Map<String, String> authFailure(String code, String message) {
+	private Map<String, String> authFailure(Trace t, HttpServletRequest request, String username, String code,
+			String message) {
+		lockManager.dealAutoLock(t, false, username, WebUtils.getIpAddress(request));
+
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", code);
 		result.put("message", message);
@@ -259,13 +268,15 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private Map<String, String> authSuccess(HttpServletRequest request, TicketGrantingTicket t, String from,
+	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
 			String serviceId, boolean first, String pwdStrength) throws ServletException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
 		try {
+			lockManager.dealAutoLock(t, true, tgt.getUsername(), WebUtils.getIpAddress(request));
+
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(t, from, serviceId, first);
+				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
 				String token = stCache.addTicket(st);
 
 				result.put("from", from);

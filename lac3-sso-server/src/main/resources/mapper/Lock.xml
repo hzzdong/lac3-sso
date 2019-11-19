@@ -7,6 +7,7 @@
 		,u.lockedTarget
 		,u.type
 		,u.count
+		,u.err
 		,u.reason
 		,u.lockedTime
 		,u.operator
@@ -120,7 +121,7 @@
 				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
 			</when>
 			<otherwise>
-				order by u.id
+				order by u.status
 			</otherwise>
 		</choose>
 	</select>
@@ -131,6 +132,7 @@
 			,lockedTarget
 			,type
 			,count
+			,err
 			,reason
 			,lockedTime
 			,operator
@@ -141,6 +143,7 @@
 			,#{entity.lockedTarget}
 			,#{entity.type}
 			,#{entity.count}
+			,#{entity.err}
 			,#{entity.reason}
 			,#{entity.lockedTime}
 			,#{entity.operator}
@@ -156,6 +159,7 @@
 			,lockedTarget=#{entity.lockedTarget}
 			,type=#{entity.type}
 			,count=#{entity.count}
+			,err=#{entity.err}
 			,reason=#{entity.reason}
 			,lockedTime=#{entity.lockedTime}
 			,remark=#{entity.remark}

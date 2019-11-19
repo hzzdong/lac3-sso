@@ -1,8 +1,8 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
 import com.linkallcloud.sso.portal.exception.TicketException;
+import com.linkallcloud.sso.portal.redis.ticket.RedisTicketCache;
 import com.linkallcloud.sso.portal.ticket.Ticket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketCache;
 
 /**
  * Represents a cache of tickets that each expire after a configurable period of

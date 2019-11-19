@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 import com.linkallcloud.sso.portal.exception.DuplicateTicketException;
 import com.linkallcloud.sso.portal.exception.TicketException;
+import com.linkallcloud.sso.portal.redis.ticket.RedisLoginTicketCache;
 import com.linkallcloud.sso.portal.ticket.LoginTicket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisLoginTicketCache;
 import com.linkallcloud.sso.portal.utils.Util;
 
 /**

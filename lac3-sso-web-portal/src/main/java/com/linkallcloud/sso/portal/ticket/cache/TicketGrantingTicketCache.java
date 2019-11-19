@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.linkallcloud.sso.portal.redis.ticket.RedisTicketGrantingTicketCache;
 import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisTicketGrantingTicketCache;
 
 @Component
 public class TicketGrantingTicketCache extends GrantorCache<TicketGrantingTicket, RedisTicketGrantingTicketCache> {

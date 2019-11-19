@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.linkallcloud.sso.portal.redis.ticket.RedisProxyGrantingTicketCache;
 import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.cache.redis.RedisProxyGrantingTicketCache;
 
 @Component
 public class ProxyGrantingTicketCache extends GrantorCache<ProxyGrantingTicket, RedisProxyGrantingTicketCache> {

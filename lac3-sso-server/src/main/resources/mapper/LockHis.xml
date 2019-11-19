@@ -8,6 +8,7 @@
 		,u.lockedTarget
 		,u.type
 		,u.count
+		,u.err
 		,u.reason
 		,u.lockedTime
 		,u.operator
@@ -139,6 +140,7 @@
 			,lockedTarget
 			,type
 			,count
+			,err
 			,reason
 			,lockedTime
 			,operator
@@ -150,6 +152,7 @@
 			,#{entity.lockedTarget}
 			,#{entity.type}
 			,#{entity.count}
+			,#{entity.err}
 			,#{entity.reason}
 			,#{entity.lockedTime}
 			,#{entity.operator}
@@ -166,6 +169,7 @@
 			,lockedTarget=#{entity.lockedTarget}
 			,type=#{entity.type}
 			,count=#{entity.count}
+			,err=#{entity.err}
 			,reason=#{entity.reason}
 			,lockedTime=#{entity.lockedTime}
 			,operator=#{entity.operator}

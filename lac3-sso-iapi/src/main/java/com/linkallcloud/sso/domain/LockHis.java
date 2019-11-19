@@ -6,8 +6,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.domain.Domain;
 import com.linkallcloud.core.domain.annotation.ShowName;
 import com.linkallcloud.sh.tuils.Dates;
-import com.linkallcloud.sso.enums.LockReson;
 import com.linkallcloud.sso.enums.LockBlackType;
+import com.linkallcloud.sso.enums.LockReson;
 
 @ShowName(value = "锁/解锁历史", logFields = "id")
 public class LockHis extends Domain {
@@ -17,6 +17,7 @@ public class LockHis extends Domain {
 	private String lockedTarget;// 锁定目标
 	private int type;// 锁定类型
 	private int count;// 锁定次数
+	private int err;// 错误次数
 	private int reason;// 锁定原因
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date lockedTime;// 锁定时间
@@ -34,6 +35,7 @@ public class LockHis extends Domain {
 		this.lockedTarget = lock.getLockedTarget();
 		this.type = lock.getType();
 		this.count = lock.getCount();
+		this.err = lock.getErr();
 		this.reason = lock.getReason();
 		this.lockedTime = lock.getLockedTime();
 		this.operator = lock.getOperator();
@@ -78,6 +80,14 @@ public class LockHis extends Domain {
 
 	public void setCount(int count) {
 		this.count = count;
+	}
+
+	public int getErr() {
+		return err;
+	}
+
+	public void setErr(int err) {
+		this.err = err;
 	}
 
 	public int getReason() {

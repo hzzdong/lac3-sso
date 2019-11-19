@@ -1,4 +1,4 @@
-package com.linkallcloud.sso.portal.ticket.cache.redis;
+package com.linkallcloud.sso.server.redis;
 
 import java.util.concurrent.TimeUnit;
 
@@ -9,103 +9,16 @@ import org.springframework.data.redis.core.RedisTemplate;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
-import com.linkallcloud.sso.portal.ticket.Ticket;
 
-public abstract class RedisTicketCache<T extends Ticket> {
-	private Log log = Logs.get();
+public class RedisCache {
+
+	protected Log log = Logs.get();
 
 	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
 
-	protected abstract RedisTemplate<String, T> getTicketTemplate();
-
 	public RedisTemplate<String, Object> getObjectTemplate() {
 		return redisTemplate;
-	}
-
-	/**
-	 * 写入redis缓存（设置expire存活时间）
-	 * 
-	 * @param key
-	 * @param value
-	 * @param expire
-	 * @return
-	 */
-	public boolean put(final String key, T value) {
-		try {
-			getTicketTemplate().opsForValue().set(key, value);
-			return true;
-		} catch (Exception e) {
-			log.errorf("写入redis缓存(%s)失败！错误信息为：%s", key, e.getMessage());
-			return false;
-		}
-	}
-
-	/**
-	 * 写入redis缓存（设置expire存活时间）
-	 * 
-	 * @param key
-	 * @param value
-	 * @param expire
-	 * @return
-	 */
-	public boolean put(final String key, T value, long expire) {
-		if (expire > 0) {
-			try {
-				getTicketTemplate().opsForValue().set(key, value, expire, TimeUnit.SECONDS);
-				return true;
-			} catch (Exception e) {
-				log.errorf("写入redis缓存(%s)失败！错误信息为：%s", key, e.getMessage());
-				return false;
-			}
-		} else {
-			return this.put(key, value);
-		}
-	}
-
-	/**
-	 * 读取redis缓存
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public T get(final String key) {
-		if (!Strings.isBlank(key)) {
-			try {
-				return getTicketTemplate().opsForValue().get(key);
-			} catch (Exception e) {
-				log.errorf("读取redis缓存(%s)失败！错误信息为：%s", key, e.getMessage());
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * 判断redis缓存中是否有对应的key
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public boolean exists(final String key) {
-		try {
-			return getTicketTemplate().hasKey(key);
-		} catch (Exception e) {
-			log.errorf("判断redis缓存中是否有对应的key(%s)失败！错误信息为：%s", key, e.getMessage());
-		}
-		return false;
-	}
-
-	public T remove(final String key) {
-		try {
-			if (exists(key)) {
-				T ticket = this.get(key);
-				getTicketTemplate().delete(key);
-				return ticket;
-			}
-		} catch (Exception e) {
-			log.errorf("redis删除key(%s)失败！错误信息为：%s", key, e.getMessage());
-		}
-		return null;
 	}
 
 	/*
@@ -170,6 +83,34 @@ public abstract class RedisTicketCache<T extends Ticket> {
 	}
 
 	/**
+	 * 判断redis缓存中是否有对应的key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public boolean existObject(final String key) {
+		try {
+			return getObjectTemplate().hasKey(key);
+		} catch (Exception e) {
+			log.errorf("判断redis缓存中是否有对应的key(%s)失败！错误信息为：%s", key, e.getMessage());
+		}
+		return false;
+	}
+
+	public Object removeObject(final String key) {
+		try {
+			if (existObject(key)) {
+				Object o = this.getObject(key);
+				getObjectTemplate().delete(key);
+				return o;
+			}
+		} catch (Exception e) {
+			log.errorf("redis删除key(%s)失败！错误信息为：%s", key, e.getMessage());
+		}
+		return null;
+	}
+
+	/**
 	 * 计数器
 	 * 
 	 * @param key
@@ -178,7 +119,7 @@ public abstract class RedisTicketCache<T extends Ticket> {
 	 */
 	public int increment(String key) {
 		Integer count = 1;
-		if (this.exists(key)) {
+		if (this.existObject(key)) {
 			count = (Integer) this.getObject(key);
 			count++;
 		}
