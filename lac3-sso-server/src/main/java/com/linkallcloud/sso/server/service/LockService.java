@@ -213,14 +213,19 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 
 		// 重置锁定次数
 		l.setStatus(LockStatus.UnLock.getCode());
+		l.setReason(LockReson.UnLockByTime.getCode());
 		l.setCount(0);
 		l.setErr(0);
+		l.setLockedTime(new Date());
+		l.setOperator("系统");
+		l.setRemark("连续锁定次数超过设定数，自动拉黑解锁");
 		lockCache(t, l);
 		activity().update(t, l);
 	}
 
 	private void autoUnLock(Trace t, Lock l) {
 		l.setStatus(LockStatus.UnLock.getCode());
+		l.setReason(LockReson.UnLockByTime.getCode());
 		l.setLockedTime(new Date());
 		l.setOperator("系统");
 		l.setRemark("锁定周期到期自动解锁");
@@ -229,12 +234,12 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	@Override
-	public void dealAutoLock(Trace t, boolean success, String account, String ip, LockConfig config) {
-		dealAccountAutoLock(t, success, account, config);
-		dealIpAutoLock(t, success, account, config);
+	public void dealAutoLock(Trace t, boolean success, String account, String ip, String remark, LockConfig config) {
+		dealAccountAutoLock(t, success, account, remark, config);
+		dealIpAutoLock(t, success, ip, remark, config);
 	}
 
-	private void dealIpAutoLock(Trace t, boolean success, String ip, LockConfig config) {
+	private void dealIpAutoLock(Trace t, boolean success, String ip, String remark, LockConfig config) {
 		int errCount = config.getIpErrCount();
 		Lock ipLock = fetchExistLock(t, LockBlackType.Ip.getCode(), ip, null);
 		if (ipLock != null) {
@@ -247,14 +252,14 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 						ipLock.setErr(0);
 						ipLock.setReason(LockReson.LockByLoginFailure.getCode());
 						ipLock.setOperator("系统");
-						ipLock.setRemark("登录验证失败");
+						ipLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
 						lockCache(t, ipLock);
 						super.update(t, ipLock);
 					} else {
 						ipLock.setErr(ipLock.getErr() + 1);
 						ipLock.setReason(LockReson.LockByLoginFailure.getCode());
 						ipLock.setOperator("系统");
-						ipLock.setRemark("登录验证失败");
+						ipLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
 						super.update(t, ipLock);
 					}
 				}
@@ -264,13 +269,13 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 		} else {
 			if (!success) {
 				Lock entity = new Lock(LockBlackType.Ip.getCode(), ip, LockStatus.UnLock.getCode(), 0, 1,
-						LockReson.LockByLoginFailure.getCode(), "系统", "登录验证失败");
+						LockReson.LockByLoginFailure.getCode(), "系统", Strings.isBlank(remark) ? "登录验证失败" : remark);
 				super.insert(t, entity);
 			}
 		}
 	}
 
-	private void dealAccountAutoLock(Trace t, boolean success, String account, LockConfig config) {
+	private void dealAccountAutoLock(Trace t, boolean success, String account, String remark, LockConfig config) {
 		int errCount = config.getAccountErrCount();
 		Lock accountLock = fetchExistLock(t, LockBlackType.Account.getCode(), account, null);
 		if (accountLock != null) {
@@ -283,14 +288,14 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 						accountLock.setErr(0);
 						accountLock.setReason(LockReson.LockByLoginFailure.getCode());
 						accountLock.setOperator("系统");
-						accountLock.setRemark("登录验证失败");
+						accountLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
 						lockCache(t, accountLock);
 						super.update(t, accountLock);
 					} else {
 						accountLock.setErr(accountLock.getErr() + 1);
 						accountLock.setReason(LockReson.LockByLoginFailure.getCode());
 						accountLock.setOperator("系统");
-						accountLock.setRemark("登录验证失败");
+						accountLock.setRemark(Strings.isBlank(remark) ? "登录验证失败" : remark);
 						super.update(t, accountLock);
 					}
 				}
@@ -300,7 +305,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 		} else {
 			if (!success) {
 				Lock entity = new Lock(LockBlackType.Account.getCode(), account, LockStatus.UnLock.getCode(), 0, 1,
-						LockReson.LockByLoginFailure.getCode(), "系统", "登录验证失败");
+						LockReson.LockByLoginFailure.getCode(), "系统", Strings.isBlank(remark) ? "登录验证失败" : remark);
 				super.insert(t, entity);
 			}
 		}

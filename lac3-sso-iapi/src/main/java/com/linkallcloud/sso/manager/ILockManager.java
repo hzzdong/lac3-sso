@@ -16,6 +16,6 @@ public interface ILockManager extends IManager<Lock> {
 
 	void check(Trace t, String lockedTarget) throws LockException;
 
-	void dealAutoLock(Trace t, boolean success, String account, String ip);
+	void dealAutoLock(Trace t, boolean success, String account, String ip, String remark);
 
 }

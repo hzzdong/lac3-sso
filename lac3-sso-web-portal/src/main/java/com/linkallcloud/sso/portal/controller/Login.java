@@ -11,6 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,6 +27,7 @@ import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.domain.Account;
+import com.linkallcloud.sso.manager.ILoginHisManager;
 import com.linkallcloud.sso.portal.auth.PasswordHandler;
 import com.linkallcloud.sso.portal.auth.TrustHandler;
 import com.linkallcloud.sso.portal.auth.provider.DbPasswordHandler;
@@ -55,6 +57,9 @@ public class Login extends BaseController {
 
 	@Autowired
 	private LacSessionValidateCode sessionValidateCode;
+
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private ILoginHisManager loginHisManager;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(@RequestParam(value = "from", required = false) String appCode,
@@ -158,7 +163,7 @@ public class Login extends BaseController {
 				return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
 			} else {
 				// failure: nothing else to be done
-				return authFailure(t, request, username, "TrustHandler", "无法验证用户");
+				return authFailure(t, request, username, "TrustHandler", "无法验证用户", appCode, appUrl);
 			}
 		} else if (handler instanceof PasswordHandler && username != null && password != null && lt != null) {
 			// do we have a valid login ticket?
@@ -185,17 +190,17 @@ public class Login extends BaseController {
 					return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
 				} catch (Throwable e) {
 					// failure: record failed password authentication
-					return authFailure(t, request, username, "Account", "登录名或者密码错误");
+					return authFailure(t, request, username, "Account", "登录名或者密码错误", appCode, appUrl);
 				}
 			} else {
 				// horrible way of logging, I know
 				log.error("Invalid login ticket from " + request.getRemoteAddr());
 				// failure: record invalid login ticket
-				return authFailure(t, request, username, "Lt-VCODE", "验证码错误，请重新输入");
+				return authFailure(t, request, username, "Lt-VCODE", "验证码错误，请重新输入", appCode, appUrl);
 			}
 		}
 
-		return authFailure(t, request, username, "Account", "登录名或者密码错误");
+		return authFailure(t, request, username, "Account", "登录名或者密码错误", appCode, appUrl);
 	}
 
 	/**
@@ -207,7 +212,7 @@ public class Login extends BaseController {
 			TicketGrantingTicket tgt, String from, String serviceId, boolean first)
 			throws ServletException, IOException {
 		try {
-			lockManager.dealAutoLock(t, true, tgt.getUsername(), WebUtils.getIpAddress(request));
+			loginSuccess(t, request, tgt, from, serviceId);
 
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
 				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
@@ -248,9 +253,16 @@ public class Login extends BaseController {
 		}
 	}
 
+	private void loginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
+			String serviceId) {
+		String ip = WebUtils.getIpAddress(request);
+		lockManager.dealAutoLock(t, true, tgt.getUsername(), ip, "登录验证成功");
+		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, from, serviceId);
+	}
+
 	private Map<String, String> authFailure(Trace t, HttpServletRequest request, String username, String code,
-			String message) {
-		lockManager.dealAutoLock(t, false, username, WebUtils.getIpAddress(request));
+			String message, String from, String serviceId) {
+		loginFailure(t, request, username, from, serviceId, message);
 
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", code);
@@ -263,6 +275,13 @@ public class Login extends BaseController {
 		return result;
 	}
 
+	private void loginFailure(Trace t, HttpServletRequest request, String username, String from, String serviceId,
+			String message) {
+		String ip = WebUtils.getIpAddress(request);
+		lockManager.dealAutoLock(t, false, username, ip, message);
+		// loginHisManager.loginFailure(t, username, ip, from, serviceId);
+	}
+
 	/**
 	 * Grants a service ticket for the given service, using the given
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
@@ -273,7 +292,7 @@ public class Login extends BaseController {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
 		try {
-			lockManager.dealAutoLock(t, true, tgt.getUsername(), WebUtils.getIpAddress(request));
+			loginSuccess(t, request, tgt, from, serviceId);
 
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
 				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
