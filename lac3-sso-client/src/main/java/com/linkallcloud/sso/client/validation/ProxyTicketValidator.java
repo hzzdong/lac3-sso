@@ -14,16 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.linkallcloud.core.json.Json;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.principal.SimpleService;
 import com.linkallcloud.sso.client.proxy.ProxyGrantingTicketStorage;
 import com.linkallcloud.sso.client.proxy.ProxyRetriever;
-import com.linkallcloud.sso.client.response.ErrorResponse;
-import com.linkallcloud.sso.client.response.PTResponse;
-import com.linkallcloud.sso.client.response.STResponse;
-import com.linkallcloud.sso.client.response.ServiceResponse;
 import com.linkallcloud.sso.client.util.CommonUtils;
 import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
 import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;

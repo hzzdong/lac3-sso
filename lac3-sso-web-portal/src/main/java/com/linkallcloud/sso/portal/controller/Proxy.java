@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -23,7 +22,7 @@ public class Proxy extends BaseController {
 
 	private static final String INVALID_REQUEST = "INVALID_REQUEST";
 	private static final String BAD_PGT = "BAD_PGT";
-	//private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
+	// private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
 
 	@Autowired
 	private ProxyGrantingTicketCache pgtCache;

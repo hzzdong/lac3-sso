@@ -41,7 +41,7 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 	// Private state
 
 	/** Map of offenders to the number of their offenses. */
-	private static Map offenders = new HashMap();
+	private static Map<String, Integer> offenders = new HashMap<>();
 
 	/** Thread to manage offenders. */
 	private static Thread offenderThread = new Thread() {
@@ -90,11 +90,11 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 
 	/** Returns the number of "active" failures for the given address. */
 	private synchronized static int getFailures(String address) {
-		Object o = offenders.get(address);
+		Integer o = offenders.get(address);
 		if (o == null)
 			return 0;
 		else
-			return ((Integer) o).intValue();
+			return o.intValue();
 	}
 
 	/**
@@ -103,9 +103,9 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 	 */
 	private synchronized static void expireFailures() {
 		// scoop up addresses from Map so as to avoid modifying the Map in-place
-		Set keys = offenders.keySet();
-		Iterator ki = keys.iterator();
-		List l = new ArrayList();
+		Set<String> keys = offenders.keySet();
+		Iterator<String> ki = keys.iterator();
+		List<String> l = new ArrayList<>();
 		while (ki.hasNext())
 			l.add(ki.next());
 
