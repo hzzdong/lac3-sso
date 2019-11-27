@@ -243,11 +243,13 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 			}
 		} else {
 			if (entities != null && !entities.isEmpty()) {
+				int errCountSetup = LockBlackType.Account.getCode().equals(type) ? config.getAccountErrCount()
+						: config.getIpErrCount();
 				boolean first = true;
 				for (Lock l : entities) {
 					if (first) {
 						first = false;
-						if (l.getErr() >= config.getAccountErrCount() - 1) {// 到达累计连续错误次数设定值
+						if (l.getErr() >= errCountSetup - 1) {// 到达累计连续错误次数设定值
 							lockIncrement(t, l, remark);
 						} else {
 							lockIncrementErr(t, l, remark);

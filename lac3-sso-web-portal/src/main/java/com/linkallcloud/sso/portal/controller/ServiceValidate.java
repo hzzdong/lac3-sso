@@ -57,6 +57,9 @@ public class ServiceValidate extends BaseController {
 			} else {
 				String pgtIOU = null;
 				if (!Strings.isBlank(pgtAppCode) && !Strings.isBlank(pgtUrl)) {
+					// The servie can pass?
+					checkSiteCanPass(t, pgtAppCode, pgtUrl);
+					
 					pgtIOU = sendPgt(st, pgtAppCode, pgtUrl);
 				}
 				return validationSuccess(st, pgtIOU);

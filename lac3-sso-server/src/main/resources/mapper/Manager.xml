@@ -1,104 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.linkallcloud.sso.server.dao.IAccountDao">
+<mapper namespace="com.linkallcloud.sso.server.dao.IManagerDao">
 
 	<sql id="Base_Column_List">
 		u.id,u.uuid,u.status,u.createTime,u.updateTime
 		,u.loginname
+		,u.passwd
+		,u.salt
 		,u.name
 		,u.mobile
 		,u.email
 		,u.birthday
-		,u.sex
-		,u.ico
-		,u.passwd
-		,u.salt
-		,u.lastLoginDate
-		,u.oldPasswds
-		,u.lastPasswdDate
-		,u.wechatOpenId
-		,u.alipayOpenId
 		,u.remark
 	</sql>
 	
-	<select id="fetchById" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.Manager">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			um_account u
+			tab_manager u
 		where 
 			u.id=#{id}
 	</select>
 	
-	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			tab_manager u 
 		WHERE
 			u.id = #{id} and u.uuid=#{uuid} 
 	</select>
 	
-	<select id="fetchByLoginname" resultType="com.linkallcloud.sso.domain.Account">
-		select
-			<include refid="Base_Column_List" />
-		from 
-			um_account u 
-		where 
-			u.loginname=#{loginname}
-	</select>
-	
-	<select id="fecthByMobile" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fecthByLoginName" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			tab_manager u
 		WHERE
-			u.mobile = #{mobile}
+			u.loginname = #{loginName} and u.status &lt;&gt; 9
 	</select>
 	
-	<select id="fecthByEmail" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fecthByMobile" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			tab_manager u
 		WHERE
-			u.email = #{email}
+			u.mobile = #{mobile} and u.status &lt;&gt; 9
 	</select>
 	
-	<select id="fechByWechatOpenId" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.Manager">
 		select
 			<include refid="Base_Column_List" />
-		from 
-			um_account u 
-		where 
-			u.wechatOpenId=#{openid}
-	</select>
-	
-	<select id="fetchByAlipayOpenId" resultType="com.linkallcloud.sso.domain.Account">
-		select
-			<include refid="Base_Column_List" />
-		from 
-			um_account u 
-		where 
-			u.alipayOpenId=#{openid}
-	</select>
-	
-	<select id="findByIds" resultType="com.linkallcloud.sso.domain.Account">
-		select
-			<include refid="Base_Column_List" />
-		from um_account u 
+		from tab_manager u 
 		where u.status &lt;&gt; 9 and  u.id in
 			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
 				#{id}
 			</foreach>
 	</select>
 	
-	<select id="findPage" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			tab_manager u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
@@ -110,13 +76,6 @@
 			<if test="page.cnds!=null and page.cnds.birthday != null"> AND u.birthday = #{page.cnds.birthday}</if>
 			<if test="page.cnds!=null and page.cnds.birthdayGe != null"> AND u.birthday &gt;= #{page.cnds.birthdayGe}</if>
 			<if test="page.cnds!=null and page.cnds.birthdayLe != null"> AND u.birthday &lt;= #{page.cnds.birthdayLe}</if>
-			<if test="page.cnds!=null and page.cnds.sex != null"> AND u.sex = #{page.cnds.sex}</if>
-			<if test="page.cnds!=null and page.cnds.lastPasswdDateGe != null"> AND u.lastPasswdDate &gt;= #{page.cnds.lastPasswdDateGe}</if>
-			<if test="page.cnds!=null and page.cnds.lastPasswdDateLe != null"> AND u.lastPasswdDate &lt;= #{page.cnds.lastPasswdDateLe}</if>
-			<if test="page.cnds!=null and page.cnds.lastLoginDateGe != null"> AND u.lastLoginDate &gt;= #{page.cnds.lastLoginDateGe}</if>
-			<if test="page.cnds!=null and page.cnds.lastLoginDateLe != null"> AND u.lastLoginDate &lt;= #{page.cnds.lastLoginDateLe}</if>
-			<if test="page.cnds!=null and page.cnds.wechatOpenId != null"> AND u.wechatOpenId = #{page.cnds.wechatOpenId}</if>
-			<if test="page.cnds!=null and page.cnds.alipayOpenId != null"> AND u.alipayOpenId = #{page.cnds.alipayOpenId}</if>
 		<choose>
 			<when test="page.orders != null and page.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
@@ -127,11 +86,11 @@
 		</choose>
 	</select>
 	
-	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			tab_manager u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
@@ -143,13 +102,6 @@
 			<if test="page.cnds!=null and page.cnds.birthday != null"> AND u.birthday = #{page.cnds.birthday}</if>
 			<if test="page.cnds!=null and page.cnds.birthdayGe != null"> AND u.birthday &gt;= #{page.cnds.birthdayGe}</if>
 			<if test="page.cnds!=null and page.cnds.birthdayLe != null"> AND u.birthday &lt;= #{page.cnds.birthdayLe}</if>
-			<if test="page.cnds!=null and page.cnds.sex != null"> AND u.sex = #{page.cnds.sex}</if>
-			<if test="page.cnds!=null and page.cnds.lastPasswdDateGe != null"> AND u.lastPasswdDate &gt;= #{page.cnds.lastPasswdDateGe}</if>
-			<if test="page.cnds!=null and page.cnds.lastPasswdDateLe != null"> AND u.lastPasswdDate &lt;= #{page.cnds.lastPasswdDateLe}</if>
-			<if test="page.cnds!=null and page.cnds.lastLoginDateGe != null"> AND u.lastLoginDate &gt;= #{page.cnds.lastLoginDateGe}</if>
-			<if test="page.cnds!=null and page.cnds.lastLoginDateLe != null"> AND u.lastLoginDate &lt;= #{page.cnds.lastLoginDateLe}</if>
-			<if test="page.cnds!=null and page.cnds.wechatOpenId != null"> AND u.wechatOpenId = #{page.cnds.wechatOpenId}</if>
-			<if test="page.cnds!=null and page.cnds.alipayOpenId != null"> AND u.alipayOpenId = #{page.cnds.alipayOpenId}</if>
 		<choose>
 			<when test="page.orders != null and page.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
@@ -160,11 +112,11 @@
 		</choose>
 	</select>
 	
-	<select id="find" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="find" resultType="com.linkallcloud.sso.domain.Manager">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			tab_manager u
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
@@ -173,16 +125,9 @@
 			<if test="query!=null and query.cnds!=null and query.cnds.nameEq != null"> AND u.name = #{query.cnds.nameEq}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.mobile != null"> AND u.mobile = #{query.cnds.mobile}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.email != null"> AND u.email = #{query.cnds.email}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.sex != null"> AND u.sex = #{query.cnds.sex}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.birthday != null"> AND u.birthday = #{query.cnds.birthday}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.birthdayGe != null"> AND u.birthday &gt;= #{query.cnds.birthdayGe}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.birthdayLe != null"> AND u.birthday &lt;= #{query.cnds.birthdayLe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.lastPasswdDateGe != null"> AND u.lastPasswdDate &gt;= #{query.cnds.lastPasswdDateGe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.lastPasswdDateLe != null"> AND u.lastPasswdDate &lt;= #{query.cnds.lastPasswdDateLe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.lastLoginDateGe != null"> AND u.lastLoginDate &gt;= #{query.cnds.lastLoginDateGe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.lastLoginDateLe != null"> AND u.lastLoginDate &lt;= #{query.cnds.lastLoginDateLe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.wechatOpenId != null"> AND u.wechatOpenId = #{query.cnds.wechatOpenId}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.alipayOpenId != null"> AND u.alipayOpenId = #{query.cnds.alipayOpenId}</if>
 		<choose>
 			<when test="query != null and query.orders != null and query.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
@@ -193,74 +138,51 @@
 		</choose>
 	</select>
 	
-	<insert id="insert" parameterType="com.linkallcloud.sso.domain.Account" useGeneratedKeys="true" keyProperty="entity.id">
-		insert into um_account 
-			(uuid,status,createTime,updateTime
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.Manager" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_manager 
+			( uuid,status,createTime,updateTime
 			,loginname
+			,passwd
+			,salt
 			,name
 			,mobile
 			,email
 			,birthday
-			,sex
-			,ico
-			,passwd
-			,salt
-			,lastLoginDate
-			,oldPasswds
-			,lastPasswdDate
-			,wechatOpenId
-			,alipayOpenId
 			,remark
 			)
 		values
 			(#{entity.uuid},0,now(),now()
 			,#{entity.loginname}
+			,#{entity.passwd}
+			,#{entity.salt}
 			,#{entity.name}
 			,#{entity.mobile}
 			,#{entity.email}
 			,#{entity.birthday}
-			,#{entity.sex}
-			,#{entity.ico}
-			,#{entity.passwd}
-			,#{entity.salt}
-			,#{entity.lastLoginDate}
-			,#{entity.oldPasswds}
-			,#{entity.lastPasswdDate}
-			,#{entity.wechatOpenId}
-			,#{entity.alipayOpenId}
 			,#{entity.remark}
 			)
 	</insert>
 	
 	<update id="update">
 		update 
-			um_account 
+			tab_manager 
 		set 
 			updateTime=now()
+			,loginname=#{entity.loginname}
 			,name=#{entity.name}
-			,mobile=#{entity.mobile}
 			,email=#{entity.email}
 			,birthday=#{entity.birthday}
-			,sex=#{entity.sex}
-			,ico=#{entity.ico}
 			,remark=#{entity.remark}
 			<if test="entity.passwd != null and entity.salt != null"> ,passwd=#{entity.passwd},salt=#{entity.salt}</if>
+			<if test="entity.mobile != null"> ,mobile=#{entity.mobile}</if>
+			<if test="entity.status != null"> ,status=#{entity.status}</if>
 		where 
 			id=#{entity.id} and uuid=#{entity.uuid}
 	</update>
 	
-	<update id="updatePassword">
-		update 
-			um_account 
-		set 
-			updateTime=now(),passwd=#{entity.passwd},salt=#{entity.salt},oldPasswds=#{entity.oldPasswds},lastPasswdDate=now()
-		where 
-			id=#{entity.id}
-	</update>
-	
 	<delete id="delete">
 		update 
-			um_account 
+			tab_manager 
 		set
 			status=9,updateTime=now()
 		where
@@ -269,38 +191,11 @@
 
 	<update id="updateStatus">
 		update
-			um_account
+			tab_manager
 		set
 			status=#{status},updateTime=now()
 		where
 			id=#{id} and uuid=#{uuid}
-	</update>
-	
-	<update id="updateLastLoginDate">
-		update 
-			um_account 
-		set 
-			lastLoginDate=now()
-		where 
-			id=#{id}
-	</update>
-	
-	<update id="updateWechatOpenId">
-		update 
-			um_account 
-		set 
-			updateTime=now(),wechatOpenId=#{openid}
-		where 
-			id=#{id}
-	</update>
-	
-	<update id="updateAlipayOpenId">
-		update 
-			um_account 
-		set 
-			updateTime=now(),alipayOpenId=#{openid}
-		where 
-			id=#{id}
 	</update>
 	
 </mapper>

@@ -47,7 +47,7 @@ public class ProxyValidate extends BaseController {
 			ProxyTicket pt = ptCache.getTicket(ticket);
 			if (pt == null) {
 				return validationFailure(INVALID_TICKET, "ticket '" + ticket + "' not recognized");
-			} else if (!pt.getService().equals(appUrl) || !pt.getAppCode().equals(appCode)) {
+			} else if (!pt.getAppServiceUrl().equals(appUrl) || !pt.getAppCode().equals(appCode)) {
 				return validationFailure(INVALID_SERVICE, "ticket '" + ticket + "' does not match supplied service");
 			} else if ("true".equals(renew) && !pt.isFromNewLogin()) {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");

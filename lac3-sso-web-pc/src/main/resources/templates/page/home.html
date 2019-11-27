@@ -83,13 +83,13 @@
         <li class="header">导航菜单</li>
         
         <li th:each="item : ${ items }" class="lac-tab-li" th:classappend="${item.children != null && item.children.size()>0}? 'treeview'">
-            <a th:if="${ #maps.containsKey(item.attributes, 'url') == false || item.attributes['url'].length() <= 1 }"  href="#" class="lac-tab-link lac-tab0">
+            <a th:if="${ item.attributes == null || #maps.containsKey(item.attributes, 'url') == false || item.attributes['url'].length() <= 1 }"  href="#" class="lac-tab-link lac-tab0">
               <i class="fa fa-th-large"></i> <span th:text="${item.name}">菜单项</span>
               <span class="pull-right-container">
 	              <i class="fa fa-angle-left pull-right"></i>
 	          </span>
             </a>
-            <a th:if="${ #maps.containsKey(item.attributes, 'url') && item.attributes.url.length() > 1 }" href="#" class="lac-tab-link lac-tab lac-tab1" th:data-id="${item.govCode}" th:data-title="${item.name}" th:data-url="${item.attributes.url}?:''">
+            <a th:if="${ item.attributes != null && #maps.containsKey(item.attributes, 'url') && item.attributes.url.length() > 1 }" href="#" class="lac-tab-link lac-tab lac-tab1" th:data-id="${item.govCode}" th:data-title="${item.name}" th:data-url="${item.attributes.url}?:''">
               <i class="fa fa-th-large"></i> <span th:text="${item.name}">菜单项</span>
             </a>
             <ul th:if="${ item.children != null && item.children.size()>0 }" class="treeview-menu">

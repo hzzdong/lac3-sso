@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.MultipartConfigElement;
 
+import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,119 +26,105 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.linkallcloud.sso.manager.IManagerManager;
 import com.linkallcloud.sso.pc.aop.LoginFilter;
-import com.linkallcloud.sso.pc.aop.PermissionInterceptor;
-import com.linkallcloud.sso.pc.kiss.um.YwUserKiss;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
 import com.linkallcloud.web.support.TraceArgumentResolver;
 
 @EnableDubbo(multipleConfig = true)
 @Configuration
-@SpringBootApplication(scanBasePackages = {"com.linkallcloud.sso.pc"})
+@SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.pc" })
 public class WebPcApplication implements WebMvcConfigurer {
 
-    @Value("${lac.static.server}")
-    private String staticServer;
+	@Value("${lac.static.server}")
+	private String staticServer;
+	@Value("${lac.static.res.version}")
+	private String staticResourceVersion;
 
-    @Value("${lac.static.res.version}")
-    private String staticResourceVersion;
-    
-    @Value("${oapi.appcode}")
+	@Value("${lac.appid}")
+	private String myAppId;
+	@Value("${lac.appcode}")
 	private String myAppCode;
-    
-    @Value("${lac.lf.loginUrl:/login}")
-	private String localLoginUrl;
 
-	@Autowired
-	private YwUserKiss ywUserKiss;
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private IManagerManager managerManager;
 
-    @Bean
-    public LacEnvInterceptor getLacEnvInterceptor() {
-        return new LacEnvInterceptor() {
-            @Override
-            protected String getStaticServer() {
-                return staticServer;
-            }
+	@Bean
+	public LacEnvInterceptor getLacEnvInterceptor() {
+		return new LacEnvInterceptor() {
+			@Override
+			protected String getStaticServer() {
+				return staticServer;
+			}
 
-            @Override
-            protected String getResourceVersion() {
-                return staticResourceVersion;
-            }
-        };
-    }
+			@Override
+			protected String getResourceVersion() {
+				return staticResourceVersion;
+			}
+		};
+	}
 
-    @Bean
-    public PermissionInterceptor getPermissionInterceptor() {
-        return new PermissionInterceptor();
-    }
-    
-    @Bean
+	@Bean
 	@Order(1)
 	public FilterRegistrationBean<LoginFilter> loginFilterReg() {
 		FilterRegistrationBean<LoginFilter> frb = new FilterRegistrationBean<LoginFilter>();
-		frb.setFilter(new LoginFilter(myAppCode, ywUserKiss, localLoginUrl));
+		frb.setFilter(new LoginFilter(myAppId, myAppCode, managerManager, "/login"));
 		frb.addUrlPatterns("/*");
 		frb.setName("LoginFilter");
 		return frb;
 	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
-        envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
-        envpi.addPathPatterns("/**");
-        envpi.order(4);
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
+		envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
+		envpi.addPathPatterns("/**");
+		envpi.order(4);
 
-        InterceptorRegistration pi = registry.addInterceptor(getPermissionInterceptor());
-        pi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**", "/login/**", "/verifyCode",
-                "/exit", "/unsupport", "/error", "/pub/**", "/face/**");
-        pi.addPathPatterns("/**");
-        pi.order(5);
+		WebMvcConfigurer.super.addInterceptors(registry);
+	}
 
-        WebMvcConfigurer.super.addInterceptors(registry);
-    }
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(new AppVisitorArgumentResolver());
+		resolvers.add(new TraceArgumentResolver());
+		WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+	}
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AppVisitorArgumentResolver());
-        resolvers.add(new TraceArgumentResolver());
-        WebMvcConfigurer.super.addArgumentResolvers(resolvers);
-    }
+	@Bean
+	public HttpMessageConverters fastJsonHttpMessageConverters() {
+		FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+		FastJsonConfig fastJsonConfig = new FastJsonConfig();
+		fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+		fastConverter.setFastJsonConfig(fastJsonConfig);
+		return new HttpMessageConverters(fastConverter);
+	}
 
-    @Bean
-    public HttpMessageConverters fastJsonHttpMessageConverters() {
-        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
-        fastConverter.setFastJsonConfig(fastJsonConfig);
-        return new HttpMessageConverters(fastConverter);
-    }
+	@Bean
+	public CookieSerializer cookieSerializer() {
+		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+		serializer.setCookieName("MYSESSION");
+		serializer.setCookiePath("/");
+		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+		return serializer;
+	}
 
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setCookieName("MYSESSION");
-        serializer.setCookiePath("/");
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
-        return serializer;
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(WebPcApplication.class, args);
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(WebPcApplication.class, args);
-    }
-
-    /**
-     * 文件上传配置
-     */
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-    	MultipartConfigFactory factory = new MultipartConfigFactory();
-        // 单个文件最大
-        factory.setMaxFileSize(DataSize.parse("10240KB")); // KB,MB
-        // 设置总上传数据总大小
-        factory.setMaxRequestSize(DataSize.parse("102400KB"));
-        return factory.createMultipartConfig();
-    }
+	/**
+	 * 文件上传配置
+	 */
+	@Bean
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		// 单个文件最大
+		factory.setMaxFileSize(DataSize.parse("10240KB")); // KB,MB
+		// 设置总上传数据总大小
+		factory.setMaxRequestSize(DataSize.parse("102400KB"));
+		return factory.createMultipartConfig();
+	}
 
 }

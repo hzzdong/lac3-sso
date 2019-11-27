@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Order(-999)
-public class DjExceptionAspect extends BizExceptionAspect<SsoException> {
+public class LacExceptionAspect extends BizExceptionAspect<SsoException> {
 
     @Pointcut("execution(public * com.linkallcloud.sso.server.manager..*.*(..))")
     public void manager() {

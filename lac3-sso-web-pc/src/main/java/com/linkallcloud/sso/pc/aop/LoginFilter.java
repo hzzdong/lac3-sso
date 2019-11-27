@@ -3,16 +3,19 @@ package com.linkallcloud.sso.pc.aop;
 import java.util.List;
 
 import com.linkallcloud.core.dto.Trace;
+import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.principal.Principal;
-import com.linkallcloud.sso.pc.kiss.um.YwUserKiss;
+import com.linkallcloud.sso.domain.Manager;
+import com.linkallcloud.sso.manager.IManagerManager;
 import com.linkallcloud.web.filter.AbstractPrincipalFilter;
 import com.linkallcloud.web.session.SessionUser;
 
 public class LoginFilter extends AbstractPrincipalFilter {
 
+	private String myAppId;
 	private String myAppCode;
-	private YwUserKiss ywUserKiss;
+	private IManagerManager managerManager;
 
 	private String loginUrl;
 
@@ -20,10 +23,11 @@ public class LoginFilter extends AbstractPrincipalFilter {
 		super();
 	}
 
-	public LoginFilter(String myAppCode, YwUserKiss ywUserKiss, String loginUrl) {
+	public LoginFilter(String myAppId, String myAppCode, IManagerManager managerManager, String loginUrl) {
 		super();
+		this.myAppId = myAppId;
 		this.myAppCode = myAppCode;
-		this.ywUserKiss = ywUserKiss;
+		this.managerManager = managerManager;
 		this.loginUrl = loginUrl;
 	}
 
@@ -38,7 +42,7 @@ public class LoginFilter extends AbstractPrincipalFilter {
 
 	@Override
 	protected String getLoginUrl() {
-		return loginUrl;
+		return Strings.isBlank(loginUrl) ? "/login" : loginUrl;
 	}
 
 	@Override
@@ -51,7 +55,14 @@ public class LoginFilter extends AbstractPrincipalFilter {
 	}
 
 	private SessionUser getUserByLoginName(String loginName) {
-		return ywUserKiss.assembleSessionUser(new Trace(true), loginName, ywUserKiss.getMyAppCode());
+		Manager manager = managerManager.fecthByLoginName(new Trace(true), loginName);
+		if (manager != null) {
+			SessionUser su = new SessionUser(manager.getId().toString(), manager.getUuid(), manager.getLoginname(),
+					manager.getName(), "");
+			su.setAppInfo(myAppId, myAppCode);
+			return su;
+		}
+		return null;
 	}
 
 	private String getLoginName(Principal ssoPrincipal) {

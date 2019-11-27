@@ -105,7 +105,7 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 	private String constructUrl(final String proxyGrantingTicketId, final String targetService,
 			final String targetSiteCode) {
 		try {
-			return this.ssoServerUrl + "proxy.pi" + "?pgt=" + proxyGrantingTicketId + "&targetFrom=" + targetSiteCode
+			return this.ssoServerUrl + "/proxy" + "?pgt=" + proxyGrantingTicketId + "&targetFrom=" + targetSiteCode
 					+ "&targetService=" + URLEncoder.encode(targetService, "UTF-8");
 		} catch (final UnsupportedEncodingException e) {
 			throw new RuntimeException(e);

@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,10 +21,8 @@ import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.vo.LoginVo;
-import com.linkallcloud.sso.pc.kiss.um.AccountKiss;
-import com.linkallcloud.sso.pc.kiss.um.YwUserKiss;
-import com.linkallcloud.um.domain.sys.Account;
-import com.linkallcloud.um.face.account.AccountValidateRequest;
+import com.linkallcloud.sso.domain.Manager;
+import com.linkallcloud.sso.manager.IManagerManager;
 import com.linkallcloud.web.session.SessionUser;
 import com.linkallcloud.web.utils.Controllers;
 import com.linkallcloud.web.vc.SessionValidateCode;
@@ -32,17 +30,17 @@ import com.linkallcloud.web.vc.SessionValidateCode;
 @Controller
 @RequestMapping
 @Module(name = "用户登录")
-public class LoginController {
+public class LoginController extends BaseManagerController {
 	private static final Log log = Logs.get();
 
-	@Autowired
-	private AccountKiss accountKiss;
-	
-	@Autowired
-	private YwUserKiss ywUserKiss;
-	
-	@Value("${oapi.appcode}")
-	protected String myAppCode;
+	@Value("${lac.appid}")
+	private String myAppId;
+
+	@Value("${lac.appcode}")
+	private String myAppCode;
+
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private IManagerManager managerManager;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String localLogin(HttpSession session, HttpServletRequest request, ModelMap modelMap) {
@@ -94,17 +92,18 @@ public class LoginController {
 //			return new Result<String>("10002005", "验证码错误，请重新输入！");
 //		}
 		try {
-			Account account = accountKiss.loginValidate(t,
-					new AccountValidateRequest(lvo.getLoginName(), lvo.getPassword(), null));
-			if (account != null) {
-				SessionUser su = ywUserKiss.assembleSessionUser(t, account.getAccount(), ywUserKiss.getMyAppCode());
-				if (su != null) {
-					Controllers.login(myAppCode, su);
-					Controllers.setSessionObject("pwdStrength", lvo.getPwdStrength());
-					// setClientInfo2Cache(lvo.getLoginName(), lvo.getClient());
-					// return WebUtils.makeSuccessResult(request.getContextPath() + getIndexUrl());
-					return new Result<String>();
-				}
+			Manager manager = managerManager.loginValidate(t, lvo.getLoginName(), lvo.getPassword());
+			if (manager != null) {
+				SessionUser su = new SessionUser(manager.getId().toString(), manager.getUuid(), manager.getLoginname(),
+						manager.getName(), "");
+				su.setAppInfo(myAppId, myAppCode);
+				su.setMenuPermissions(getMenuPermissionResources());
+
+				Controllers.login(myAppCode, su);
+				Controllers.setSessionObject("pwdStrength", lvo.getPwdStrength());
+				// setClientInfo2Cache(lvo.getLoginName(), lvo.getClient());
+				// return WebUtils.makeSuccessResult(request.getContextPath() + getIndexUrl());
+				return new Result<String>();
 			}
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
