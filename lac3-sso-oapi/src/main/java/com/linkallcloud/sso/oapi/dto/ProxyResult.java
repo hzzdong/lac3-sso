@@ -5,8 +5,6 @@ import com.linkallcloud.core.dto.Result;
 public class ProxyResult extends Result<String> {
 	private static final long serialVersionUID = -2779392486641955302L;
 
-	private String proxyTicket;
-
 	public ProxyResult() {
 		super();
 		this.setCode("0");
@@ -15,7 +13,7 @@ public class ProxyResult extends Result<String> {
 	public ProxyResult(String proxyTicket) {
 		super();
 		this.setCode("0");
-		this.proxyTicket = proxyTicket;
+		this.setData(proxyTicket);
 	}
 
 	public ProxyResult(String errorCode, String errorMessage) {
@@ -25,11 +23,11 @@ public class ProxyResult extends Result<String> {
 	}
 
 	public String getProxyTicket() {
-		return proxyTicket;
+		return getData();
 	}
 
 	public void setProxyTicket(String proxyTicket) {
-		this.proxyTicket = proxyTicket;
+		this.setData(proxyTicket);
 	}
 
 }

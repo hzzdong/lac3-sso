@@ -6,7 +6,7 @@
  * 2011-6-15
  * 
  */
-package com.linkallcloud.sso.client.proxy;
+package com.linkallcloud.sso.client.proxy.storage;
 
 /**
  * Interface for the storage and retrieval of ProxyGrantingTicketIds by mapping them to a specific

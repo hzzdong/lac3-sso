@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.authorization.DefaultAuthorizedDeciderImpl.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.authorization;
 
 import java.util.List;
@@ -15,10 +7,6 @@ import com.linkallcloud.sso.client.util.CommonUtils;
 
 /**
  * Default implementation of the AuthorizedDecider that delegates to a list to check if someone is authorized.
- * 
- * 2011-6-15
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public final class DefaultAuthorizedDeciderImpl implements AuthorizedDecider {

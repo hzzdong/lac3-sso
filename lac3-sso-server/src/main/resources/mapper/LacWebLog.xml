@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.ILacWebLogDao">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id,uuid,tid,module,operateDesc,operateTime,costTime,operateResult,errorMessage,
+		orgId,orgType,operatorId,operatorAccount,ip,url,mobile,mobileBrand,os,osVersion,browser,browserVersion,ua
+	</sql>
+
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.LacWebLog">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_web_log u
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid}
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.LacWebLog">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_web_log u 
+		WHERE
+			u.id &lt;&gt; 0
+			<if test="query!=null and query.cnds!=null and query.cnds.tid != null"> AND u.tid = #{query.cnds.tid}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.operatorAccount != null"> AND u.operatorAccount like #{query.cnds.operatorAccount}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.module != null"> AND u.module like #{query.cnds.module}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.operateResult != null"> AND u.operateResult = #{query.cnds.operateResult}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.mobile != null"> AND u.mobile = #{query.cnds.mobile}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.os != null"> AND u.os = #{query.cnds.os}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.browser != null"> AND u.browser = #{query.cnds.browser}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.ip != null"> AND u.ip = #{query.cnds.ip}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.mobileBrand != null"> AND u.mobileBrand like #{query.cnds.mobileBrand}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.operateTime != null"> AND u.operateTime &gt;= #{query.cnds.operateTime}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.operateTime2 != null"> AND u.operateTime &lt;= #{query.cnds.operateTime2}</if>
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.LacWebLog">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_web_log u 
+		WHERE
+			u.id &lt;&gt; 0
+			<if test="page.cnds!=null and page.cnds.tid != null"> AND u.tid = #{page.cnds.tid}</if>
+			<if test="page.cnds!=null and page.cnds.operatorAccount != null"> AND u.operatorAccount like #{page.cnds.operatorAccount}</if>
+			<if test="page.cnds!=null and page.cnds.module != null"> AND u.module like #{page.cnds.module}</if>
+			<if test="page.cnds!=null and page.cnds.operateResult != null"> AND u.operateResult = #{page.cnds.operateResult}</if>
+			<if test="page.cnds!=null and page.cnds.mobile != null"> AND u.mobile = #{page.cnds.mobile}</if>
+			<if test="page.cnds!=null and page.cnds.os != null"> AND u.os = #{page.cnds.os}</if>
+			<if test="page.cnds!=null and page.cnds.browser != null"> AND u.browser = #{page.cnds.browser}</if>
+			<if test="page.cnds!=null and page.cnds.ip != null"> AND u.ip = #{page.cnds.ip}</if>
+			<if test="page.cnds!=null and page.cnds.mobileBrand != null"> AND u.mobileBrand like #{page.cnds.mobileBrand}</if>
+			<if test="page.cnds!=null and page.cnds.operateTime != null"> AND u.operateTime &gt;= #{page.cnds.operateTime}</if>
+			<if test="page.cnds!=null and page.cnds.operateTime2 != null"> AND u.operateTime &lt;= #{page.cnds.operateTime2}</if>
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.LacWebLog" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_web_log
+			(uuid,tid,module,operateDesc,operateTime,costTime,operateResult,errorMessage,
+				orgId,orgType,operatorId,operatorAccount,ip,url,mobile,mobileBrand,os,osVersion,browser,browserVersion,ua
+			)
+		values(#{entity.uuid},#{entity.tid},#{entity.module},#{entity.operateDesc},#{entity.operateTime},#{entity.costTime},#{entity.operateResult},#{entity.errorMessage},
+			#{entity.orgId},#{entity.orgType},#{entity.operatorId},#{entity.operatorAccount},#{entity.ip},#{entity.url},#{entity.mobile},
+			#{entity.mobileBrand},#{entity.os},#{entity.osVersion},#{entity.browser},#{entity.browserVersion},#{entity.ua}
+			)
+	</insert>
+	
+</mapper>

@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +25,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.linkallcloud.sso.manager.IManagerManager;
 import com.linkallcloud.sso.pc.aop.LoginFilter;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
@@ -47,9 +45,6 @@ public class WebPcApplication implements WebMvcConfigurer {
 	@Value("${lac.appcode}")
 	private String myAppCode;
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
-	private IManagerManager managerManager;
-
 	@Bean
 	public LacEnvInterceptor getLacEnvInterceptor() {
 		return new LacEnvInterceptor() {
@@ -69,7 +64,7 @@ public class WebPcApplication implements WebMvcConfigurer {
 	@Order(1)
 	public FilterRegistrationBean<LoginFilter> loginFilterReg() {
 		FilterRegistrationBean<LoginFilter> frb = new FilterRegistrationBean<LoginFilter>();
-		frb.setFilter(new LoginFilter(myAppId, myAppCode, managerManager, "/login"));
+		frb.setFilter(new LoginFilter(myAppId, myAppCode, "/login"));
 		frb.addUrlPatterns("/*");
 		frb.setName("LoginFilter");
 		return frb;
@@ -80,7 +75,7 @@ public class WebPcApplication implements WebMvcConfigurer {
 		InterceptorRegistration envpi = registry.addInterceptor(getLacEnvInterceptor());
 		envpi.excludePathPatterns("/js/**", "/css/**", "/images/**", "/img/**", "/static/**");
 		envpi.addPathPatterns("/**");
-		envpi.order(4);
+		envpi.order(2);
 
 		WebMvcConfigurer.super.addInterceptors(registry);
 	}

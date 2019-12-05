@@ -1,20 +1,11 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.proxy.SsoProxyRetriever.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.proxy;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.linkallcloud.core.json.Json;
+import com.alibaba.fastjson.JSON;
+import com.linkallcloud.core.log.Log;
+import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.www.utils.HttpClientFactory;
 import com.linkallcloud.sso.client.response.PgtResponse;
@@ -24,18 +15,9 @@ import com.linkallcloud.sso.client.util.CommonUtils;
  * Implementation of a ProxyRetriever that follows the SSO specification. In
  * general, this class will make a call to the SSO server with some specified
  * parameters and receive an XML response to parse.
- * 
- * 2011-6-14
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
- * 
  */
 public final class SsoProxyRetriever implements ProxyRetriever {
-
-	/**
-	 * Instance of Commons Logging.
-	 */
-	protected final Log log = LogFactory.getLog(this.getClass());
+	protected final Log log = Logs.get();
 
 	/**
 	 * Url to SSO server.
@@ -52,13 +34,6 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 		this.ssoServerUrl = ssoServerUrl;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * cn.zj.pubinfo.sso.client.proxy.ProxyRetriever#getProxyTicketIdFor(java.lang.
-	 * String, cn.zj.pubinfo.principal.Service, cn.zj.pubinfo.principal.Service)
-	 */
 	@Override
 	public String getProxyTicketIdFor(final String proxyGrantingTicketId, final Service targetService) {
 
@@ -72,7 +47,7 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 
 		// parse this response
 		PgtResponse pgtResponse = getPgtResponse(response);
-		if (pgtResponse != null) {
+		if (pgtResponse != null && pgtResponse.getCode().equals("0")) {
 			return pgtResponse.getProxyTicket();
 		} else {
 			log.error(
@@ -88,12 +63,7 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 	 * @return PgtResponse
 	 */
 	private static PgtResponse getPgtResponse(String response) {
-		if (response != null && response.length() > 0) {
-			if (response.indexOf("errorCode") == -1) {
-				return Json.fromJson(PgtResponse.class, response);
-			}
-		}
-		return null;
+		return JSON.parseObject(response, PgtResponse.class);
 	}
 
 	/**

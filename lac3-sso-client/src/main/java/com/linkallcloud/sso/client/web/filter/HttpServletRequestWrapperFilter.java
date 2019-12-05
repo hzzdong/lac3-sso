@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.HttpServletRequestWrapperFilter.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
@@ -30,10 +22,6 @@ import com.linkallcloud.core.principal.Principal;
  * <p/>
  * This filter needs to be configured in the chain so that it executes after both the authentication and the validation
  * filters.
- * 
- * 2011-6-14
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public final class HttpServletRequestWrapperFilter implements Filter {

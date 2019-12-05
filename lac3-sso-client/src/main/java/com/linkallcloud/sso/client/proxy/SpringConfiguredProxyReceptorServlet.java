@@ -16,6 +16,8 @@ import javax.servlet.ServletException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.linkallcloud.sso.client.proxy.storage.ProxyGrantingTicketStorage;
+
 /**
  * Implementation of an HttpServlet that accepts ProxyGrantingTicketIous and ProxyGrantingTickets and stores them in an
  * implementation of {@link ProxyGrantingTicketStorage}.

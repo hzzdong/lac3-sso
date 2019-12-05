@@ -12,6 +12,9 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
@@ -47,7 +50,7 @@ public abstract class BaseController {
 	protected TicketGrantingTicketCache tgcCache;
 
 	@Autowired
-	private ProxyGrantingTicketCache pgtCache;
+	protected ProxyGrantingTicketCache pgtCache;
 
 	@Autowired
 	protected ApplicationKiss applicationKiss;
@@ -102,7 +105,7 @@ public abstract class BaseController {
 			Application app = null;
 			try {
 				app = applicationKiss.fetchByCode(t, appCode);
-			} catch (Exception e) {//UM异常，为了尽量确保SSO正常使用，放弃检查，放行。
+			} catch (Exception e) {// UM异常，为了尽量确保SSO正常使用，放弃检查，放行。
 				log.errorf("########## 调用UM查询应用(code=%s)信息失败。为了尽量确保SSO正常使用，直接放行本次检查。", appCode);
 				return;
 			}
@@ -165,9 +168,9 @@ public abstract class BaseController {
 	}
 
 	/** Creates and sends a new PGT, returning a unique IOU for this PGT. */
-	protected String sendPgt(ActiveTicket<?> st, String pgtAppCode, String callbackUrl) throws TicketException {
+	protected String sendPgt(ActiveTicket<?> st, String callbackUrl) throws TicketException {// String pgtAppCode,
 		// first, create the PGT and save it to the cache
-		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, pgtAppCode, callbackUrl);
+		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl);
 		String pgtToken = pgtCache.addTicket(pgt);
 
 		// now, create an IOU (with a serial and a random component)
@@ -199,14 +202,21 @@ public abstract class BaseController {
 			else
 				target = callbackUrl + "&pgtIou=" + iouId + "&pgtId=" + pgtId;
 			// SecureURL.retrieve(target);
+			String response = null;
 			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
-				HttpClientFactory.me(true).get(target);
+				response = HttpClientFactory.me(true).get(target);
 			} else {
-				HttpClientFactory.me(false).get(target);
+				response = HttpClientFactory.me(false).get(target);
 			}
-
-			// we succeeded!
-			return true;
+			
+			if (!Strings.isBlank(response)) {
+				Result<String> ret = JSON.parseObject(response, new TypeReference<Result<String>>() {
+				});
+				if (ret != null && ret.getCode().equals("0")) {
+					return true;// we succeeded!
+				}
+			}
+			return false;
 
 		} catch (Throwable ex) {
 			log.error("PGT callback failed: " + ex.toString());

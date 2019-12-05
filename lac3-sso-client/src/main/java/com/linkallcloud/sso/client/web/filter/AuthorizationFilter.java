@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.AuthorizationFilter.java 
- *
- * 2011-6-15
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
@@ -36,10 +28,6 @@ import com.linkallcloud.sso.client.util.CommonUtils;
  * If a user is not authorized to use the application, the response code of 403 will be sent to the browser.
  * <p/>
  * This filter needs to be configured after both the authentication filter and the validation filter.
- * 
- * 2011-6-15
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public final class AuthorizationFilter implements Filter {

@@ -1,52 +1,25 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.response.PgtResponse.java 
- *
- * 2011-5-22
- * 
- */
 package com.linkallcloud.sso.client.response;
 
-/**
- * 2011-5-22
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
- * 
- */
-public class PgtResponse extends ServiceResponse {
+import com.linkallcloud.core.dto.Result;
 
-    private String proxyTicket;
+public class PgtResponse extends Result<String> {
+	private static final long serialVersionUID = 4111126248220899447L;
 
-    /**
-     * 
-     */
-    public PgtResponse() {
-        super();
-    }
+	public PgtResponse() {
+		super();
+	}
 
-    /**
-     * 
-     * @param proxyTicket
-     */
-    public PgtResponse(String proxyTicket) {
-        super();
-        this.proxyTicket = proxyTicket;
-    }
+	public PgtResponse(String proxyTicket) {
+		super();
+		this.setData(proxyTicket);
+	}
 
-    /**
-     * @return the proxyTicket
-     */
-    public String getProxyTicket() {
-        return proxyTicket;
-    }
+	public String getProxyTicket() {
+		return getData();
+	}
 
-    /**
-     * @param proxyTicket
-     *            the proxyTicket to set
-     */
-    public void setProxyTicket(String proxyTicket) {
-        this.proxyTicket = proxyTicket;
-    }
+	public void setProxyTicket(String proxyTicket) {
+		this.setData(proxyTicket);
+	}
 
 }

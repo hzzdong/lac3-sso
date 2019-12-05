@@ -4,10 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.sso.oapi.dto.ProxyResult;
@@ -15,9 +17,11 @@ import com.linkallcloud.sso.portal.exception.SiteException;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.portal.ticket.ProxyTicket;
-import com.linkallcloud.sso.portal.ticket.cache.ProxyGrantingTicketCache;
 import com.linkallcloud.sso.portal.ticket.cache.ProxyTicketCache;
 
+@Controller
+@RequestMapping
+@Module(name = "代理")
 public class Proxy extends BaseController {
 
 	private static final String INVALID_REQUEST = "INVALID_REQUEST";
@@ -25,15 +29,12 @@ public class Proxy extends BaseController {
 	// private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
 
 	@Autowired
-	private ProxyGrantingTicketCache pgtCache;
-
-	@Autowired
 	private ProxyTicketCache ptCache;
 
 	@ResponseBody
 	@RequestMapping(value = "/proxy")
 	public Object proxy(@RequestParam(value = "pgt", required = false) String pgtId,
-			@RequestParam(value = "targetAppCode", required = false) String targetAppCode,
+			@RequestParam(value = "targetFrom", required = false) String targetAppCode,
 			@RequestParam(value = "targetService", required = false) String targetService, HttpServletRequest request,
 			HttpServletResponse response, Trace t) throws SiteException, TicketException {
 		if (Strings.isBlank(pgtId) || Strings.isBlank(targetAppCode) || Strings.isBlank(targetService)) {

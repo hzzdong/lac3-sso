@@ -77,6 +77,8 @@ public abstract class BaseManagerController {
 		children06.addChild(subChildren0601);
 		Tree subChildren0602 = new Tree("62", children06.getId(), "管理员管理", "Manager", "/Manager/main");
 		children06.addChild(subChildren0602);
+		Tree subChildren0603 = new Tree("63", children06.getId(), "操作日志", "log", "/log/main");
+		children06.addChild(subChildren0603);
 
 		Tree children07 = new Tree("7", root.getId(), "帮助", "Help", "/Help/main");
 		root.addChild(children07);

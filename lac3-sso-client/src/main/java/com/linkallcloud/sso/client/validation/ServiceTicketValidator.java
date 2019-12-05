@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.principal.SimplePrincipal;
-import com.linkallcloud.sso.client.proxy.ProxyGrantingTicketStorage;
-import com.linkallcloud.sso.client.proxy.ProxyRetriever;
+import com.linkallcloud.sso.client.proxy.storage.ProxyGrantingTicketStorage;
 import com.linkallcloud.sso.client.util.CommonUtils;
 import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
 
@@ -19,7 +18,7 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 	/**
 	 * Proxy callback url to send to the SSO server.
 	 */
-	private final Service proxyCallbackUrl;
+	private final String proxyCallbackUrl;
 
 	/**
 	 * The storage mechanism for the ProxyGrantingTickets.
@@ -29,30 +28,30 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 	/**
 	 * Injected into Assertions to allow them to retrieve proxy tickets.
 	 */
-	private final ProxyRetriever proxyRetriever;
+	//private final ProxyRetriever proxyRetriever;
 
 	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew) {
-		this(ssoServerUrl, renew, null, null, null);
+		this(ssoServerUrl, renew, null, null);
 	}
 
-	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew, final Service proxyCallbackUrl,
-			final ProxyGrantingTicketStorage proxyGrantingTicketStorage, final ProxyRetriever proxyRetriever) {
+	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew, final String proxyCallbackUrl,
+			final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {//, final ProxyRetriever proxyRetriever
 		super(ssoServerUrl, renew);
 
 		if (proxyCallbackUrl != null) {
 			CommonUtils.assertNotNull(proxyGrantingTicketStorage, "proxyGrantingTicketStorage cannot be null");
-			CommonUtils.assertNotNull(proxyRetriever, "proxyRetriever cannot be null.");
+			//CommonUtils.assertNotNull(proxyRetriever, "proxyRetriever cannot be null.");
 		}
 		this.proxyCallbackUrl = proxyCallbackUrl;
 		this.proxyGrantingTicketStorage = proxyGrantingTicketStorage;
-		this.proxyRetriever = proxyRetriever;
+		//this.proxyRetriever = proxyRetriever;
 	}
 
 	@Override
 	protected String constructURL(final String ticketId, final Service service) {
 		return getSsoServerUrl() + getValidationUrlName() + "?ticket=" + ticketId + (isRenew() ? "&renew=true" : "")
 				+ "&service=" + getEncodedService(service) + "&from=" + service.getCode()
-				+ (this.proxyCallbackUrl != null ? "&pgtUrl=" + getEncodedService(this.proxyCallbackUrl) : "");
+				+ (this.proxyCallbackUrl != null ? "&pgtUrl=" + getEncodedUrl(this.proxyCallbackUrl) : "");
 	}
 
 	protected String getValidationUrlName() {
@@ -84,8 +83,9 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 
 	protected final Assertion getAssertionBasedOnProxyGrantingTicketIou(final ServiceAuthenticationResult str) {
 		if (CommonUtils.isNotBlank(str.getProxyGrantingTicket())) {
+			//this.proxyRetriever,
 			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()), null,
-					this.proxyRetriever, this.proxyGrantingTicketStorage == null ? null
+					 this.proxyGrantingTicketStorage == null ? null
 							: this.proxyGrantingTicketStorage.retrieve(str.getProxyGrantingTicket()));
 		} else {
 			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()));

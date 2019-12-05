@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
-import com.linkallcloud.core.principal.SimpleService;
 import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
 import com.linkallcloud.sso.portal.exception.SiteException;
 import com.linkallcloud.sso.portal.exception.TicketException;
@@ -35,7 +34,6 @@ public class ProxyValidate extends BaseController {
 	public Object proxyValidate(@RequestParam(value = "from", required = false) String appCode,
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "ticket", required = false) String ticket,
-			@RequestParam(value = "pgtCode", required = false) String pgtAppCode,
 			@RequestParam(value = "pgtUrl", required = false) String pgtUrl,
 			@RequestParam(value = "renew", required = false) String renew, HttpServletRequest request,
 			HttpServletResponse response, Trace t) throws SiteException, TicketException {
@@ -53,8 +51,8 @@ public class ProxyValidate extends BaseController {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");
 			} else {
 				String pgtIOU = null;
-				if (!Strings.isBlank(pgtAppCode) && !Strings.isBlank(pgtUrl)) {
-					pgtIOU = sendPgt(pt, pgtAppCode, pgtUrl);
+				if (!Strings.isBlank(pgtUrl)) {
+					pgtIOU = sendPgt(pt, pgtUrl);
 				}
 				return validationSuccess(pt, pgtIOU);
 			}
@@ -67,7 +65,7 @@ public class ProxyValidate extends BaseController {
 		if (!Strings.isBlank(pgtIOU)) {
 			result.setProxyGrantingTicket(pgtIOU);
 		}
-		Iterator<SimpleService> proxies = pt.getProxies().iterator();
+		Iterator<String> proxies = pt.getProxies().iterator();
 		while (proxies.hasNext()) {
 			result.addProxy(proxies.next());
 		}

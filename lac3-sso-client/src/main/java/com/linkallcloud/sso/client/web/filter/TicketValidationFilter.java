@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.TicketValidationFilter.java 
- *
- * 2011-5-22
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
@@ -31,10 +23,6 @@ import com.linkallcloud.sso.client.validation.ValidationException;
  * <p/>
  * This filter needs to be configured after the authentication filter (if that
  * filter exists in the chain).
- * 
- * 2011-6-14
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public final class TicketValidationFilter extends AbstractSSOFilter {

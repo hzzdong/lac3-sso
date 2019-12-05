@@ -1,22 +1,9 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.response.STResponse.java 
- *
- * 2011-5-22
- * 
- */
 package com.linkallcloud.sso.client.response;
 
+import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.principal.Principal;
 
-/**
- * 2011-5-22
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
- * 
- */
-public class STResponse extends ServiceResponse implements Principal {
+public class STResponse extends Result<String> implements Principal {
     private static final long serialVersionUID = 7820646920539862639L;
 
     /** The unique identifier for the principal. */

@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.AssertionThreadLocalFilter.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
@@ -26,10 +18,6 @@ import com.linkallcloud.sso.client.validation.AssertionHolder;
 /**
  * Places the assertion in a ThreadLocal such that other resources can access it that do not have access to the web tier
  * session.
- * 
- * 2011-6-15
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public final class AssertionThreadLocalFilter implements Filter {

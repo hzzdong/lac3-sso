@@ -3,8 +3,6 @@ package com.linkallcloud.sso.portal.ticket;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.linkallcloud.core.principal.SimpleService;
-
 /**
  * Represents a CAS proxy-granting ticket (PGT), used to retrieve proxy tickets
  * (PTs). Note that we extend TicketGrantingTicket; this doesn't mean we can act
@@ -25,8 +23,8 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 * A PGT is also consturcted with the ID of the proxy. In CAS 2.0.1, this ID
 	 * corresponds to the callback URL to which the PGT's ID is sent.
 	 */
-	// private String proxyId;
-	private SimpleService proxyId;
+	private String proxyId;
+	// private SimpleService proxyId;
 
 	// *********************************************************************
 	// Constructor
@@ -36,10 +34,11 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	}
 
 	/** Constructs a new, immutable ProxyGrantingTicket. */
-	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtAppCode, String pgtUrl) {
+	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl) {// String pgtAppCode,
 		super(parent.getUsername());
 		this.parent = parent;
-		this.proxyId = new SimpleService(pgtUrl, pgtAppCode);
+		// this.proxyId = new SimpleService(pgtUrl, pgtAppCode);
+		this.proxyId = pgtUrl;
 	}
 
 	// *********************************************************************
@@ -59,16 +58,8 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 * Returns the identifier for the service to whom this ticket will grant proxy
 	 * tickets.
 	 */
-	public SimpleService getProxyService() {
+	public String getProxyId() {
 		return proxyId;
-	}
-
-	public SimpleService getProxyId() {
-		return proxyId;
-	}
-
-	public void setProxyId(SimpleService proxyId) {
-		this.proxyId = proxyId;
 	}
 
 	public void setParent(ActiveTicket<?> parent) {
@@ -76,9 +67,9 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	}
 
 	/** Retrieves trust chain. */
-	public List<SimpleService> getProxies() {
-		List<SimpleService> l = new ArrayList<SimpleService>();
-		l.add(getProxyService());
+	public List<String> getProxies() {
+		List<String> l = new ArrayList<String>();
+		l.add(getProxyId());
 		GrantingTicket grantor = parent.getGrantor();
 		if (grantor instanceof ProxyGrantingTicket) {
 			ProxyGrantingTicket p = (ProxyGrantingTicket) grantor;

@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.validation.ProxyTicketValidator.java 
- *
- * 2011-6-14
- * 
- */
 package com.linkallcloud.sso.client.validation;
 
 import java.util.ArrayList;
@@ -17,8 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.principal.SimpleService;
-import com.linkallcloud.sso.client.proxy.ProxyGrantingTicketStorage;
-import com.linkallcloud.sso.client.proxy.ProxyRetriever;
+import com.linkallcloud.sso.client.proxy.storage.ProxyGrantingTicketStorage;
 import com.linkallcloud.sso.client.util.CommonUtils;
 import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
 import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
@@ -32,10 +23,6 @@ import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
  * proxy3,code3&lt;/value&gt; &lt;value&gt; proxy2,code2 proxy4,code4
  * proxy5,code5&lt;/value&gt; &lt;value&gt; proxy4,code4 proxy5,code5
  * proxy6,code6&lt;/value&gt; &lt;/list&gt;
- * 
- * 2011-6-14
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
  * 
  */
 public class ProxyTicketValidator extends ServiceTicketValidator {
@@ -57,7 +44,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 	 */
 	public ProxyTicketValidator(final String ssoServerUrl, final boolean renew, List<String> proxyChains,
 			boolean acceptAnyProxy) {
-		this(ssoServerUrl, renew, null, proxyChains, acceptAnyProxy, null, null);
+		this(ssoServerUrl, renew, null, proxyChains, acceptAnyProxy, null);
 	}
 
 	/**
@@ -70,10 +57,10 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 	 * @param proxyGrantingTicketStorage
 	 * @param proxyRetriever
 	 */
-	public ProxyTicketValidator(final String ssoServerUrl, final boolean renew, final Service proxyCallbackUrl,
+	public ProxyTicketValidator(final String ssoServerUrl, final boolean renew, final String proxyCallbackUrl,
 			List<String> proxyChains, boolean acceptAnyProxy,
-			final ProxyGrantingTicketStorage proxyGrantingTicketStorage, final ProxyRetriever proxyRetriever) {
-		super(ssoServerUrl, renew, proxyCallbackUrl, proxyGrantingTicketStorage, proxyRetriever);
+			final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {//, final ProxyRetriever proxyRetriever
+		super(ssoServerUrl, renew, proxyCallbackUrl, proxyGrantingTicketStorage);
 
 		CommonUtils.assertTrue(proxyChains != null || acceptAnyProxy,
 				"proxyChains cannot be null or acceptAnyProxy must be true.");
@@ -111,15 +98,15 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 		if (str != null && str instanceof ProxyAuthenticationResult) {
 			ProxyAuthenticationResult ptr = (ProxyAuthenticationResult) str;
 
-			final List<SimpleService> proxies = ptr.getProxies();
+			final List<String> proxies = ptr.getProxies();
 			// this means there was nothing in the proxy chain, which is okay
 			if (proxies == null || proxies.isEmpty() || this.acceptAnyProxy) {
 				return getAssertionBasedOnProxyGrantingTicketIou(str);
 			}
 
-			final Service[] principals = new Service[proxies.size()];
+			final String[] principals = new String[proxies.size()];
 			int i = 0;
-			for (final Iterator<SimpleService> iter = proxies.iterator(); iter.hasNext();) {
+			for (final Iterator<String> iter = proxies.iterator(); iter.hasNext();) {
 				principals[i++] = iter.next();
 			}
 

@@ -93,6 +93,20 @@ public abstract class AbstractUrlBasedTicketValidator implements TicketValidator
 		}
 	}
 
+	/**
+	 * Helper method to encode the service url.
+	 * 
+	 * @param service the service url to encode.
+	 * @return the encoded service url.
+	 */
+	protected final String getEncodedUrl(final String url) {
+		try {
+			return URLEncoder.encode(url, "UTF-8");
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	protected final String getSsoServerUrl() {
 		return this.ssoServerUrl;
 	}
