@@ -114,6 +114,7 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 				}
 
 				request.setAttribute(Principal.PRINCIPAL_KEY, assertion.getPrincipal());
+				request.setAttribute(Assertion.ASSERTION_KEY, assertion);
 
 				if (isUseSession()) {
 					request.getSession().setAttribute(Assertion.ASSERTION_KEY, assertion);

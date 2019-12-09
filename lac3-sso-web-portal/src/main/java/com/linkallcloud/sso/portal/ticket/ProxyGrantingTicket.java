@@ -3,6 +3,9 @@ package com.linkallcloud.sso.portal.ticket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.linkallcloud.core.principal.SimpleService;
+
 /**
  * Represents a CAS proxy-granting ticket (PGT), used to retrieve proxy tickets
  * (PTs). Note that we extend TicketGrantingTicket; this doesn't mean we can act
@@ -17,14 +20,15 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 * A PGT is constructed with a ServiceTicket (potentially a ProxyTicket). We
 	 * store this ticket to inherit ticket expiration.
 	 */
-	private ActiveTicket<?> parent;
+	// private ActiveTicket<?> parent;
+	private ServiceTicket stParent;
+	private ProxyTicket ptParent;
 
 	/**
 	 * A PGT is also consturcted with the ID of the proxy. In CAS 2.0.1, this ID
 	 * corresponds to the callback URL to which the PGT's ID is sent.
 	 */
-	private String proxyId;
-	// private SimpleService proxyId;
+	private SimpleService proxyId;
 
 	// *********************************************************************
 	// Constructor
@@ -34,11 +38,14 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	}
 
 	/** Constructs a new, immutable ProxyGrantingTicket. */
-	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl) {// String pgtAppCode,
+	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl, String pgtAppCode) {
 		super(parent.getUsername());
-		this.parent = parent;
-		// this.proxyId = new SimpleService(pgtUrl, pgtAppCode);
-		this.proxyId = pgtUrl;
+		if (parent instanceof ServiceTicket) {
+			this.stParent = (ServiceTicket) parent;
+		} else {
+			this.ptParent = (ProxyTicket) parent;
+		}
+		this.proxyId = new SimpleService(pgtUrl, pgtAppCode);
 	}
 
 	// *********************************************************************
@@ -46,31 +53,45 @@ public class ProxyGrantingTicket extends GrantingTicket {
 
 	/** Retrieves the ticket's username. */
 	public String getUsername() {
-		return parent.getUsername();
+		return getParent().getUsername();
 	}
 
 	/** Returns the ticket that was exchanged for this ProxyGrantingTicket. */
+	@JSONField(serialize = false, deserialize = false)
 	public ActiveTicket<?> getParent() {
-		return parent;
+		return stParent != null ? stParent : ptParent;
+	}
+
+	public ServiceTicket getStParent() {
+		return stParent;
+	}
+
+	public ProxyTicket getPtParent() {
+		return ptParent;
+	}
+
+	public void setStParent(ServiceTicket stParent) {
+		this.stParent = stParent;
+	}
+
+	public void setPtParent(ProxyTicket ptParent) {
+		this.ptParent = ptParent;
 	}
 
 	/**
 	 * Returns the identifier for the service to whom this ticket will grant proxy
 	 * tickets.
 	 */
-	public String getProxyId() {
+	public SimpleService getProxyId() {
 		return proxyId;
 	}
 
-	public void setParent(ActiveTicket<?> parent) {
-		this.parent = parent;
-	}
-
 	/** Retrieves trust chain. */
-	public List<String> getProxies() {
-		List<String> l = new ArrayList<String>();
+	@JSONField(serialize = false, deserialize = false)
+	public List<SimpleService> getProxies() {
+		List<SimpleService> l = new ArrayList<SimpleService>();
 		l.add(getProxyId());
-		GrantingTicket grantor = parent.getGrantor();
+		GrantingTicket grantor = getParent().getGrantor();
 		if (grantor instanceof ProxyGrantingTicket) {
 			ProxyGrantingTicket p = (ProxyGrantingTicket) grantor;
 			l.addAll(p.getProxies());
@@ -83,6 +104,6 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 * false otherwise.
 	 */
 	public boolean isExpired() {
-		return super.isExpired() || parent.getGrantor().isExpired();
+		return super.isExpired() || getParent().getGrantor().isExpired();
 	}
 }

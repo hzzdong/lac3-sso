@@ -6,18 +6,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
+import com.linkallcloud.core.principal.SimpleService;
 import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
 import com.linkallcloud.sso.portal.exception.SiteException;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.ticket.ProxyTicket;
 import com.linkallcloud.sso.portal.ticket.cache.ProxyTicketCache;
 
+@Controller
+@RequestMapping
 public class ProxyValidate extends BaseController {
 
 	// failure codes
@@ -35,6 +39,7 @@ public class ProxyValidate extends BaseController {
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "ticket", required = false) String ticket,
 			@RequestParam(value = "pgtUrl", required = false) String pgtUrl,
+			@RequestParam(value = "proxyCode", required = false) String pgtAppCode,
 			@RequestParam(value = "renew", required = false) String renew, HttpServletRequest request,
 			HttpServletResponse response, Trace t) throws SiteException, TicketException {
 		if (Strings.isBlank(appCode) || Strings.isBlank(appUrl) || Strings.isBlank(ticket)) {
@@ -51,8 +56,13 @@ public class ProxyValidate extends BaseController {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");
 			} else {
 				String pgtIOU = null;
-				if (!Strings.isBlank(pgtUrl)) {
-					pgtIOU = sendPgt(pt, pgtUrl);
+				if (!Strings.isBlank(pgtUrl) && !Strings.isBlank(pgtAppCode)) {
+					try {
+						checkSiteCanPass(t, pgtAppCode, pgtUrl);
+					} catch (SiteException e) {
+						return validationFailure(INVALID_SERVICE, String.format("代理服务(%,%)未许可", pgtAppCode, pgtUrl));
+					}
+					pgtIOU = sendPgt(pt, pgtUrl, pgtAppCode);
 				}
 				return validationSuccess(pt, pgtIOU);
 			}
@@ -65,7 +75,7 @@ public class ProxyValidate extends BaseController {
 		if (!Strings.isBlank(pgtIOU)) {
 			result.setProxyGrantingTicket(pgtIOU);
 		}
-		Iterator<String> proxies = pt.getProxies().iterator();
+		Iterator<SimpleService> proxies = pt.getProxies().iterator();
 		while (proxies.hasNext()) {
 			result.addProxy(proxies.next());
 		}

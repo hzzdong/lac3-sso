@@ -12,16 +12,16 @@ import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.principal.SimpleService;
-import com.linkallcloud.sso.client.proxy.ProxyRetriever;
 import com.linkallcloud.sso.client.proxy.SsoProxyRetriever;
+import com.linkallcloud.web.sso.ProxyRetriever;
 import com.linkallcloud.web.utils.Controllers;
 
-public class PtResolver implements HandlerMethodArgumentResolver {
+public class ProxyTicketResolver implements HandlerMethodArgumentResolver {
     private static Log log = Logs.get();
 
     private ProxyRetriever proxyRetriever;
 
-    public PtResolver(String ssoServerUrl) {
+    public ProxyTicketResolver(String ssoServerUrl) {
         this.proxyRetriever = new SsoProxyRetriever(ssoServerUrl);
     }
 

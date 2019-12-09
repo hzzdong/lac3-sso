@@ -3,10 +3,12 @@ package com.linkallcloud.sso.oapi.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.linkallcloud.core.principal.SimpleService;
+
 public class ProxyAuthenticationResult extends ServiceAuthenticationResult {
 	private static final long serialVersionUID = -8036149193912999535L;
 
-	private List<String> proxies;
+	private List<SimpleService> proxies;
 
 	public ProxyAuthenticationResult() {
 		super();
@@ -27,18 +29,18 @@ public class ProxyAuthenticationResult extends ServiceAuthenticationResult {
 		this.setMessage(errorMessage);
 	}
 
-	public List<String> getProxies() {
+	public List<SimpleService> getProxies() {
 		return proxies;
 	}
 
-	public void setProxies(List<String> proxies) {
+	public void setProxies(List<SimpleService> proxies) {
 		this.proxies = proxies;
 	}
 
-	public void addProxy(String proxy) {
+	public void addProxy(SimpleService proxy) {
 		if (proxy != null) {
 			if (proxies == null) {
-				proxies = new ArrayList<String>();
+				proxies = new ArrayList<SimpleService>();
 			}
 			proxies.add(proxy);
 		}

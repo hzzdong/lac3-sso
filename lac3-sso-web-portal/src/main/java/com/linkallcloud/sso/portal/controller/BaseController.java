@@ -168,9 +168,9 @@ public abstract class BaseController {
 	}
 
 	/** Creates and sends a new PGT, returning a unique IOU for this PGT. */
-	protected String sendPgt(ActiveTicket<?> st, String callbackUrl) throws TicketException {// String pgtAppCode,
+	protected String sendPgt(ActiveTicket<?> st, String callbackUrl, String pgtAppCode) throws TicketException {
 		// first, create the PGT and save it to the cache
-		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl);
+		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl, pgtAppCode);
 		String pgtToken = pgtCache.addTicket(pgt);
 
 		// now, create an IOU (with a serial and a random component)

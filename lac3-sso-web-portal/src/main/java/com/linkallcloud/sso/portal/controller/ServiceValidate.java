@@ -39,6 +39,7 @@ public class ServiceValidate extends BaseController {
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "ticket", required = false) String ticket,
 			@RequestParam(value = "pgtUrl", required = false) String pgtUrl,
+			@RequestParam(value = "proxyCode", required = false) String pgtAppCode,
 			@RequestParam(value = "renew", required = false) String renew, HttpServletRequest request,
 			HttpServletResponse response, Trace t) throws SiteException, TicketException {
 		if (Strings.isBlank(appCode) || Strings.isBlank(appUrl) || Strings.isBlank(ticket)) {
@@ -55,8 +56,13 @@ public class ServiceValidate extends BaseController {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");
 			} else {
 				String pgtIOU = null;
-				if (!Strings.isBlank(pgtUrl)) {
-					pgtIOU = sendPgt(st, pgtUrl);
+				if (!Strings.isBlank(pgtUrl) && !Strings.isBlank(pgtAppCode)) {
+					try {
+						checkSiteCanPass(t, pgtAppCode, pgtUrl);
+					} catch (SiteException e) {
+						return validationFailure(INVALID_SERVICE, String.format("代理服务(%,%)未许可", pgtAppCode, pgtUrl));
+					}
+					pgtIOU = sendPgt(st, pgtUrl, pgtAppCode);
 				}
 				return validationSuccess(st, pgtIOU);
 			}

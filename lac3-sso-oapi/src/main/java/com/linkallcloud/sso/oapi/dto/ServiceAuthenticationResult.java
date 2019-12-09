@@ -7,9 +7,14 @@ import com.linkallcloud.core.principal.Principal;
 public class ServiceAuthenticationResult extends Result<String> implements Principal {
 	private static final long serialVersionUID = 3323906180281674154L;
 
+	/** The unique identifier for the principal. */
 	private String id;
+
+	/** The unique identifier for the site account loginname. */
 	private String siteId;
-	private int appingType;// 账号映射类型：MappingType
+
+	/** The account mapping type. */
+	private int mappingType;
 
 	private String proxyGrantingTicket;
 
@@ -28,9 +33,9 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 		this(user);
 		this.siteId = siteUser;
 		if (AccountMapping.Mapping.getCode().intValue() == siteMaping) {
-			this.appingType = siteMaping;
+			this.mappingType = siteMaping;
 		} else {
-			this.appingType = AccountMapping.Unified.getCode();
+			this.mappingType = AccountMapping.Unified.getCode();
 		}
 	}
 
@@ -58,14 +63,6 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 		return id;
 	}
 
-	public int getAppingType() {
-		return appingType;
-	}
-
-	public void setAppingType(int appingType) {
-		this.appingType = appingType;
-	}
-
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -79,9 +76,13 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 		return siteId;
 	}
 
+	public void setMappingType(int mappingType) {
+		this.mappingType = mappingType;
+	}
+
 	@Override
 	public int getMappingType() {
-		return appingType;
+		return mappingType;
 	}
 
 }

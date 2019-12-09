@@ -8,8 +8,9 @@ import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.principal.Service;
 import com.linkallcloud.core.www.utils.HttpClientFactory;
-import com.linkallcloud.sso.client.response.PgtResponse;
 import com.linkallcloud.sso.client.util.CommonUtils;
+import com.linkallcloud.sso.oapi.dto.ProxyResult;
+import com.linkallcloud.web.sso.ProxyRetriever;
 
 /**
  * Implementation of a ProxyRetriever that follows the SSO specification. In
@@ -46,7 +47,7 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 		}
 
 		// parse this response
-		PgtResponse pgtResponse = getPgtResponse(response);
+		ProxyResult pgtResponse = getPgtResponse(response);
 		if (pgtResponse != null && pgtResponse.getCode().equals("0")) {
 			return pgtResponse.getProxyTicket();
 		} else {
@@ -62,8 +63,8 @@ public final class SsoProxyRetriever implements ProxyRetriever {
 	 * @param response
 	 * @return PgtResponse
 	 */
-	private static PgtResponse getPgtResponse(String response) {
-		return JSON.parseObject(response, PgtResponse.class);
+	private static ProxyResult getPgtResponse(String response) {
+		return JSON.parseObject(response, ProxyResult.class);
 	}
 
 	/**

@@ -2,6 +2,8 @@ package com.linkallcloud.sso.portal.ticket;
 
 import java.util.List;
 
+import com.linkallcloud.core.principal.SimpleService;
+
 /**
  * Represents a proxy ticket (PT).
  */
@@ -29,7 +31,7 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	}
 
 	/** Retrieves the proxy ticket's lineage -- its chain of "trust." */
-	public List<String> getProxies() {
+	public List<SimpleService> getProxies() {
 		return getGrantor().getProxies();
 	}
 
