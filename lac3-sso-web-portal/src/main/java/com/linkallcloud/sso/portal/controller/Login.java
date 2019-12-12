@@ -15,16 +15,19 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.linkallcloud.core.busilog.annotation.Module;
+import com.linkallcloud.core.dto.Client;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
+import com.linkallcloud.core.vo.LoginVo;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.domain.Account;
 import com.linkallcloud.sso.manager.ILoginHisManager;
@@ -118,29 +121,43 @@ public class Login extends BaseController {
 		return "login";
 	}
 
+//	@ResponseBody
+//	@RequestMapping(value = "/login", method = RequestMethod.POST)
+//	public Object doLogin(@RequestParam(value = "from", required = false) String appCode,
+//			@RequestParam(value = "service", required = false) String appUrl,
+//			@RequestParam(value = "username", required = false) String username,
+//			@RequestParam(value = "password", required = false) String password,
+//			@RequestParam(value = "lt", required = false) String lt,
+//			@RequestParam(value = "vcode", required = false) String vcode,
+//			@RequestParam(value = "warn", required = false) String warn,
+//			@RequestParam(value = "pwdStrength", required = false) String pwdStrength,
+//			@RequestParam(value = "rememberMe", required = false) String rememberMe, 
+//			@RequestBody Client client,HttpServletRequest request,
+//			HttpServletResponse response, Trace t)
+//			throws ServletException, SiteException, IOException, AccountException, InvalidTicketException {
+
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Object doLogin(@RequestParam(value = "from", required = false) String appCode,
-			@RequestParam(value = "service", required = false) String appUrl,
-			@RequestParam(value = "username", required = false) String username,
-			@RequestParam(value = "password", required = false) String password,
-			@RequestParam(value = "lt", required = false) String lt,
-			@RequestParam(value = "vcode", required = false) String vcode,
-			@RequestParam(value = "warn", required = false) String warn,
-			@RequestParam(value = "pwdStrength", required = false) String pwdStrength,
-			@RequestParam(value = "rememberMe", required = false) String rememberMe, HttpServletRequest request,
-			HttpServletResponse response, Trace t)
+	public Object doLogin(@RequestBody LoginVo lvo, HttpServletRequest request, HttpServletResponse response, Trace t)
 			throws ServletException, SiteException, IOException, AccountException, InvalidTicketException {
 		// avoid caching (in the stupidly numerous ways we must)
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-Control", "no-store");
 		response.setDateHeader("Expires", -1);
 
+		if (!sessionValidateCode.validate(request, response, lvo.getVcode())) {
+			// horrible way of logging, I know
+			log.error("验证码错误， " + request.getRemoteAddr());
+			// failure: record invalid login ticket
+			return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", lvo.getFrom(),
+					lvo.getService());
+		}
+
 		// blacklist and lock check
-		checkBlackAndLock(t, username, WebUtils.getIpAddress(request));
+		checkBlackAndLock(t, lvo.getLoginName(), WebUtils.getIpAddress(request));
 
 		// The servie can pass?
-		checkSiteCanPass(t, appCode, appUrl);
+		checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
 
 		TicketGrantingTicket tgt = getTgc(request);
 
@@ -159,48 +176,54 @@ public class Login extends BaseController {
 					// and send a new one
 					tgt = sendTgc(trustedUsername, request, response);
 				}
-				sendPrivacyCookie(warn, request, response);
-				return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
+				sendPrivacyCookie(lvo.getWarn(), request, response);
+				return authSuccess(t, request, tgt, lvo.getFrom(), lvo.getService(), true, lvo.getPwdStrength(),
+						lvo.getClient());
 			} else {
 				// failure: nothing else to be done
-				return authFailure(t, request, username, "TrustHandler", "无法验证用户", appCode, appUrl);
+				return authFailure(t, request, lvo.getLoginName(), "TrustHandler", "无法验证用户", lvo.getFrom(),
+						lvo.getService());
 			}
-		} else if (handler instanceof PasswordHandler && username != null && password != null && lt != null) {
+		} else if (handler instanceof PasswordHandler && lvo.getLoginName() != null && lvo.getPassword() != null
+				&& lvo.getLt() != null) {
 			// do we have a valid login ticket?
-			if (ltCache.getTicket(lt) != null && sessionValidateCode.validate(request, response, vcode)) {
+			if (ltCache.getTicket(lvo.getLt()) != null) {
 				// do we have a valid username and password?
 				try {
-					Account account = handler.authenticate(t, request, username, password);
-					username = account.getLoginname();
+					Account account = handler.authenticate(t, request, lvo.getLoginName(), lvo.getPassword());
+					lvo.setLoginName(account.getLoginname());
 					// success: send a new TGC if we don't have a valid TGT from above
 					if (tgt == null) {
-						tgt = sendTgc(username, request, response);
-					} else if (!tgt.getUsername().equals(username)) {
+						tgt = sendTgc(lvo.getLoginName(), request, response);
+					} else if (!tgt.getUsername().equals(lvo.getLoginName())) {
 						// we're coming into a renew=true as a different user...
 						// expire the old tgt
 						tgt.expire();
 						// and send a new one
-						tgt = sendTgc(username, request, response);
+						tgt = sendTgc(lvo.getLoginName(), request, response);
 					}
 
 					// set remember me
-					setRememberMe(rememberMe, username, request, response);
+					setRememberMe(lvo.getRememberMe(), lvo.getLoginName(), request, response);
 
-					sendPrivacyCookie(warn, request, response);
-					return authSuccess(t, request, tgt, appCode, appUrl, true, pwdStrength);
+					sendPrivacyCookie(lvo.getWarn(), request, response);
+					return authSuccess(t, request, tgt, lvo.getFrom(), lvo.getService(), true, lvo.getPwdStrength(),
+							lvo.getClient());
 				} catch (Throwable e) {
 					// failure: record failed password authentication
-					return authFailure(t, request, username, "Account", "登录名或者密码错误", appCode, appUrl);
+					return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", lvo.getFrom(),
+							lvo.getService());
 				}
 			} else {
 				// horrible way of logging, I know
 				log.error("Invalid login ticket from " + request.getRemoteAddr());
 				// failure: record invalid login ticket
-				return authFailure(t, request, username, "Lt-VCODE", "验证码错误，请重新输入", appCode, appUrl);
+				return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", lvo.getFrom(),
+						lvo.getService());
 			}
 		}
 
-		return authFailure(t, request, username, "Account", "登录名或者密码错误", appCode, appUrl);
+		return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", lvo.getFrom(), lvo.getService());
 	}
 
 	/**
@@ -212,7 +235,7 @@ public class Login extends BaseController {
 			TicketGrantingTicket tgt, String from, String serviceId, boolean first)
 			throws ServletException, IOException {
 		try {
-			loginSuccess(t, request, tgt, from, serviceId);
+			// loginSuccess(t, request, tgt, from, serviceId);
 
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
 				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
@@ -253,11 +276,11 @@ public class Login extends BaseController {
 		}
 	}
 
-	private void loginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
-			String serviceId) {
+	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
+			String serviceId, Client client) {
 		String ip = WebUtils.getIpAddress(request);
 		lockManager.dealAutoLock(t, true, tgt.getUsername(), ip, "登录验证成功");
-		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, from, serviceId);
+		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, from, serviceId, tgt.getId(), client);
 	}
 
 	private Map<String, String> authFailure(Trace t, HttpServletRequest request, String username, String code,
@@ -287,12 +310,13 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
-			String serviceId, boolean first, String pwdStrength) throws ServletException, IOException {
+	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
+			String from, String serviceId, boolean first, String pwdStrength, Client client)
+			throws ServletException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
 		try {
-			loginSuccess(t, request, tgt, from, serviceId);
+			ssoLoginSuccess(t, request, tgt, from, serviceId, client);
 
 			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
 				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
@@ -388,14 +412,14 @@ public class Login extends BaseController {
 		return null;
 	}
 
-	private void setRememberMe(String remember, String userName, HttpServletRequest request,
+	private void setRememberMe(Integer remember, String userName, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
 			Cookie cookie = new Cookie(IParams.REMEMBER_COOKIE, userName);
 			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
 				cookie.setSecure(true);
 			}
-			cookie.setMaxAge("true".equalsIgnoreCase(remember) ? (60 * 60 * 24 * 365) : 0);
+			cookie.setMaxAge((remember != null && remember.intValue() == 1) ? (60 * 60 * 24 * 365) : 0);
 			cookie.setPath(request.getContextPath());
 			cookie.setHttpOnly(true);
 			response.addCookie(cookie);

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.service.BaseService;
 import com.linkallcloud.sso.activity.ILoginHisActivity;
 import com.linkallcloud.sso.domain.LoginHis;
@@ -19,6 +20,21 @@ public class LoginHisService extends BaseService<LoginHis, ILoginHisActivity> im
 	@Override
 	public ILoginHisActivity activity() {
 		return loginHisActivity;
+	}
+
+	@Override
+	public void logout(Trace t, String md5Tgt) {
+		activity().logout(t, md5Tgt);
+	}
+
+	@Override
+	public void logout(Trace t, Long id) {
+		activity().logout(t, id);
+	}
+
+	@Override
+	public LoginHis fetchByTgt(Trace t, String md5Tgt) {
+		return activity().fetchByTgt(t, md5Tgt);
 	}
 
 }

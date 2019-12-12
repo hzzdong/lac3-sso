@@ -1,69 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.linkallcloud.sso.server.dao.ILoginHisDao">
+<mapper namespace="com.linkallcloud.sso.server.dao.IAppLoginHisDao">
 
 	<sql id="Base_Column_List">
 		u.id,u.uuid,u.status,u.createTime,u.updateTime
-		,u.loginname
-		,u.loginTime
 		,u.appCode
 		,u.service
-		,u.ip
-		,u.mobi
-		,u.mobileBrand
-		,u.os
-		,u.osVersion
-		,u.browser
-		,u.browserVersion
-		,u.tgt
+		,u.loginname
+		,u.loginTime
 		,u.logoutTime
+		,u.tgt
+		,u.proxy
+		,u.proxyChain
+		,u.pgt
+		,u.ppgt
 	</sql>
 	
-	<select id="fetchById" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			tab_login_his u
+			tab_app_login_his u
 		where 
 			u.id=#{id}
 	</select>
 	
-	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			tab_login_his u 
+			tab_app_login_his u 
 		WHERE
 			u.id = #{id} and u.uuid=#{uuid} 
 	</select>
 	
-	<select id="fetchByTgt" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="fetchByCode" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			tab_login_his u 
+			tab_app_login_his u 
 		where 
-			u.tgt=#{tgt}
+			u.code=#{code}
 	</select>
 	
-	<select id="findByIds" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		select
 			<include refid="Base_Column_List" />
-		from tab_login_his u 
+		from tab_app_login_his u 
 		where u.status &lt;&gt; 9 and  u.id in
 			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
 				#{id}
 			</foreach>
 	</select>
 	
-	<select id="findPage" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			tab_login_his u 
+			tab_app_login_his u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
+			<if test="page.cnds!=null and page.cnds.service != null"> AND u.service = #{page.cnds.service}</if>
 			<if test="page.cnds!=null and page.cnds.loginname != null"> AND u.loginname = #{page.cnds.loginname}</if>
 			<if test="page.cnds!=null and page.cnds.loginTime != null"> AND u.loginTime = #{page.cnds.loginTime}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{page.cnds.loginTimeGe}</if>
@@ -71,16 +70,8 @@
 			<if test="page.cnds!=null and page.cnds.logoutTime != null"> AND u.logoutTime = #{page.cnds.logoutTime}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{page.cnds.logoutTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{page.cnds.logoutTimeLe}</if>
-			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
-			<if test="page.cnds!=null and page.cnds.service != null"> AND u.service = #{page.cnds.service}</if>
-			<if test="page.cnds!=null and page.cnds.ip != null"> AND u.ip = #{page.cnds.ip}</if>
-			<if test="page.cnds!=null and page.cnds.mobi != null"> AND u.mobi = #{page.cnds.mobi}</if>
-			<if test="page.cnds!=null and page.cnds.mobileBrand != null"> AND u.mobileBrand = #{page.cnds.mobileBrand}</if>
-			<if test="page.cnds!=null and page.cnds.os != null"> AND u.os = #{page.cnds.os}</if>
-			<if test="page.cnds!=null and page.cnds.osVersion != null"> AND u.osVersion = #{page.cnds.osVersion}</if>
-			<if test="page.cnds!=null and page.cnds.browser != null"> AND u.browser = #{page.cnds.browser}</if>
-			<if test="page.cnds!=null and page.cnds.browserVersion != null"> AND u.browserVersion = #{page.cnds.browserVersion}</if>
 			<if test="page.cnds!=null and page.cnds.tgt != null"> AND u.tgt = #{page.cnds.tgt}</if>
+			<if test="page.cnds!=null and page.cnds.proxy != null"> AND u.proxy = #{page.cnds.proxy}</if>
 		<choose>
 			<when test="page.orders != null and page.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
@@ -91,14 +82,16 @@
 		</choose>
 	</select>
 	
-	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			tab_login_his u 
+			tab_app_login_his u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
+			<if test="page.cnds!=null and page.cnds.service != null"> AND u.service = #{page.cnds.service}</if>
 			<if test="page.cnds!=null and page.cnds.loginname != null"> AND u.loginname = #{page.cnds.loginname}</if>
 			<if test="page.cnds!=null and page.cnds.loginTime != null"> AND u.loginTime = #{page.cnds.loginTime}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{page.cnds.loginTimeGe}</if>
@@ -106,16 +99,11 @@
 			<if test="page.cnds!=null and page.cnds.logoutTime != null"> AND u.logoutTime = #{page.cnds.logoutTime}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{page.cnds.logoutTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{page.cnds.logoutTimeLe}</if>
-			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
-			<if test="page.cnds!=null and page.cnds.service != null"> AND u.service = #{page.cnds.service}</if>
-			<if test="page.cnds!=null and page.cnds.ip != null"> AND u.ip = #{page.cnds.ip}</if>
-			<if test="page.cnds!=null and page.cnds.mobi != null"> AND u.mobi = #{page.cnds.mobi}</if>
-			<if test="page.cnds!=null and page.cnds.mobileBrand != null"> AND u.mobileBrand = #{page.cnds.mobileBrand}</if>
-			<if test="page.cnds!=null and page.cnds.os != null"> AND u.os = #{page.cnds.os}</if>
-			<if test="page.cnds!=null and page.cnds.osVersion != null"> AND u.osVersion = #{page.cnds.osVersion}</if>
-			<if test="page.cnds!=null and page.cnds.browser != null"> AND u.browser = #{page.cnds.browser}</if>
-			<if test="page.cnds!=null and page.cnds.browserVersion != null"> AND u.browserVersion = #{page.cnds.browserVersion}</if>
 			<if test="page.cnds!=null and page.cnds.tgt != null"> AND u.tgt = #{page.cnds.tgt}</if>
+			<if test="page.cnds!=null and page.cnds.proxy != null"> AND u.proxy = #{page.cnds.proxy}</if>
+			<if test="page.cnds!=null and page.cnds.pgt != null"> AND u.pgt = #{page.cnds.pgt}</if>
+			<if test="page.cnds!=null and page.cnds.ppgt != null"> AND u.ppgt = #{page.cnds.ppgt}</if>
+				
 		<choose>
 			<when test="page.orders != null and page.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
@@ -126,14 +114,16 @@
 		</choose>
 	</select>
 	
-	<select id="find" resultType="com.linkallcloud.sso.domain.LoginHis">
+	<select id="find" resultType="com.linkallcloud.sso.domain.AppLoginHis">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			tab_login_his u
+			tab_app_login_his u
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.appCode != null"> AND u.appCode = #{query.cnds.appCode}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.service != null"> AND u.service = #{query.cnds.service}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.loginname != null"> AND u.loginname = #{query.cnds.loginname}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.loginTime != null"> AND u.loginTime = #{query.cnds.loginTime}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{query.cnds.loginTimeGe}</if>
@@ -141,16 +131,11 @@
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTime != null"> AND u.logoutTime = #{query.cnds.logoutTime}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{query.cnds.logoutTimeGe}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{query.cnds.logoutTimeLe}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.appCode != null"> AND u.appCode = #{query.cnds.appCode}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.service != null"> AND u.service = #{query.cnds.service}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.ip != null"> AND u.ip = #{query.cnds.ip}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.mobi != null"> AND u.mobi = #{query.cnds.mobi}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.mobileBrand != null"> AND u.mobileBrand = #{query.cnds.mobileBrand}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.os != null"> AND u.os = #{query.cnds.os}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.osVersion != null"> AND u.osVersion = #{query.cnds.osVersion}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.browser != null"> AND u.browser = #{query.cnds.browser}</if>
-			<if test="query!=null and query.cnds!=null and query.cnds.browserVersion != null"> AND u.browserVersion = #{query.cnds.browserVersion}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.tgt != null"> AND u.tgt = #{query.cnds.tgt}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.proxy != null"> AND u.proxy = #{query.cnds.proxy}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.pgt != null"> AND u.pgt = #{query.cnds.pgt}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.ppgt != null"> AND u.ppgt = #{query.cnds.ppgt}</if>
+				
 		<choose>
 			<when test="query != null and query.orders != null and query.orders.length > 0">
 				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
@@ -161,48 +146,79 @@
 		</choose>
 	</select>
 	
-	<insert id="insert" parameterType="com.linkallcloud.sso.domain.LoginHis" useGeneratedKeys="true" keyProperty="entity.id">
-		insert into tab_login_his 
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.AppLoginHis" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_app_login_his 
 			( uuid,status,createTime,updateTime
-			,loginname
-			,loginTime
 			,appCode
 			,service
-			,ip
-			,mobi
-			,mobileBrand
-			,os
-			,osVersion
-			,browser
-			,browserVersion
-			,tgt
+			,loginname
+			,loginTime
 			,logoutTime
+			,tgt
+			,proxy
+			,proxyChain
+			,pgt
+			,ppgt
 			)
 		values
 			(#{entity.uuid},0,now(),now()
-			,#{entity.loginname}
-			,#{entity.loginTime}
 			,#{entity.appCode}
 			,#{entity.service}
-			,#{entity.ip}
-			,#{entity.mobi}
-			,#{entity.mobileBrand}
-			,#{entity.os}
-			,#{entity.osVersion}
-			,#{entity.browser}
-			,#{entity.browserVersion}
-			,#{entity.tgt}
+			,#{entity.loginname}
+			,#{entity.loginTime}
 			,#{entity.logoutTime}
+			,#{entity.tgt}
+			,#{entity.proxy}
+			,#{entity.proxyChain}
+			,#{entity.pgt}
+			,#{entity.ppgt}
 			)
 	</insert>
 	
-	<update id="logout">
+	<update id="update">
 		update 
-			tab_login_his 
+			tab_app_login_his 
 		set 
-			updateTime=now(),logoutTime=now()
+			updateTime=now()
+			,appCode=#{entity.appCode}
+			,service=#{entity.service}
+			,loginname=#{entity.loginname}
+			,loginTime=#{entity.loginTime}
+			,logoutTime=#{entity.logoutTime}
+			,tgt=#{entity.tgt}
+			,proxy=#{entity.proxy}
+			,proxyChain=#{entity.proxyChain}
+			,pgt=#{entity.pgt}
+			,ppgt=#{entity.ppgt}
 		where 
-			id=#{id}
+			id=#{entity.id} and uuid=#{entity.uuid}
 	</update>
+	
+	<delete id="delete">
+		update 
+			tab_app_login_his 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+
+	<update id="updateStatus">
+		update
+			tab_app_login_his
+		set
+			status=#{status},updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</update>
+	
+	<select id="findEntitiesByTgt" resultType="com.linkallcloud.sso.domain.AppLoginHis">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_app_login_his u
+		WHERE
+			u.tgt = #{tgt}
+	</select>
 	
 </mapper>

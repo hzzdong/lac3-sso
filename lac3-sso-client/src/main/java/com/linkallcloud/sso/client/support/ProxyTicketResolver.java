@@ -17,38 +17,41 @@ import com.linkallcloud.web.sso.ProxyRetriever;
 import com.linkallcloud.web.utils.Controllers;
 
 public class ProxyTicketResolver implements HandlerMethodArgumentResolver {
-    private static Log log = Logs.get();
+	private static Log log = Logs.get();
 
-    private ProxyRetriever proxyRetriever;
+	private String fromAppCode;
+	private ProxyRetriever proxyRetriever;
 
-    public ProxyTicketResolver(String ssoServerUrl) {
-        this.proxyRetriever = new SsoProxyRetriever(ssoServerUrl);
-    }
+	public ProxyTicketResolver(String fromAppCode, String ssoServerUrl) {
+		this.fromAppCode = fromAppCode;
+		this.proxyRetriever = new SsoProxyRetriever(ssoServerUrl);
+	}
 
-    @Override
-    public boolean supportsParameter(MethodParameter parameter) {
-        if (parameter.getParameterType().equals(String.class) && parameter.hasParameterAnnotation(Pt.class)) {
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean supportsParameter(MethodParameter parameter) {
+		if (parameter.getParameterType().equals(String.class) && parameter.hasParameterAnnotation(Pt.class)) {
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-        Pt ptAnnotation = parameter.getParameterAnnotation(Pt.class);
-        String appCode = ptAnnotation.code();
-        String url = ptAnnotation.url();
-        if (!Strings.isBlank(appCode) && !Strings.isBlank(url)) {
-            Service targetService = new SimpleService(url, appCode);
-            Assertion as = (Assertion) Controllers.getSessionObject(Assertion.ASSERTION_KEY);
-            if (as != null) {
-                return proxyRetriever.getProxyTicketIdFor(as.getProxyGrantingTicketId(), targetService);
-            } else {
-                log.error("########## 无法获取Pt，因为session中不存在Assertion");
-            }
-        } else {
-            log.error("########## 无法获取Pt，注解中code和url不能为空");
-        }
-        return null;
-    }
+	@Override
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer modelAndViewContainer,
+			NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
+		Pt ptAnnotation = parameter.getParameterAnnotation(Pt.class);
+		String appCode = ptAnnotation.code();
+		String url = ptAnnotation.url();
+		if (!Strings.isBlank(appCode) && !Strings.isBlank(url)) {
+			Service targetService = new SimpleService(url, appCode);
+			Assertion as = (Assertion) Controllers.getSessionObject(fromAppCode + Assertion.ASSERTION_KEY);
+			if (as != null) {
+				return proxyRetriever.getProxyTicketIdFor(as.getProxyGrantingTicketId(), targetService);
+			} else {
+				log.error("########## 无法获取Pt，因为session中不存在Assertion");
+			}
+		} else {
+			log.error("########## 无法获取Pt，注解中code和url不能为空");
+		}
+		return null;
+	}
 }

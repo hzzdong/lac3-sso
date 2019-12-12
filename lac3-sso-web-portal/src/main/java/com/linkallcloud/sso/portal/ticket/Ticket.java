@@ -5,7 +5,17 @@ package com.linkallcloud.sso.portal.ticket;
  */
 public abstract class Ticket {
 
-  /** Retrieves the ticket's username. */
-  public abstract String getUsername();
+	private String id;
+
+	/** Retrieves the ticket's username. */
+	public abstract String getUsername();
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 }

@@ -1,5 +1,6 @@
 package com.linkallcloud.sso.portal.ticket.cache;
 
+import com.linkallcloud.core.lang.Lang;
 import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.redis.ticket.RedisTicketCache;
 import com.linkallcloud.sso.portal.ticket.Ticket;
@@ -27,6 +28,7 @@ public abstract class ActiveTicketCache<T extends Ticket, C extends RedisTicketC
 	@Override
 	public synchronized String addTicket(T t) throws TicketException {
 		String ticketId = newTicketId();
+		t.setId(Lang.md5(ticketId));
 		// resetTimer(ticketId);
 		storeTicket(ticketId, t);
 		return ticketId;

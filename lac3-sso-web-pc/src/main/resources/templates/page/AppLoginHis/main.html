@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>登录日志管理</title>
+  <title>应用登录日志管理</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/css/bootstrap.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
@@ -27,9 +27,12 @@
 <body class="hold-transition skin-blue sidebar-mini">
 	<section class="find-tools">
 		<div class="searchBox">
-			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;登录日志管理</div>
+			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;应用登录日志管理</div>
 			<div class="pull-right">
 				<ul>
+					<li>
+						<button class="btn-permed btn_entiy_add btn btn-block btn-primary btn-sm" data-res="AppLoginHis"><i class="fa fa-plus"></i>&nbsp;新增应用登录日志</button>
+					</li>
 					<li>
 						<button class="btn-superSearch btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button>
 					</li>
@@ -38,7 +41,7 @@
 					</li>
 					<li>
 						<form id="f_entity_search" class="form-inline">
-							<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="登录名快速查询">
+							<input type="text" id="from" name="from" oper="eq" stype="S" class="form-control form-search" placeholder="登录站点快速查询">
 						</form>
 					</li>
 				</ul>
@@ -47,12 +50,32 @@
 
 		<div class="superSearch">
 			<form id="f_entity_search_s" class="form-inline">
+
+						
+				<div class="form-group">
+					<label class="control-label">登录站点：</label>
+					<div class="control-inline">
+						<input type="text" id="from" name="from" oper="eq" stype="S" class="form-control form-search" placeholder="登录站点精确匹配">
+					</div>
+				</div>
+						
+						
+				<div class="form-group">
+					<label class="control-label">站点url：</label>
+					<div class="control-inline">
+						<input type="text" id="service" name="service" oper="eq" stype="S" class="form-control form-search" placeholder="站点url精确匹配">
+					</div>
+				</div>
+						
+						
 				<div class="form-group">
 					<label class="control-label">登录名：</label>
 					<div class="control-inline">
 						<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="登录名精确匹配">
 					</div>
 				</div>
+						
+						
 				<div class="form-group">
 					<label>登录时间范围:</label>
 					<div class="input-group">
@@ -61,16 +84,66 @@
 						<input type="hidden" id="loginTimeLe" name="loginTimeLe" oper="le" stype="D">
 					</div>
 				</div>
+						
+						
 				<div class="form-group">
-					<label class="control-label">发起站点编码：</label>
-					<div class="control-inline">
-						<input type="text" id="appCode" name="appCode" oper="eq" stype="S" class="form-control form-search" placeholder="站点编码精确匹配">
+					<label>登出时间范围:</label>
+					<div class="input-group">
+						<input type="text" class="form-control pull-right" id="logoutTimePeriod" placeholder="请选择登出时间">
+						<input type="hidden" id="logoutTimeGe" name="logoutTimeGe" oper="ge" stype="D">
+						<input type="hidden" id="logoutTimeLe" name="logoutTimeLe" oper="le" stype="D">
 					</div>
 				</div>
+						
+						
 				<div class="form-group">
-					<label class="control-label">访问IP：</label>
+					<label class="control-label">MD5(tgt)：</label>
 					<div class="control-inline">
-						<input type="text" id="ip" name="ip" oper="eq" stype="S" class="form-control form-search" placeholder="访问IP精确匹配">
+						<input type="text" id="tgt" name="tgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(tgt)精确匹配">
+					</div>
+				</div>
+						
+						
+				<div class="form-group">
+					<label class="control-label">是否代理：</label>
+					<div class="control-inline">
+						<input type="text" id="proxy" name="proxy" oper="eq" stype="B" class="form-control form-search" placeholder="是否代理精确匹配">
+					</div>
+				</div>
+						
+						
+				<div class="form-group">
+					<label class="control-label">代理链：</label>
+					<div class="control-inline">
+						<input type="text" id="proxyChain" name="proxyChain" oper="eq" stype="S" class="form-control form-search" placeholder="代理链精确匹配">
+					</div>
+				</div>
+						
+						
+				<div class="form-group">
+					<label class="control-label">MD5(pgt)：</label>
+					<div class="control-inline">
+						<input type="text" id="pgt" name="pgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(pgt)精确匹配">
+					</div>
+				</div>
+						
+						
+				<div class="form-group">
+					<label class="control-label">MD5(parent pgt)：</label>
+					<div class="control-inline">
+						<input type="text" id="ppgt" name="ppgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(parent pgt)精确匹配">
+					</div>
+				</div>
+						
+				
+				<div class="form-group">
+					<label class="control-label">状态：</label>
+					<div class="control-inline">
+						<select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
+							<option value="">全部</option>
+							<option value="0">正常状态</option>
+							<option value="1">禁用状态</option>
+						</select>
 					</div>
 				</div>
 				<div class="form-group">
@@ -86,11 +159,17 @@
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>登录名</th>
-					<th>登录时间</th>
-					<th>退出/失效时间</th>
-					<th>访问IP</th>
-					<th>发起登录站点</th>
+							<th>登录站点</th>
+							<th>站点url</th>
+							<th>登录名</th>
+							<th>登录时间</th>
+							<th>登出时间</th>
+							<th>MD5(tgt)</th>
+							<th>是否代理</th>
+							<th>代理链</th>
+							<th>MD5(pgt)</th>
+							<th>MD5(parent pgt)</th>
+					<th>状态</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -146,6 +225,26 @@
 			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
 		});
 		
+			
+		$("#logoutTimeGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#logoutTimeLe").val(moment().format('YYYY-MM-DD HH:mm:ss'));
+		$('#logoutTimePeriod').daterangepicker({
+		    "ranges": {
+		    	  '今天': [moment(), moment()],
+	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	              '最近7天': [moment().subtract(6, 'days'), moment()],
+	              '最近30天': [moment().subtract(29, 'days'), moment()],
+	              '本月': [moment().startOf('month'), moment().endOf('month')],
+	              '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		    },
+		    "startDate": moment().subtract(6, 'days'),
+		    "endDate": moment()
+		}, function(start, end, label) {
+			$("#logoutTimeGe").val(start.format('YYYY-MM-DD'));
+			$("#logoutTimeLe").val(end.format('YYYY-MM-DD HH:mm:ss'));
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+		});
+		
 				
 		initDataTable();
 		bindEvents4DataTable();
@@ -164,8 +263,14 @@
 		});
 		
 		$(".btn_entity_search_reset").on("click", function() {
+				
 			$("#loginTimeGe").val("");
 			$("#loginTimeLe").val("");
+			
+				
+			$("#logoutTimeGe").val("");
+			$("#logoutTimeLe").val("");
+			
 		});
 		
 		$('.btn-superSearch').on('click',function(){
@@ -181,83 +286,139 @@
 		        $(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
 		    });
 
+		$(".btn_entiy_add").on("click", function() {		
+			LAC.addRow4DataTable(dtable, ctx + '/AppLoginHis/add', 'AppLoginHis-edit', '新增应用登录日志');
+		});
+
 		$('#dt_entity tbody').on('click', 'button.btn-entity-edit', function(event) {
 			var tr = $(this).parents('tr');
 			var td0 = tr.children("td:first");
 			curRow = dtable.row(tr);
-			LAC.editCurRow4DataTable(curRow, ctx + '/LoginHis/edit', 'LoginHis-edit', '编辑登录日志', td0);
-		});
-		
-		$('#dt_entity tbody').on('click', 'button.btn-entity-view', function(event) {
-			curRow = dtable.row($(this).parents('tr'));
-			var rd = curRow.data();
-			LacTab.addTab({
-	            id : "LoginHis-view",
-	            title : '查看登录日志详情',
-	            url : ctx + '/LoginHis/view?id='+rd.id+"&uuid="+rd.uuid,
-	        });
+			LAC.editCurRow4DataTable(curRow, ctx + '/AppLoginHis/edit', 'AppLoginHis-edit', '编辑应用登录日志', td0);
 		});
 
+		$('#dt_entity tbody').on('click', 'button.btn-entity-del', function(event) {
+			curRow = dtable.row($(this).parents('tr'));
+			LAC.delete4DataTable(curRow, ctx + '/AppLoginHis/delete');
+		});
+
+		$('#dt_entity tbody').on('click', 'button.btn-entity-status1', function(event) {
+			curRow = dtable.row($(this).parents('tr'));
+			var data = curRow.data();
+			var url = ctx + '/AppLoginHis/changeStatus?status=1&id='+data.id+"&uuid="+data.uuid;
+			LAC.confirmExecute(url, {}, function(ret) {
+				if (ret) {
+					dtable.draw();
+				} else {
+					LAC.tip("操作执行失败！！！", "error");
+				}
+			}, "你确定要禁用此应用登录日志吗？", true);
+		});
+
+		$('#dt_entity tbody').on('click', 'button.btn-entity-status0', function(event) {
+			curRow = dtable.row($(this).parents('tr'));
+			var data = curRow.data();
+			var url = ctx + '/AppLoginHis/changeStatus?status=0&id='+data.id+"&uuid="+data.uuid;
+			LAC.confirmExecute(url, {}, function(ret) {
+				if (ret) {
+					dtable.draw();
+				} else {
+					LAC.tip("操作执行失败！！！", "error");
+				}
+			}, "你确定要启用此应用登录日志吗？", true);
+		});
 		
 	}
 
 	function initDataTable() {
 		dtable = $('#dt_entity').LacDTable(
-			{
-				order : [ [ 1, "desc" ] ],
-				url : ctx + "/LoginHis/page",
-				autoSequence : true,
-				columns : [
-					{
-						"data" : "id",
-						"visible" : false
-					}, 
-					{
-						"data" : "loginname",
-						"width" : "150px",
-						"defaultContent" : ""
-					}, 
-					{
-						"data" : "loginTime",
-						"width" : "100px",
-						"defaultContent" : ""
-					}, 
-					{
-						"data" : "logoutTime",
-						"width" : "100px",
-						"defaultContent" : ""
-					}, 
-					{
-						"data" : "ip",
-						"width" : "80px",
-						"defaultContent" : ""
-					}, 
-					{
-						"data" : "appCode",
-						"defaultContent" : "",
-						"render" : function(data, type, row) {
-							return (row.appCode?row.appCode:'') + ' , ' + (row.service?row.service:'');
-						}
-					}, 
-					{
-						"data" : null,
-						"defaultContent" : "",
-						"width" : "45px",
-						"orderable" : false,
-						"searchable" : false,
-						"sClass" : "text-center",
-						"render" : function(data, type, row) {
-							return '<button class="btn-permed btn-entity-view icon-btn" data-res="LoginHis" title="查看登录日志详情"><i class="fa fa-eye text-green"></i></button>';
-						}
-					}],
-		
-				initComplete : function(setting, json) {
-					$(".btn-permed").permissionEnabled();
-				},
-				drawCallback : function(setting) {
-					$(".btn-permed").permissionEnabled();
-				}
-			});
+						{
+							order : [ [ 1, "desc" ] ],
+							url : ctx + "/AppLoginHis/page",
+							autoSequence : true,
+							columns : [
+								{
+									"data" : "id",
+									"visible" : false
+								}, 
+									{
+										"data" : "from",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "service",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "loginname",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "loginTime",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "logoutTime",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "tgt",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "proxy",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "proxyChain",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "pgt",
+										"defaultContent" : ""
+									}, 
+									{
+										"data" : "ppgt",
+										"defaultContent" : ""
+									}, 
+								{
+										"data" : "status",
+										"width" : "40px",
+										"render" : function(data, type, row) {
+											if (data == 0) {
+												return '<span class="badge bg-green">正常</span>';
+											} else if (data == 1) {
+												return '<span class="badge bg-red">禁用</span>';
+											} else {
+												return "";
+											}
+										}
+									}, {
+										"data" : null,
+										"defaultContent" : "",
+										"width" : "75px",
+										"orderable" : false,
+										"searchable" : false,
+										"sClass" : "text-center",
+										"render" : function(data, type, row) {
+											var ret = '<button class="btn-permed btn-entity-edit icon-btn" data-res="AppLoginHis" title="应用登录日志修改"><i class="fa fa-pencil text-green"></i></button>';
+											if (row.status == 0) {
+												ret += '<button class="btn-permed btn-entity-status1 icon-btn" data-res="AppLoginHis" title="应用登录日志禁用"><i class="fa fa-lock text-yellow"></i></button>';
+											} else if (row.status == 1){
+												ret += '<button class="btn-permed btn-entity-status0 icon-btn" data-res="AppLoginHis" title="应用登录日志启用"><i class="fa fa-unlock text-yellow"></i></button>';
+											}
+											ret += '<button class="btn-permed btn-entity-del icon-btn" data-res="AppLoginHis" title="应用登录日志删除"><i class="fa fa-trash-o text-red"></i></button>';
+											return ret;
+										}
+									}],
+					
+							initComplete : function(setting, json) {
+								$(".btn-permed").permissionEnabled();
+							},
+							drawCallback : function(setting) {
+								$(".btn-permed").permissionEnabled();
+							}
+						});
 
 	}
 </script>

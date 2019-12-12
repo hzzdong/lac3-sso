@@ -9,7 +9,7 @@ CREATE TABLE `tab_login_his` (
   `updateTime` datetime DEFAULT NULL COMMENT '更新时间',
 	          `loginname` varchar(64) DEFAULT NULL COMMENT '登录名',
 	          `loginTime` datetime DEFAULT NULL COMMENT '登录时间',
-	          `from` varchar(64) DEFAULT NULL COMMENT '登录站点',
+	          `appCode` varchar(64) DEFAULT NULL COMMENT '登录站点',
 	          `service` varchar(255) DEFAULT NULL COMMENT '站点url',
 	          `ip` varchar(64) DEFAULT NULL COMMENT '访问IP',
 	          `mobi` int(1) DEFAULT NULL COMMENT '是否移动设备',
@@ -18,6 +18,8 @@ CREATE TABLE `tab_login_his` (
 	          `osVersion` varchar(32) DEFAULT NULL COMMENT '操作系统版本',
 	          `browser` varchar(64) DEFAULT NULL COMMENT '浏览器',
 	          `browserVersion` varchar(32) DEFAULT NULL COMMENT '浏览器版本',
+	          `tgt` varchar(127) DEFAULT NULL COMMENT 'MD5(tgt)',
+	          `logoutTime` datetime DEFAULT NULL COMMENT '登出时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='登录日志';

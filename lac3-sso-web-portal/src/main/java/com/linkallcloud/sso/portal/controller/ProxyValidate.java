@@ -17,7 +17,9 @@ import com.linkallcloud.core.principal.SimpleService;
 import com.linkallcloud.sso.oapi.dto.ProxyAuthenticationResult;
 import com.linkallcloud.sso.portal.exception.SiteException;
 import com.linkallcloud.sso.portal.exception.TicketException;
+import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.portal.ticket.ProxyTicket;
+import com.linkallcloud.sso.portal.ticket.TicketBox;
 import com.linkallcloud.sso.portal.ticket.cache.ProxyTicketCache;
 
 @Controller
@@ -55,7 +57,7 @@ public class ProxyValidate extends BaseController {
 			} else if ("true".equals(renew) && !pt.isFromNewLogin()) {
 				return validationFailure(INVALID_TICKET, "ticket not backed by initial SSO login, as requested");
 			} else {
-				String pgtIOU = null;
+				TicketBox<ProxyGrantingTicket> pgtIOU = null;
 				if (!Strings.isBlank(pgtUrl) && !Strings.isBlank(pgtAppCode)) {
 					try {
 						checkSiteCanPass(t, pgtAppCode, pgtUrl);
@@ -64,16 +66,20 @@ public class ProxyValidate extends BaseController {
 					}
 					pgtIOU = sendPgt(pt, pgtUrl, pgtAppCode);
 				}
-				return validationSuccess(pt, pgtIOU);
+				return validationSuccess(t, pt, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
 			}
 		}
 	}
 
-	private ProxyAuthenticationResult validationSuccess(ProxyTicket pt, String pgtIOU) {
+	private ProxyAuthenticationResult validationSuccess(Trace t, ProxyTicket pt, String appCode, String appUrl,
+			TicketBox<ProxyGrantingTicket> pgtIOU, String pgtAppCode, String pgtUrl) {
+		// app login log
+		appProxyAuthSuccess(t, pt,  appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
+
 		ProxyAuthenticationResult result = new ProxyAuthenticationResult(pt.getUsername(), pt.getSiteUser(),
 				pt.getSiteMaping());
-		if (!Strings.isBlank(pgtIOU)) {
-			result.setProxyGrantingTicket(pgtIOU);
+		if (pgtIOU != null && !Strings.isBlank(pgtIOU.getId())) {
+			result.setProxyGrantingTicket(pgtIOU.getId());
 		}
 		Iterator<SimpleService> proxies = pt.getProxies().iterator();
 		while (proxies.hasNext()) {

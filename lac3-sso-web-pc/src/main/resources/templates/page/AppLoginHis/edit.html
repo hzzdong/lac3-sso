@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>查看登录日志详情</title>
+  <title>应用登录日志管理</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/css/bootstrap.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css" th:href="@{{path}/AdminLTE2410/dist/css/skins/_all-skins.min.css(path=${static_server},v=${static_res_version})}">
   <link href="plugins/ztree/css/zTreeStyle/zTreeStyle.css" th:href="@{{path}/AdminLTE2410/plugins/ztree/css/zTreeStyle/zTreeStyle.css(path=${static_server},v=${static_res_version})}" rel="stylesheet">
   <link href="plugins/ztree/css/metroStyle/metroStyle.css" th:href="@{{path}/AdminLTE2410/plugins/ztree/css/metroStyle/metroStyle.css(path=${static_server},v=${static_res_version})}" rel="stylesheet">
-  <link href="lac/lac2TreeTable.css" th:href="@{{path}/lac/lac2TreeTable.css(path=${static_server},v=${static_res_version})}" rel="stylesheet">
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -27,58 +26,132 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" th:href="@{{path}/AdminLTE2410/bower_components/fonts.googleapis/fonts.css(path=${static_server},v=${static_res_version})}">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
-<div class="box box-outline">
+<div class="box box-outline box-info">
 	<div class="box-header with-border">
-		<h3 class="box-title">SSO登录日志</h3>
+		<h3 class="box-title">应用登录日志基本信息</h3>
 	</div>
 	<div class="box-body">
-			<table class="table table-bordered">
-				<tbody>
-					<tr>
-						<td style="width: 15%" align="right">登录账号:</td>
-						<td style="width: 35%" th:text="${entity.loginname}"></td>
-						<td style="width: 15%" align="right">登录时间:</td>
-						<td style="width: 35%" th:text="${entity.loginTimeStr}"></td>
-					</tr>
-					<tr>
-						<td align="right">发起登录站点编码:</td>
-						<td th:text="${entity.appCode}"></td>
-						<td align="right">访问IP:</td>
-						<td th:text="${entity.ip}"></td>
-					</tr>
-					<tr>
-						<td align="right">发起登录站点URL:</td>
-						<td th:text="${entity.service}" colspan="3"></td>
-					</tr>
-					<tr>
-						<td align="right">是否移动设备:</td>
-						<td th:text="${entity.mobi?'是':'否'}"></td>
-						<td align="right">手机品牌:</td>
-						<td th:text="${entity.mobileBrand}"></td>
-					</tr>
-					<tr>
-						<td align="right">操作系统:</td>
-						<td th:text="${entity.os}"></td>
-						<td align="right">操作系统版本:</td>
-						<td th:text="${entity.osVersion}"></td>
-					</tr>
-					<tr>
-						<td align="right">浏览器:</td>
-						<td th:text="${entity.browser}"></td>
-						<td align="right">浏览器版本:</td>
-						<td th:text="${entity.browserVersion}"></td>
-					</tr>
-				</tbody>
-			</table>
-	</div>
-	<div class="box-header with-border">
-		<h3 class="box-title">应用登录详情</h3>
-	</div>
-	<div class="box-body">
-		<ul id="dataTree" class="ztree"></ul>
+		<form id="f_entity_addedit" class="form-horizontal" method="post" action="/AppLoginHis/save" th:action="@{/AppLoginHis/save}">
+			<input type="hidden" id="id" name="id" th:value="${id}"/>
+			<input type="hidden" id="uuid" name="uuid" th:value="${uuid}"/>
+			
+					
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="from" class="col-sm-4 control-label">登录站点</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[64]]" name="from" id="from" placeholder="请输入登录站点...">
+						</div>
+					</div>
+				</div>
+					
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="service" class="col-sm-4 control-label">站点url</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[255]]" name="service" id="service" placeholder="请输入站点url...">
+						</div>
+					</div>
+				</div>
+			</div>
+				
+					
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="loginname" class="col-sm-4 control-label">登录名</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[127]]" name="loginname" id="loginname" placeholder="请输入登录名...">
+						</div>
+					</div>
+				</div>
+					
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="loginTime" class="col-sm-4 control-label">登录时间</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control date" name="loginTime" id="loginTime" placeholder="请输入登录时间...">
+						</div>
+					</div>
+				</div>
+			</div>
+				
+					
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="logoutTime" class="col-sm-4 control-label">登出时间</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control date" name="logoutTime" id="logoutTime" placeholder="请输入登出时间...">
+						</div>
+					</div>
+				</div>
+					
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="tgt" class="col-sm-4 control-label">MD5(tgt)</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[127]]" name="tgt" id="tgt" placeholder="请输入MD5(tgt)...">
+						</div>
+					</div>
+				</div>
+			</div>
+				
+					
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="proxy" class="col-sm-4 control-label">是否代理</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[1]]" name="proxy" id="proxy" placeholder="请输入是否代理...">
+						</div>
+					</div>
+				</div>
+					
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="proxyChain" class="col-sm-4 control-label">代理链</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[512]]" name="proxyChain" id="proxyChain" placeholder="请输入代理链...">
+						</div>
+					</div>
+				</div>
+			</div>
+				
+					
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="pgt" class="col-sm-4 control-label">MD5(pgt)</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[127]]" name="pgt" id="pgt" placeholder="请输入MD5(pgt)...">
+						</div>
+					</div>
+				</div>
+					
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="ppgt" class="col-sm-4 control-label">MD5(parent pgt)</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control validate[maxSize[127]]" name="ppgt" id="ppgt" placeholder="请输入MD5(parent pgt)...">
+						</div>
+					</div>
+				</div>
+			</div>
+				
+			
+
+		</form>
 	</div>
 	<div class="box-footer">
-		<button id="btn_entity_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">关闭</button>
+		<button id="btn_entity_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">取消</button>
+		<button id="btn_entity_save" type="button" class="btn btn-primary pull-right" data-res="AppLoginHis">保存</button>
 	</div>
 </div>
 
@@ -91,8 +164,8 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/js/bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery-slimscroll/jquery.slimscroll.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="bower_components/fastclick/lib/fastclick.js" th:src="@{{path}/AdminLTE2410/bower_components/fastclick/lib/fastclick.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="bower_components/bootstrap-daterangepicker-3.0.5/moment.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-daterangepicker-3.0.5/moment.min.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-daterangepicker-3.0.5/daterangepicker.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.zh-CN.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.zh-CN.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="dist/js/adminlte.min.js" th:src="@{{path}/AdminLTE2410/dist/js/adminlte.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="dist/js/demo.js" th:src="@{{path}/AdminLTE2410/dist/js/demo.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="plugins/iCheck/icheck.min.js" th:src="@{{path}/AdminLTE2410/plugins/iCheck/icheck.min.js(path=${static_server},v=${static_res_version})}"></script>
@@ -107,67 +180,35 @@
 <script src="../../lac/lac2FieldTree.js" th:src="@{{path}/lac/lac2FieldTree.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/lac2Dialog.js" th:src="@{{path}/lac/lac2Dialog.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../../lac/lac2DataTables.js" th:src="@{{path}/lac/lac2DataTables.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="../../lac/lac2TreeTable.js" th:src="@{{path}/lac/lac2TreeTable.js(path=${static_server},v=${static_res_version})}"></script>
-<script th:inline="javascript">
-	/*<![CDATA[*/
-	var ut = /*[[${entity.tgt}]]*/'';
-	/*]]>*/
-
+<script src="../../lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../lac/fuzzysearch.js" th:src="@{{path}/lac/fuzzysearch.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/ztree/js/jquery.ztree.exhide.min.js" th:src="@{{path}/AdminLTE2410/plugins/ztree/js/jquery.ztree.exhide.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/languages/jquery.validationEngine-zh_CN.js" th:src="@{{path}/AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/languages/jquery.validationEngine-zh_CN.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/jquery.validationEngine-2.6.4.js" th:src="@{{path}/AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/jquery.validationEngine-2.6.4.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../../AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/validateHelper.js" th:src="@{{path}/AdminLTE2410/plugins/jqueryValidationEngine-2.6.4/validateHelper.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript">
 	$(function() {
-		initAppLoginHisTreeTable();
+		$('.date').datepicker({
+			autoclose : true,
+			format : 'yyyy-mm-dd',
+			language : "zh-CN",
+			todayHighlight : true
+		});
+		
+		$("#f_entity_addedit").initLacForm(ctx + "/AppLoginHis/get?id=" + $("#id").val() + "&uuid=" + $("#uuid").val(), function(){
+			$("#btn_entity_save").permissionEnabled();
+		});
+
 		$("#btn_entity_cancel").click(function() {
 			LacTab.closeThisTab();
 		});
-	});
-	
-	function initAppLoginHisTreeTable(){
-		$("#dataTree").treeTable({
-			url : ctx + "/AppLoginHis/list?ut="+ut,
-			defaultColumnWidth: '25%',
-			defaultColumnName: '登录名',
-			//iconBasePath: ctx + "/lac/imgs/",
-			expandAll: false,
-			callback : function(){
-				$(".btn-permed").permissionEnabled();
-			},
-			columns : [
-				{
-					"feName" : "govCode",
-					"fcName" : "应用编码",
-					"width" : "10%",
-					"render" : function(treeNode) {
-						var url = '';
-						if (treeNode.attributes && treeNode.attributes.url) {
-							url = treeNode.attributes.url;
-						}
-						return '<span title="'+url+'">'+(treeNode.govCode?treeNode.govCode:'')+'</span>';
-					}
-				},
-				{
-					"feName" : "attributes.loginTime",
-					"fcName" : "登录时间",
-					"width" : "10%"
-				},
-				{
-					"feName" : "attributes.proxy",
-					"fcName" : "代理",
-					"width" : "5%",
-					"render" : function(treeNode) {
-						if (treeNode.attributes && treeNode.attributes.proxy == true) {
-							return '<span class="badge bg-aqua">是</span>';
-						} else {
-							return "";
-						}
-					}
-				},
-				{
-					"feName" : "attributes.proxyChain",
-					"fcName" : "代理链",
-					"width" : "50%"
-				}
-			]
+
+		$("#btn_entity_save").click(function() {
+			$('#f_entity_addedit').saveClose();
 		});
-	}
+
+		$("#f_entity_addedit").validationEngine("attach", { notShowPrompt : true }).bindValidationEngineHelper();
+	});
 </script>
 </body>
 </html>

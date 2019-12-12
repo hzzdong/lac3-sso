@@ -37,7 +37,7 @@ $(function() {
 		var username = $.trim($("#username").val());
 		var password = $.trim($("#password").val());
 		var vcode = $.trim($("#vcode").val());
-		var rememberMe = $("#rememberMe").is(":checked") ? "true" : "false";
+		var rememberMe = $("#rememberMe").is(":checked") ? "1" : "0";
 
 		if (vcode == "") {
 			showErrorInfo("验证码不能为空，请重新输入！");
@@ -59,22 +59,25 @@ $(function() {
 			var lvo = {
 				from : $("#from").val(),
 				service : $("#service").val(),
-				username : username,
+				loginName : username,
 				password : mpass,
 				lt : $("#lt").val(),
 				warn : $("#warn").val(),
 				pwdStrength: pwdStrength,
 				vcode : vcode,
-				rememberMe : rememberMe
+				rememberMe : rememberMe,
+				client:browserOsInfo
 			};
 			$.ajax({
 				url : ctx + "/login",
 				type : 'post',
 				cache : false,
-				data : lvo,
+				dataType:'json',
+        	    contentType: "application/json; charset=utf-8",
+				data : JSON2.stringify(lvo),
 				async : false, // 默认为true 异步
 				success : function(ret) {
-					console.log(JSON2.stringify(ret));
+					//console.log(JSON2.stringify(ret));
 					if(ret && ret.code=="0"){
 		        		window.location.href = ret.go;
 					} else {

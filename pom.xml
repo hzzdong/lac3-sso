@@ -12,11 +12,11 @@
 
 	<groupId>com.linkallcloud</groupId>
 	<artifactId>lac3-sso</artifactId>
-	<version>0.0.3.7</version>
+	<version>0.0.4.1</version>
 	<packaging>pom</packaging>
 
-	<name>Linkallcloud Project</name>
-	<description>Linkallcloud Project</description>
+	<name>Linkallcloud Project sso</name>
+	<description>Linkallcloud Project sso</description>
 	
 	<distributionManagement>
 		<repository>
@@ -48,10 +48,10 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<java.version>1.8</java.version>
 
-		<lac3-core.version>0.0.8.6</lac3-core.version>
-		<lac3-cache.version>0.0.8.6</lac3-cache.version>
-		<lac3-handshake.version>0.0.8.6</lac3-handshake.version>
-		<lac3-web.version>0.0.8.6</lac3-web.version>
+		<lac3-core.version>0.0.8.8</lac3-core.version>
+		<lac3-cache.version>0.0.8.8</lac3-cache.version>
+		<lac3-handshake.version>0.0.8.8</lac3-handshake.version>
+		<lac3-web.version>0.0.8.8</lac3-web.version>
 
 		<lac3-um.version>0.0.5.5</lac3-um.version>
 

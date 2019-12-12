@@ -114,10 +114,10 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 				}
 
 				request.setAttribute(Principal.PRINCIPAL_KEY, assertion.getPrincipal());
-				request.setAttribute(Assertion.ASSERTION_KEY, assertion);
+				request.setAttribute(siteCode + Assertion.ASSERTION_KEY, assertion);
 
 				if (isUseSession()) {
-					request.getSession().setAttribute(Assertion.ASSERTION_KEY, assertion);
+					request.getSession().setAttribute(siteCode + Assertion.ASSERTION_KEY, assertion);
 				}
 			} catch (final ValidationException e) {
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);

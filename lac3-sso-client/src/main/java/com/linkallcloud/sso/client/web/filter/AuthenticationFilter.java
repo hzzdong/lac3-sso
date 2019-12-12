@@ -95,7 +95,9 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 
 		final HttpSession session = request.getSession(isUseSession());
 		final String ticket = request.getParameter(PARAM_TICKET);
-		final Assertion assertion = session != null ? (Assertion) session.getAttribute(Assertion.ASSERTION_KEY) : null;
+		final Assertion assertion = session != null
+				? (Assertion) session.getAttribute(siteCode + Assertion.ASSERTION_KEY)
+				: null;
 		final boolean wasGatewayed = session != null && session.getAttribute(CONST_GATEWAY) != null;
 
 		if (CommonUtils.isBlank(ticket) && assertion == null && !wasGatewayed) {

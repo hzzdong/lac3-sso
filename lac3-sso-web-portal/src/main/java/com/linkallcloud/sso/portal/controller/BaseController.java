@@ -21,8 +21,10 @@ import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.www.utils.HttpClientFactory;
 import com.linkallcloud.core.www.utils.WebUtils;
+import com.linkallcloud.sso.domain.AppLoginHis;
 import com.linkallcloud.sso.exception.AppException;
 import com.linkallcloud.sso.exception.ArgException;
+import com.linkallcloud.sso.manager.IAppLoginHisManager;
 import com.linkallcloud.sso.manager.IBlackManager;
 import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.sso.portal.exception.SiteException;
@@ -30,6 +32,9 @@ import com.linkallcloud.sso.portal.exception.TicketException;
 import com.linkallcloud.sso.portal.kiss.um.ApplicationKiss;
 import com.linkallcloud.sso.portal.ticket.ActiveTicket;
 import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.portal.ticket.ProxyTicket;
+import com.linkallcloud.sso.portal.ticket.ServiceTicket;
+import com.linkallcloud.sso.portal.ticket.TicketBox;
 import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.portal.ticket.cache.ProxyGrantingTicketCache;
 import com.linkallcloud.sso.portal.ticket.cache.TicketGrantingTicketCache;
@@ -60,6 +65,9 @@ public abstract class BaseController {
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	protected ILockManager lockManager;
+
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	protected IAppLoginHisManager appLoginHisManager;
 
 	public void checkBlackAndLock(Trace t, String account, String ip) {
 		if (!Strings.isBlank(account)) {
@@ -156,7 +164,8 @@ public abstract class BaseController {
 		if (cookies != null) {
 			for (int i = 0; i < cookies.length; i++) {
 				if (cookies[i].getName().equals(IParams.TGC_ID)) {
-					tgt = (TicketGrantingTicket) tgcCache.getTicket(cookies[i].getValue());
+					String ticketId = cookies[i].getValue();
+					tgt = (TicketGrantingTicket) tgcCache.getTicket(ticketId);
 					if (tgt == null) {
 						continue;
 					}
@@ -168,7 +177,8 @@ public abstract class BaseController {
 	}
 
 	/** Creates and sends a new PGT, returning a unique IOU for this PGT. */
-	protected String sendPgt(ActiveTicket<?> st, String callbackUrl, String pgtAppCode) throws TicketException {
+	protected TicketBox<ProxyGrantingTicket> sendPgt(ActiveTicket<?> st, String callbackUrl, String pgtAppCode)
+			throws TicketException {
 		// first, create the PGT and save it to the cache
 		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl, pgtAppCode);
 		String pgtToken = pgtCache.addTicket(pgt);
@@ -184,7 +194,7 @@ public abstract class BaseController {
 
 		// return the IOU if appropriate
 		if (sent)
-			return pgtIou;
+			return new TicketBox<ProxyGrantingTicket>(pgtIou, pgt);
 		else
 			return null;
 	}
@@ -208,7 +218,7 @@ public abstract class BaseController {
 			} else {
 				response = HttpClientFactory.me(false).get(target);
 			}
-			
+
 			if (!Strings.isBlank(response)) {
 				Result<String> ret = JSON.parseObject(response, new TypeReference<Result<String>>() {
 				});
@@ -222,6 +232,73 @@ public abstract class BaseController {
 			log.error("PGT callback failed: " + ex.toString());
 			return false;
 		}
+	}
+
+	protected void appLoginAuthSuccess(Trace t, ServiceTicket st, String appCode, String appUrl,
+			TicketBox<ProxyGrantingTicket> pgtIOU, String pgtAppCode, String pgtUrl) {
+		if (Strings.isBlank(pgtAppCode) || appCode.equals(pgtAppCode)) {// 无代理，或者app自身是代理
+			AppLoginHis alh = new AppLoginHis(Strings.isBlank(st.getSiteUser()) ? st.getUsername() : st.getSiteUser(),
+					appCode, appUrl, st.getGrantor().getId());
+			if (pgtIOU != null) {
+				ProxyGrantingTicket pgt = pgtIOU.getTicket();
+				alh.setProxy(true);
+				alh.setProxyChain(JSON.toJSONString(pgt.getProxies()));
+				alh.setPgt(pgt.getId());
+			}
+			appLoginHisManager.loginSuccess(t, alh);
+		} else {// 有代理，app和代理分开是不同的应用
+			AppLoginHis alh = new AppLoginHis(Strings.isBlank(st.getSiteUser()) ? st.getUsername() : st.getSiteUser(),
+					appCode, appUrl, st.getGrantor().getId());
+			appLoginHisManager.loginSuccess(t, alh);
+
+			if (pgtIOU != null) {
+				ProxyGrantingTicket pgt = pgtIOU.getTicket();
+				AppLoginHis palh = new AppLoginHis(
+						Strings.isBlank(st.getSiteUser()) ? st.getUsername() : st.getSiteUser(), pgtAppCode, pgtUrl,
+						st.getGrantor().getId(), JSON.toJSONString(pgt.getProxies()), pgt.getId());
+				appLoginHisManager.loginSuccess(t, palh);
+			}
+		}
+	}
+
+	protected void appProxyAuthSuccess(Trace t, ProxyTicket pt, String appCode, String appUrl,
+			TicketBox<ProxyGrantingTicket> pgtIOU, String pgtAppCode, String pgtUrl) {
+		TicketGrantingTicket tgt = getTgtFromPt(pt);
+
+		if (Strings.isBlank(pgtAppCode) || appCode.equals(pgtAppCode)) {// 无后续代理，或者app自身是后续代理
+			AppLoginHis alh = new AppLoginHis(Strings.isBlank(pt.getSiteUser()) ? pt.getUsername() : pt.getSiteUser(),
+					appCode, appUrl, tgt.getId(), pt.getGrantor().getId());
+			if (pgtIOU != null) {
+				ProxyGrantingTicket pgt = pgtIOU.getTicket();
+				alh.setProxy(true);
+				alh.setProxyChain(JSON.toJSONString(pgt.getProxies()));
+				alh.setPgt(pgt.getId());
+			}
+			appLoginHisManager.loginSuccess(t, alh);
+		} else {// 有代理，app和代理分开是不同的应用
+			AppLoginHis alh = new AppLoginHis(Strings.isBlank(pt.getSiteUser()) ? pt.getUsername() : pt.getSiteUser(),
+					appCode, appUrl, tgt.getId(), pt.getGrantor().getId());
+			appLoginHisManager.loginSuccess(t, alh);
+
+			if (pgtIOU != null) {
+				ProxyGrantingTicket pgt = pgtIOU.getTicket();
+				AppLoginHis palh = new AppLoginHis(
+						Strings.isBlank(pt.getSiteUser()) ? pt.getUsername() : pt.getSiteUser(), pgtAppCode, pgtUrl,
+						tgt.getId(), pt.getGrantor().getId(), JSON.toJSONString(pgt.getProxies()), pgt.getId());
+				appLoginHisManager.loginSuccess(t, palh);
+			}
+		}
+
+	}
+
+	protected TicketGrantingTicket getTgtFromPt(ProxyTicket pt) {
+		ProxyGrantingTicket pgt = pt.getGrantor();
+		if (pgt.getParent() instanceof ServiceTicket) {
+			return ((ServiceTicket) pgt.getParent()).getGrantor();
+		} else if (pgt.getParent() instanceof ProxyTicket) {
+			return getTgtFromPt((ProxyTicket) pgt.getParent());
+		}
+		return null;
 	}
 
 }

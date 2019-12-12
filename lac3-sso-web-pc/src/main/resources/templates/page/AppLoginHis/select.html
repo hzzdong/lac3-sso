@@ -1,0 +1,339 @@
+<section class="find-tools">
+	<div class="searchBox">
+		<div class="pull-left">
+			<i class="fa fa-list"></i>&nbsp;应用登录日志列表
+		</div>
+		<div class="pull-right">
+			<ul>
+				<li th:if="${multi == true}"><button class="btn-apploginhis-selects btn btn-block btn-primary btn-sm"><i class="fa fa-check"></i>&nbsp;选择应用登录日志</button></li>
+				<li><button class="btn-superSearch-apploginhis btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button></li>
+				<li><button class="btn_apploginhis_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button></li>
+				<li>
+					<form id="f_apploginhis_search" class="form-inline">
+						<input type="text" id="from" name="from" oper="eq" stype="S" class="form-control form-search" placeholder="登录站点快速查询">
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="superSearch">
+		<form id="f_apploginhis_search_s" class="form-inline">
+			
+					
+			<div class="form-group">
+				<label class="control-label">登录站点：</label>
+				<div class="control-inline">
+					<input type="text" id="from" name="from" oper="eq" stype="S" class="form-control form-search" placeholder="登录站点精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">站点url：</label>
+				<div class="control-inline">
+					<input type="text" id="service" name="service" oper="eq" stype="S" class="form-control form-search" placeholder="站点url精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">登录名：</label>
+				<div class="control-inline">
+					<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="登录名精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label>登录时间范围:</label>
+				<div class="input-group">
+					<input type="text" class="form-control pull-right" id="loginTimePeriod" placeholder="请选择登录时间">
+					<input type="hidden" id="loginTimeGe" name="loginTimeGe" oper="ge" stype="D">
+					<input type="hidden" id="loginTimeLe" name="loginTimeLe" oper="le" stype="D">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label>登出时间范围:</label>
+				<div class="input-group">
+					<input type="text" class="form-control pull-right" id="logoutTimePeriod" placeholder="请选择登出时间">
+					<input type="hidden" id="logoutTimeGe" name="logoutTimeGe" oper="ge" stype="D">
+					<input type="hidden" id="logoutTimeLe" name="logoutTimeLe" oper="le" stype="D">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">MD5(tgt)：</label>
+				<div class="control-inline">
+					<input type="text" id="tgt" name="tgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(tgt)精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">是否代理：</label>
+				<div class="control-inline">
+					<input type="text" id="proxy" name="proxy" oper="eq" stype="B" class="form-control form-search" placeholder="是否代理精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">代理链：</label>
+				<div class="control-inline">
+					<input type="text" id="proxyChain" name="proxyChain" oper="eq" stype="S" class="form-control form-search" placeholder="代理链精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">MD5(pgt)：</label>
+				<div class="control-inline">
+					<input type="text" id="pgt" name="pgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(pgt)精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">MD5(parent pgt)：</label>
+				<div class="control-inline">
+					<input type="text" id="ppgt" name="ppgt" oper="eq" stype="S" class="form-control form-search" placeholder="MD5(parent pgt)精确匹配">
+				</div>
+			</div>
+					
+			
+			<div class="form-group">
+				<label class="control-label">状态：</label>
+				<div class="control-inline">
+					<select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
+						<option value="">全部</option>
+						<option value="0">启用</option>
+						<option value="1">禁用</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<button type="button" class="btn btn-primary btn-sm btn_apploginhis_search_s">查询</button>
+				<button type="reset" class="btn btn-default btn-sm btn_apploginhis_search_reset">重置</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<section class="content">
+	<table id="dt_apploginhis" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+						<th>登录站点</th>
+						<th>站点url</th>
+						<th>登录名</th>
+						<th>登录时间</th>
+						<th>登出时间</th>
+						<th>MD5(tgt)</th>
+						<th>是否代理</th>
+						<th>代理链</th>
+						<th>MD5(pgt)</th>
+						<th>MD5(parent pgt)</th>
+				<th>状态</th>
+				<th th:if="${multi != true}">操作</th>
+			</tr>
+		</thead>
+	</table>
+
+</section>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var rules4AppLoginHis = /*[[${cnds}]]*/'';
+	var multi4AppLoginHis = /*[[${multi}]]*/'';
+	/*]]>*/
+
+	var dtable4AppLoginHis, curRow4AppLoginHis;
+
+	function getCnds4AppLoginHis() {
+		return rules4AppLoginHis || [];
+	}
+
+	$(function() {
+			
+		$("#loginTimeGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#loginTimeLe").val(moment().format('YYYY-MM-DD'));
+		$('#loginTimePeriod').daterangepicker({
+		    "ranges": {
+		    	  '今天': [moment(), moment()],
+	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	              '最近7天': [moment().subtract(6, 'days'), moment()],
+	              '最近30天': [moment().subtract(29, 'days'), moment()],
+	              '本月': [moment().startOf('month'), moment().endOf('month')],
+	              '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		    },
+		    "startDate": moment().subtract(6, 'days'),
+		    "endDate": moment()
+		}, function(start, end, label) {
+			$("#loginTimeGe").val(start.format('YYYY-MM-DD'));
+			$("#loginTimeLe").val(end.format('YYYY-MM-DD'));
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+		});
+		
+			
+		$("#logoutTimeGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#logoutTimeLe").val(moment().format('YYYY-MM-DD'));
+		$('#logoutTimePeriod').daterangepicker({
+		    "ranges": {
+		    	  '今天': [moment(), moment()],
+	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	              '最近7天': [moment().subtract(6, 'days'), moment()],
+	              '最近30天': [moment().subtract(29, 'days'), moment()],
+	              '本月': [moment().startOf('month'), moment().endOf('month')],
+	              '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		    },
+		    "startDate": moment().subtract(6, 'days'),
+		    "endDate": moment()
+		}, function(start, end, label) {
+			$("#logoutTimeGe").val(start.format('YYYY-MM-DD'));
+			$("#logoutTimeLe").val(end.format('YYYY-MM-DD'));
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+		});
+		
+		
+		initDataTable4AppLoginHis();
+		bindEvents4DataTable4AppLoginHis();
+	});
+
+	function bindEvents4DataTable4AppLoginHis() {
+		/* 快速查询 */
+		$(".btn_apploginhis_search").on(
+				"click",
+				function() {
+					$('.btn-superSearch-apploginhis').removeClass('active');
+					$('.superSearch').css('display', 'none');
+					$("#f_apploginhis_search").search4DataTable(dtable4AppLoginHis, rules4AppLoginHis);
+				});
+
+		$(".btn_apploginhis_search_s").on(
+				"click",
+				function() {
+					$("#f_apploginhis_search_s").search4DataTable(dtable4AppLoginHis, rules4AppLoginHis);
+				});
+				
+		$(".btn_apploginhis_search_reset").on("click", function() {
+				
+			$("#loginTimeGe").val("");
+			$("#loginTimeLe").val("");
+			
+				
+			$("#logoutTimeGe").val("");
+			$("#logoutTimeLe").val("");
+			
+		});
+
+		$('.btn-superSearch-apploginhis').on(
+				'click',
+				function() {
+					$('.btn_apploginhis_search').removeClass('active');
+					$(this).toggleClass('active');
+					if ($(this).hasClass('active')) {
+						$("#f_apploginhis_search").hide();
+						$(".btn_apploginhis_search").hide();
+					} else {
+						$("#f_apploginhis_search").show();
+						$(".btn_apploginhis_search").show();
+					}
+					$(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
+				});
+
+		$('#dt_apploginhis tbody').on(
+			'click',
+			'.btn-apploginhis-select',
+			function(event) {
+				curRow4AppLoginHis = dtable4AppLoginHis.row($(this).parents('tr'));
+				var rowData = curRow4AppLoginHis.data();
+				if (multi4AppLoginHis == true) {
+					var rows = [];
+					rows.push(rowData);
+					LAC.getModel("dlg_apploginhis_select").getCallback()(rows);
+				} else {
+					LAC.getModel("dlg_apploginhis_select").getCallback()(rowData);
+				}
+		});
+
+		$(".btn-apploginhis-selects").on("click", function() {
+			var rows = dtable4AppLoginHis.rows('.selected').data();
+			if (rows && rows.length < 1) {
+				LAC.showWarn("请至少选择一行。");
+			} else {
+				LAC.getModel("dlg_apploginhis_select").getCallback()(rows);
+			}
+		});
+
+	}
+
+	function initDataTable4AppLoginHis() {
+		var options = {
+			order : [ [ 1, "desc" ] ],
+			url : ctx + "/AppLoginHis/page4Select",
+			autoCheckBox : multi4AppLoginHis ? true : false,
+			cnds : getCnds4AppLoginHis,
+			columns : [
+					{
+						"data" : "id",
+						"visible" : false
+					},
+					{
+						"data" : "name",
+						"width" : "120px",
+						"defaultContent" : "",
+						"render" : function(data, type, row) {
+							return '<i class="text-light-blue btn-apploginhis-select" style="cursor:pointer">' + data + '</i>';
+						}
+					},
+					{
+						"data" : "phone",
+						"width" : "60px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "areaName",
+						"width" : "150px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "agentName",
+						"orderable" : false,
+						"defaultContent" : ""
+					},
+					{
+						"data" : "status",
+						"width" : "40px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-green">正常</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-yellow">停用</span>';
+							} else {
+								return "";
+							}
+						}
+					},
+					{
+						"data" : null,
+						"defaultContent" : "",
+						"width" : "30px",
+						"orderable" : false,
+						"searchable" : false,
+						"render" : function(data, type, row) {
+							return '<span class="badge bg-light-blue btn-block btn-apploginhis-select" style="cursor:pointer">选择</span>';
+						}
+					} ]
+		};
+
+		if (multi4AppLoginHis == true) {
+			options.columns.splice(6, 1);
+		}
+		dtable4AppLoginHis = $('#dt_apploginhis').LacDTable(options);
+	}
+</script>
