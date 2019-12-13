@@ -20,17 +20,17 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linkallcloud.cache.redis.LacRedisCacheManager;
 import com.linkallcloud.cache.redis.LacRedisCacheWriter;
+import com.linkallcloud.sso.ticket.LoginTicket;
+import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.ticket.ProxyTicket;
+import com.linkallcloud.sso.ticket.ServiceTicket;
+import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 
 @Configuration
 @ConditionalOnClass(RedisOperations.class)
@@ -44,6 +44,89 @@ public class RedisConfig extends CachingConfigurerSupport {
 		RedisTemplate<String, Date> template = new RedisTemplate<>();
 		// 使用fastjson序列化
 		FastJsonRedisSerializer<Date> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Date.class);
+		// value值的序列化采用fastJsonRedisSerializer
+		template.setValueSerializer(fastJsonRedisSerializer);
+		template.setHashValueSerializer(fastJsonRedisSerializer);
+		// key的序列化采用StringRedisSerializer
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setConnectionFactory(redisConnectionFactory);
+		return template;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "redisTGTTemplate")
+	public RedisTemplate<String, TicketGrantingTicket> redisTGTTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, TicketGrantingTicket> template = new RedisTemplate<>();
+		// 使用fastjson序列化
+		FastJsonRedisSerializer<TicketGrantingTicket> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(
+				TicketGrantingTicket.class);
+		// value值的序列化采用fastJsonRedisSerializer
+		template.setValueSerializer(fastJsonRedisSerializer);
+		template.setHashValueSerializer(fastJsonRedisSerializer);
+		// key的序列化采用StringRedisSerializer
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setConnectionFactory(redisConnectionFactory);
+		return template;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "redisSTTemplate")
+	public RedisTemplate<String, ServiceTicket> redisSTTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, ServiceTicket> template = new RedisTemplate<>();
+		// 使用fastjson序列化
+		FastJsonRedisSerializer<ServiceTicket> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(
+				ServiceTicket.class);
+		// value值的序列化采用fastJsonRedisSerializer
+		template.setValueSerializer(fastJsonRedisSerializer);
+		template.setHashValueSerializer(fastJsonRedisSerializer);
+		// key的序列化采用StringRedisSerializer
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setConnectionFactory(redisConnectionFactory);
+		return template;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "redisPTTemplate")
+	public RedisTemplate<String, ProxyTicket> redisPTTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, ProxyTicket> template = new RedisTemplate<>();
+		// 使用fastjson序列化
+		FastJsonRedisSerializer<ProxyTicket> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(ProxyTicket.class);
+		// value值的序列化采用fastJsonRedisSerializer
+		template.setValueSerializer(fastJsonRedisSerializer);
+		template.setHashValueSerializer(fastJsonRedisSerializer);
+		// key的序列化采用StringRedisSerializer
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setConnectionFactory(redisConnectionFactory);
+		return template;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "redisPGTTemplate")
+	public RedisTemplate<String, ProxyGrantingTicket> redisPGTTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, ProxyGrantingTicket> template = new RedisTemplate<>();
+		// 使用fastjson序列化
+		FastJsonRedisSerializer<ProxyGrantingTicket> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(
+				ProxyGrantingTicket.class);
+		// value值的序列化采用fastJsonRedisSerializer
+		template.setValueSerializer(fastJsonRedisSerializer);
+		template.setHashValueSerializer(fastJsonRedisSerializer);
+		// key的序列化采用StringRedisSerializer
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setConnectionFactory(redisConnectionFactory);
+		return template;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "redisLtTemplate")
+	public RedisTemplate<String, LoginTicket> redisLtTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, LoginTicket> template = new RedisTemplate<>();
+		// 使用fastjson序列化
+		FastJsonRedisSerializer<LoginTicket> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(LoginTicket.class);
 		// value值的序列化采用fastJsonRedisSerializer
 		template.setValueSerializer(fastJsonRedisSerializer);
 		template.setHashValueSerializer(fastJsonRedisSerializer);
@@ -117,16 +200,23 @@ public class RedisConfig extends CachingConfigurerSupport {
 	}
 
 	private RedisCacheConfiguration getRedisCacheConfigurationWithTtl(Integer seconds) {
-		Jackson2JsonRedisSerializer<Object> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+//		Jackson2JsonRedisSerializer<Object> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+//		ObjectMapper om = new ObjectMapper();
+//		om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+//		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//		jsonRedisSerializer.setObjectMapper(om);
+//		if (seconds != null) {
+//			return RedisCacheConfiguration.defaultCacheConfig()
+//					.serializeValuesWith(
+//							RedisSerializationContext.SerializationPair.fromSerializer(jsonRedisSerializer))
+//					.entryTtl(Duration.ofSeconds(seconds));
+//		} else {
+//			return RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(
+//					RedisSerializationContext.SerializationPair.fromSerializer(jsonRedisSerializer));
+//		}
 
-//		FastJsonRedisSerializer<Object> jsonRedisSerializer = new FastJsonRedisSerializer<Object>(Object.class);
-
-		ObjectMapper om = new ObjectMapper();
-		om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		jsonRedisSerializer.setObjectMapper(om);
-
+		FastJsonRedisSerializer<Object> jsonRedisSerializer = new FastJsonRedisSerializer<Object>(Object.class);
 		if (seconds != null) {
 			return RedisCacheConfiguration.defaultCacheConfig()
 					.serializeValuesWith(

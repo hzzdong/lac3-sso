@@ -16,6 +16,7 @@ import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.sso.dto.LockConfig;
 import com.linkallcloud.sso.service.IBlackService;
 import com.linkallcloud.sso.service.ILockService;
+import com.linkallcloud.sso.service.ILoginHisService;
 
 @Component
 @Order(1)
@@ -30,6 +31,9 @@ public class SSOServerRunner implements ApplicationRunner {
 
 	@Autowired
 	private LockConfigure lockConfigure;
+	
+	@Autowired
+	private ILoginHisService loginHisService;
 
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -43,6 +47,21 @@ public class SSOServerRunner implements ApplicationRunner {
 
 		config = lockConfigure.loadLockConfig(t);
 		autoUnlockExecute(t);
+		
+		markLoginTimeoutLogs(t);
+	}
+
+	private void markLoginTimeoutLogs(Trace t) {
+		executor.scheduleWithFixedDelay(new Runnable() {
+			public void run() {
+				try {
+					loginHisService.markLoginTimeoutLogs(t);
+				} catch (Throwable e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+
+		}, 0, 10, TimeUnit.MINUTES);
 	}
 
 	private void autoUnlockExecute(Trace t) {
@@ -57,5 +76,6 @@ public class SSOServerRunner implements ApplicationRunner {
 
 		}, 0, 2, TimeUnit.MINUTES);
 	}
+
 
 }

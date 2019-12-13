@@ -15,4 +15,6 @@ public interface ILoginHisManager extends IManager<LoginHis> {
 	void logout(Trace t, Long id);
 	LoginHis fetchByTgt(Trace t, String md5Tgt);
 
+	Boolean offline(Trace t, Long id, String uuid);
+
 }

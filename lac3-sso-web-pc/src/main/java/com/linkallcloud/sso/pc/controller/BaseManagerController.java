@@ -30,7 +30,7 @@ public abstract class BaseManagerController {
 
 	private static Tree initMenuTree() {
 		Tree root = new Tree("-1", null, "统一认证");
-		Tree children01 = new Tree("1", root.getId(), "在线管理", "OnLine", "/OnLine/main");
+		Tree children01 = new Tree("1", root.getId(), "在线管理", "OnLine", "/LoginHis/online");
 		root.addChild(children01);
 
 		Tree children02 = new Tree("2", root.getId(), "账号管理");

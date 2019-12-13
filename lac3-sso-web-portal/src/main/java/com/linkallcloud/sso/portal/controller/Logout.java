@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
-import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.portal.utils.IParams;
+import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.web.utils.Controllers;
 
 @Controller

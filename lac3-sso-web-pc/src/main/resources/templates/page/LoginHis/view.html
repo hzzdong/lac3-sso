@@ -41,14 +41,16 @@
 						<td style="width: 35%" th:text="${entity.loginTimeStr}"></td>
 					</tr>
 					<tr>
-						<td align="right">发起登录站点编码:</td>
-						<td th:text="${entity.appCode}"></td>
-						<td align="right">访问IP:</td>
+						<td align="right">登录Ip:</td>
 						<td th:text="${entity.ip}"></td>
+						<td align="right">退出/失效时间:</td>
+						<td th:text="${entity.logoutTimeStr}"></td>
 					</tr>
 					<tr>
+						<td align="right">发起登录站点编码:</td>
+						<td th:text="${entity.appCode}"></td>
 						<td align="right">发起登录站点URL:</td>
-						<td th:text="${entity.service}" colspan="3"></td>
+						<td th:text="${entity.service}"></td>
 					</tr>
 					<tr>
 						<td align="right">是否移动设备:</td>
@@ -134,7 +136,7 @@
 				{
 					"feName" : "govCode",
 					"fcName" : "应用编码",
-					"width" : "10%",
+					"width" : "15%",
 					"render" : function(treeNode) {
 						var url = '';
 						if (treeNode.attributes && treeNode.attributes.url) {
@@ -146,24 +148,28 @@
 				{
 					"feName" : "attributes.loginTime",
 					"fcName" : "登录时间",
-					"width" : "10%"
+					"width" : "12%"
 				},
 				{
 					"feName" : "attributes.proxy",
 					"fcName" : "代理",
+					"orderable" : false,
+					"searchable" : false,
+					"sClass" : "text-center",
 					"width" : "5%",
 					"render" : function(treeNode) {
 						if (treeNode.attributes && treeNode.attributes.proxy == true) {
 							return '<span class="badge bg-aqua">是</span>';
 						} else {
-							return "";
+							return '&nbsp';
 						}
 					}
 				},
 				{
 					"feName" : "attributes.proxyChain",
 					"fcName" : "代理链",
-					"width" : "50%"
+					"orderable" : false,
+					"width" : "43%"
 				}
 			]
 		});

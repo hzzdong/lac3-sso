@@ -5,7 +5,7 @@ import com.linkallcloud.core.exception.BizException;
 public class SsoException extends BizException {
 	private static final long serialVersionUID = 3060232218291004549L;
 
-	public static final String ARG_CODE_SSO = "e-sso";
+	public static final String ARG_CODE_SSO = "e.sso";
 
 	public SsoException() {
 		super(ARG_CODE_SSO, "SSO系统错误");

@@ -30,20 +30,20 @@ import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.core.vo.LoginVo;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.domain.Account;
+import com.linkallcloud.sso.exception.AccountException;
+import com.linkallcloud.sso.exception.InvalidTicketException;
+import com.linkallcloud.sso.exception.SiteException;
+import com.linkallcloud.sso.exception.TicketException;
 import com.linkallcloud.sso.manager.ILoginHisManager;
 import com.linkallcloud.sso.portal.auth.PasswordHandler;
 import com.linkallcloud.sso.portal.auth.TrustHandler;
 import com.linkallcloud.sso.portal.auth.provider.DbPasswordHandler;
-import com.linkallcloud.sso.portal.exception.AccountException;
-import com.linkallcloud.sso.portal.exception.InvalidTicketException;
-import com.linkallcloud.sso.portal.exception.SiteException;
-import com.linkallcloud.sso.portal.exception.TicketException;
-import com.linkallcloud.sso.portal.ticket.ServiceTicket;
-import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.cache.LoginTicketCache;
-import com.linkallcloud.sso.portal.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.sso.portal.utils.IParams;
 import com.linkallcloud.sso.portal.utils.LacSessionValidateCode;
+import com.linkallcloud.sso.ticket.ServiceTicket;
+import com.linkallcloud.sso.ticket.TicketGrantingTicket;
+import com.linkallcloud.sso.ticket.cache.LoginTicketCache;
+import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 
 @Controller
 @RequestMapping

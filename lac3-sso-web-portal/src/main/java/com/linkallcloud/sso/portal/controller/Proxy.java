@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
+import com.linkallcloud.sso.exception.SiteException;
+import com.linkallcloud.sso.exception.TicketException;
 import com.linkallcloud.sso.oapi.dto.ProxyResult;
-import com.linkallcloud.sso.portal.exception.SiteException;
-import com.linkallcloud.sso.portal.exception.TicketException;
-import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.ProxyTicket;
-import com.linkallcloud.sso.portal.ticket.cache.ProxyTicketCache;
+import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.ticket.ProxyTicket;
+import com.linkallcloud.sso.ticket.cache.ProxyTicketCache;
 
 @Controller
 @RequestMapping

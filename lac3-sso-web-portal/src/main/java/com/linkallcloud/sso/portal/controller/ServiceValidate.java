@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
+import com.linkallcloud.sso.exception.SiteException;
+import com.linkallcloud.sso.exception.TicketException;
 import com.linkallcloud.sso.oapi.dto.ServiceAuthenticationResult;
-import com.linkallcloud.sso.portal.exception.SiteException;
-import com.linkallcloud.sso.portal.exception.TicketException;
-import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.ServiceTicket;
-import com.linkallcloud.sso.portal.ticket.TicketBox;
-import com.linkallcloud.sso.portal.ticket.cache.ServiceTicketCache;
+import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.ticket.ServiceTicket;
+import com.linkallcloud.sso.ticket.TicketBox;
+import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 
 /**
  * Handles ST validation and PGT acquisition.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>登录日志管理</title>
+  <title>统一认证在线用户管理</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" th:href="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/css/bootstrap.min.css(path=${static_server},v=${static_res_version})}">
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" th:href="@{{path}/AdminLTE2410/bower_components/font-awesome/css/font-awesome.min.css(path=${static_server},v=${static_res_version})}">
@@ -27,7 +27,7 @@
 <body class="hold-transition skin-blue sidebar-mini">
 	<section class="find-tools">
 		<div class="searchBox">
-			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;登录日志管理</div>
+			<div class="pull-left"><i class="fa fa-th-large"></i>&nbsp;统一认证在线用户管理</div>
 			<div class="pull-right">
 				<ul>
 					<li>
@@ -88,8 +88,7 @@
 					<th>ID</th>
 					<th>登录名</th>
 					<th>登录时间</th>
-					<th>退出/失效时间</th>
-					<th>访问IP</th>
+					<th>登录IP</th>
 					<th>发起登录站点</th>
 					<th>操作</th>
 				</tr>
@@ -197,7 +196,18 @@
 	            url : ctx + '/LoginHis/view?id='+rd.id+"&uuid="+rd.uuid,
 	        });
 		});
-
+		
+		$('#dt_entity tbody').on('click', 'button.btn-entity-offline', function(event) {
+			curRow = dtable.row($(this).parents('tr'));
+			var rd = curRow.data();
+			LAC.confirmExecute(ctx + '/LoginHis/offline?id='+rd.id+"&uuid="+rd.uuid, {}, function(ret) {
+				if(ret && ret.code == "0"){
+					curRow.remove().draw(false);
+				} else {
+					LAC.tip(ret.message || "操作执行失败！！！", "error");
+				}
+			}, "你确定要强制下线此用户吗？", true);
+		});
 		
 	}
 
@@ -205,7 +215,7 @@
 		dtable = $('#dt_entity').LacDTable(
 			{
 				order : [ [ 1, "desc" ] ],
-				url : ctx + "/LoginHis/page",
+				url : ctx + "/LoginHis/onlinePage",
 				autoSequence : true,
 				columns : [
 					{
@@ -214,29 +224,17 @@
 					}, 
 					{
 						"data" : "loginname",
-						"width" : "150px",
-						"defaultContent" : "",
-						"render" : function(data, type, row) {
-							if(row.logoutTime){
-								return '<i class="fa fa-circle text-muted"></i> ' + (data?data:'');
-							} else {
-								return '<i class="fa fa-circle text-green"></i> ' + (data?data:'');
-							}
-						}
-					}, 
-					{
-						"data" : "loginTime",
-						"width" : "100px",
+						"width" : "180px",
 						"defaultContent" : ""
 					}, 
 					{
-						"data" : "logoutTime",
-						"width" : "100px",
+						"data" : "loginTime",
+						"width" : "120px",
 						"defaultContent" : ""
 					}, 
 					{
 						"data" : "ip",
-						"width" : "80px",
+						"width" : "100px",
 						"defaultContent" : ""
 					}, 
 					{
@@ -249,12 +247,12 @@
 					{
 						"data" : null,
 						"defaultContent" : "",
-						"width" : "45px",
+						"width" : "75px",
 						"orderable" : false,
 						"searchable" : false,
 						"sClass" : "text-center",
 						"render" : function(data, type, row) {
-							return '<button class="btn-permed btn-entity-view icon-btn" data-res="LoginHis" title="查看登录日志详情"><i class="fa fa-eye text-green"></i></button>';
+							return '<button class="btn-permed btn-entity-view icon-btn" data-res="LoginHis" title="查看登录日志详情"><i class="fa fa-eye text-green"></i></button><button class="btn-permed btn-entity-offline icon-btn" data-res="LoginHis" title="统一认证令牌强制失效，用户下线"><i class="fa fa-power-off text-yellow"></i></button>';
 						}
 					}],
 		

@@ -52,4 +52,9 @@ public class LoginHisManager extends BaseManager<LoginHis, ILoginHisService> imp
 		return service().fetchByTgt(t, md5Tgt);
 	}
 
+	@Override
+	public Boolean offline(Trace t, Long id, String uuid) {
+		return service().offline(t, id, uuid);
+	}
+
 }

@@ -79,6 +79,13 @@ public class LoginHis extends Domain {
 		this.loginTime = loginTime;
 	}
 
+	public boolean isTimeout(int tolerance) {
+		if (loginTime != null) {
+			return Dates.addSecond(loginTime, tolerance).before(new Date());
+		}
+		return true;
+	}
+
 	public String getAppCode() {
 		return appCode;
 	}
@@ -161,6 +168,14 @@ public class LoginHis extends Domain {
 
 	public Date getLogoutTime() {
 		return logoutTime;
+	}
+
+	public String getLogoutTimeStr() {
+		if (logoutTime == null) {
+			return "";
+		} else {
+			return Dates.formatDate(logoutTime, "yyyy-MM-dd HH:mm:ss");
+		}
 	}
 
 	public void setLogoutTime(Date logoutTime) {

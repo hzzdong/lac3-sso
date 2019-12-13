@@ -25,7 +25,7 @@ public class SysSetupService extends BaseService<SysSetup, ISysSetupActivity> im
 		return sysSetupActivity;
 	}
 
-	@Cacheable(value = "SysSetup", key = "#code")
+	//@Cacheable(value = "SysSetup", key = "#code")
 	@Override
 	public SysSetup fetchByCode(Trace t, String code) {
 		return activity().fetchByCode(t, code);
@@ -67,7 +67,7 @@ public class SysSetupService extends BaseService<SysSetup, ISysSetupActivity> im
 //		return fetchByCode(t, "black_ip_lock_times_count");
 //	}
 
-	@CacheEvict(value = "SysSetup", key = "#entity.code")
+	//@CacheEvict(value = "SysSetup", key = "#entity.code")
 	@Override
 	@ServLog(db = true)
 	@Transactional(readOnly = false)

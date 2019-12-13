@@ -29,7 +29,8 @@ import com.linkallcloud.web.support.TraceArgumentResolver;
 
 @EnableDubbo(multipleConfig = true)
 @Configuration
-@SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.portal" })
+@SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.redis", "com.linkallcloud.sso.ticket",
+		"com.linkallcloud.sso.portal" })
 public class WebPortalApplication implements WebMvcConfigurer {
 
 	@Value("${lac.static.server}")

@@ -68,6 +68,7 @@
 			<if test="page.cnds!=null and page.cnds.loginTime != null"> AND u.loginTime = #{page.cnds.loginTime}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{page.cnds.loginTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeLe != null"> AND u.loginTime &lt;= #{page.cnds.loginTimeLe}</if>
+			<if test="page.cnds!=null and page.cnds.logoutTimeIsN == true"> AND u.logoutTime is null </if>
 			<if test="page.cnds!=null and page.cnds.logoutTime != null"> AND u.logoutTime = #{page.cnds.logoutTime}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{page.cnds.logoutTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{page.cnds.logoutTimeLe}</if>
@@ -103,6 +104,7 @@
 			<if test="page.cnds!=null and page.cnds.loginTime != null"> AND u.loginTime = #{page.cnds.loginTime}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{page.cnds.loginTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.loginTimeLe != null"> AND u.loginTime &lt;= #{page.cnds.loginTimeLe}</if>
+			<if test="page.cnds!=null and page.cnds.logoutTimeIsN == true"> AND u.logoutTime is null </if>
 			<if test="page.cnds!=null and page.cnds.logoutTime != null"> AND u.logoutTime = #{page.cnds.logoutTime}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{page.cnds.logoutTimeGe}</if>
 			<if test="page.cnds!=null and page.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{page.cnds.logoutTimeLe}</if>
@@ -138,6 +140,7 @@
 			<if test="query!=null and query.cnds!=null and query.cnds.loginTime != null"> AND u.loginTime = #{query.cnds.loginTime}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.loginTimeGe != null"> AND u.loginTime &gt;= #{query.cnds.loginTimeGe}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.loginTimeLe != null"> AND u.loginTime &lt;= #{query.cnds.loginTimeLe}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.logoutTimeIsN == true"> AND u.logoutTime is null </if>
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTime != null"> AND u.logoutTime = #{query.cnds.logoutTime}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTimeGe != null"> AND u.logoutTime &gt;= #{query.cnds.logoutTimeGe}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.logoutTimeLe != null"> AND u.logoutTime &lt;= #{query.cnds.logoutTimeLe}</if>
@@ -195,6 +198,15 @@
 			,#{entity.logoutTime}
 			)
 	</insert>
+	
+	<update id="update">
+		update 
+			tab_login_his 
+		set 
+			updateTime=now(),logoutTime=#{entity.logoutTime}
+		where 
+			id=#{entity.id}
+	</update>
 	
 	<update id="logout">
 		update 

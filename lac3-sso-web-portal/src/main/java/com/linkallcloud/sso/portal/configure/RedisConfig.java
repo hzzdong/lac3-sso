@@ -26,11 +26,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.linkallcloud.cache.redis.LacRedisCacheManager;
 import com.linkallcloud.cache.redis.LacRedisCacheWriter;
-import com.linkallcloud.sso.portal.ticket.LoginTicket;
-import com.linkallcloud.sso.portal.ticket.ProxyGrantingTicket;
-import com.linkallcloud.sso.portal.ticket.ProxyTicket;
-import com.linkallcloud.sso.portal.ticket.ServiceTicket;
-import com.linkallcloud.sso.portal.ticket.TicketGrantingTicket;
+import com.linkallcloud.sso.ticket.LoginTicket;
+import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
+import com.linkallcloud.sso.ticket.ProxyTicket;
+import com.linkallcloud.sso.ticket.ServiceTicket;
+import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 
 @Configuration
 @ConditionalOnClass(RedisOperations.class)
