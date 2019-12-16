@@ -3,10 +3,13 @@ package com.linkallcloud.sso.ticket;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.util.Util;
 
 public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 
 	// private G grantor;
+	private String grantorId;
+
 	private boolean fromNewLogin;
 
 	private SimpleService service;
@@ -20,6 +23,8 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	/** Constructs a new, immutable service ticket. */
 	public ActiveTicket(G grantor, String appCode, String service, boolean fromNewLogin) {
 		this.setGrantor(grantor);
+		this.grantorId = Util.getInnerTicketId(grantor.getId());
+
 		this.fromNewLogin = fromNewLogin;
 		this.service = new SimpleService(service, appCode);
 		this.siteMaping = AccountMapping.Unified.getCode();
@@ -69,9 +74,18 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	}
 
 	/** Returns the ticket's grantor. */
+	@JSONField(serialize = false, deserialize = false)
 	public abstract G getGrantor();
 
 	public abstract void setGrantor(G grantor);
+
+	public String getGrantorId() {
+		return grantorId;
+	}
+
+	public void setGrantorId(String grantorId) {
+		this.grantorId = grantorId;
+	}
 
 	public String getSiteUser() {
 		if (siteMaping != AccountMapping.Mapping.getCode().intValue()) {

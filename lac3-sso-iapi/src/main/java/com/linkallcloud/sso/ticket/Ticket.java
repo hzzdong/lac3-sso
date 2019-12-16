@@ -1,5 +1,7 @@
 package com.linkallcloud.sso.ticket;
 
+import com.linkallcloud.sso.redis.ticket.RedisTicketCache;
+
 /**
  * Represents a generic CAS ticket.
  */
@@ -17,5 +19,7 @@ public abstract class Ticket {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	public abstract void loadReference(RedisTicketCache<? extends Ticket> cache);
 
 }

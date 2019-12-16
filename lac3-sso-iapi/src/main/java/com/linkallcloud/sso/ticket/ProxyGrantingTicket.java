@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.redis.ticket.RedisTicketCache;
 
 /**
  * Represents a CAS proxy-granting ticket (PGT), used to retrieve proxy tickets
@@ -20,7 +21,8 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 * A PGT is constructed with a ServiceTicket (potentially a ProxyTicket). We
 	 * store this ticket to inherit ticket expiration.
 	 */
-	// private ActiveTicket<?> parent;
+	@JSONField(serialize = false, deserialize = false)
+	private ActiveTicket<?> parent;
 	private ServiceTicket stParent;
 	private ProxyTicket ptParent;
 
@@ -40,6 +42,8 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	/** Constructs a new, immutable ProxyGrantingTicket. */
 	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl, String pgtAppCode) {
 		super(parent.getUsername());
+		this.parent = parent;
+		// this.parentId = Util.getInnerTicketId(parent.getId());
 		if (parent instanceof ServiceTicket) {
 			this.stParent = (ServiceTicket) parent;
 		} else {
@@ -78,6 +82,10 @@ public class ProxyGrantingTicket extends GrantingTicket {
 		this.ptParent = ptParent;
 	}
 
+	public void setParent(ActiveTicket<?> parent) {
+		this.parent = parent;
+	}
+
 	/**
 	 * Returns the identifier for the service to whom this ticket will grant proxy
 	 * tickets.
@@ -105,5 +113,24 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	 */
 	public boolean isExpired() {
 		return super.isExpired() || getParent().getGrantor().isExpired();
+	}
+
+	public void loadReference(RedisTicketCache<? extends Ticket> cache) {
+//		if (!Strings.isBlank(this.getParentId())) {
+//			if (this.getParentId().startsWith(Util.INNER_TICKET_ID_FREFIX + "ST-")) {
+//				ServiceTicket st = cache.getTicket(this.getParentId(), ServiceTicket.class);
+//				this.setParent(st);
+//				st.loadReference(cache);
+//			} else if (this.getParentId().startsWith(Util.INNER_TICKET_ID_FREFIX + "PT-")) {
+//				ProxyTicket pt = cache.getTicket(this.getParentId(), ProxyTicket.class);
+//				this.setParent(pt);
+//				pt.loadReference(cache);
+//			}
+//		}
+
+		if (this.getParent() != null) {
+			this.getParent().loadReference(cache);
+		}
+
 	}
 }

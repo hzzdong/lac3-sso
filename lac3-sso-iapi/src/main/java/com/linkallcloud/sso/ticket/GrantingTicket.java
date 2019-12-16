@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.ticket;
 
-public class GrantingTicket extends Ticket {
+public abstract class GrantingTicket extends Ticket {
 
 	private String username;
 	private boolean expired;

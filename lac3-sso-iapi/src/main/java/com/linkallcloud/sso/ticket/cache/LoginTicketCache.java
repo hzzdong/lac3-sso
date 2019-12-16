@@ -53,7 +53,8 @@ public class LoginTicketCache extends OTUTicketCache<LoginTicket, RedisLoginTick
 		String ticketId = prefix + "-" + getSerialNumber() + "-" + Util.toPrintable(b);
 
 		// make sure the identifier isn't already used
-		if (getCache().get(ticketId) != null)
+		String innerTicketId = Util.getInnerTicketId(ticketId);
+		if (getCache().get(innerTicketId) != null)
 			return newTicketId(); // tail-recurse
 		else
 			return ticketId;

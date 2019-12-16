@@ -1,5 +1,7 @@
 package com.linkallcloud.sso.ticket;
 
+import com.linkallcloud.sso.redis.ticket.RedisTicketCache;
+
 /**
  * Represents a CAS ticket-granting ticket, typically vended as a cookie (TGC).
  * This class represents, in the general sense, a ticket that is used to grant
@@ -14,6 +16,10 @@ public class TicketGrantingTicket extends GrantingTicket {
 
 	public TicketGrantingTicket(String username) {
 		super(username);
+	}
+
+	@Override
+	public void loadReference(RedisTicketCache<? extends Ticket> cache) {
 	}
 
 }

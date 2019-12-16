@@ -2,13 +2,17 @@ package com.linkallcloud.sso.ticket;
 
 import java.util.List;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.redis.ticket.RedisTicketCache;
 
 /**
  * Represents a proxy ticket (PT).
  */
 public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 
+	@JSONField(serialize = false, deserialize = false)
 	private ProxyGrantingTicket grantor;
 
 	public ProxyTicket() {
@@ -31,10 +35,12 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	}
 
 	/** Retrieves the proxy ticket's lineage -- its chain of "trust." */
+	@JSONField(serialize = false, deserialize = false)
 	public List<SimpleService> getProxies() {
 		return getGrantor().getProxies();
 	}
 
+	@JSONField(serialize = false, deserialize = false)
 	@Override
 	public ProxyGrantingTicket getGrantor() {
 		return grantor;
@@ -43,6 +49,14 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	@Override
 	public void setGrantor(ProxyGrantingTicket grantor) {
 		this.grantor = grantor;
+	}
+	
+	public void loadReference(RedisTicketCache<? extends Ticket> cache) {
+		if (!Strings.isBlank(this.getGrantorId())) {
+			ProxyGrantingTicket pgt = cache.getTicket(this.getGrantorId(), ProxyGrantingTicket.class);
+			this.setGrantor(pgt);
+			pgt.loadReference(cache);
+		}
 	}
 
 }

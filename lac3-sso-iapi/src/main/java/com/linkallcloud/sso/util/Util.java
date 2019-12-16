@@ -37,7 +37,8 @@ public class Util {
 
 	public static String getInnerTicketId(String ticketId) {
 		if (!ticketId.startsWith(Util.INNER_TICKET_ID_FREFIX)) {
-			ticketId = Util.INNER_TICKET_ID_FREFIX + Lang.md5(ticketId);
+			String ticketPrefix = ticketId.substring(0, ticketId.indexOf("-") + 1);
+			ticketId = Util.INNER_TICKET_ID_FREFIX + ticketPrefix + Lang.md5(ticketId);
 		}
 		return ticketId;
 	}
