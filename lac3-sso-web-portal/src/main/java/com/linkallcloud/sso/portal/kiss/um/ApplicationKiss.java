@@ -1,5 +1,6 @@
 package com.linkallcloud.sso.portal.kiss.um;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -31,6 +32,16 @@ public class ApplicationKiss extends BaseKiss {
 				new TypeReference<ObjectFaceResponse<Map<String, String[]>>>() {
 				});
 		return result;
+	}
+
+	public List<Application> findByYwUserId(Trace t, Long ywUserId) {
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId.toString(), null));
+		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Application/findByYwUserId",
+				sendMsgPkg);
+		List<Application> apps = unpackMessage(responseJson,
+				new TypeReference<ObjectFaceResponse<List<Application>>>() {
+				});
+		return apps;
 	}
 
 }
