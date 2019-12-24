@@ -53,7 +53,7 @@
 		<lac3-handshake.version>0.0.9</lac3-handshake.version>
 		<lac3-web.version>0.0.9</lac3-web.version>
 
-		<lac3-um.version>0.0.5.8</lac3-um.version>
+		<lac3-um.version>0.0.6</lac3-um.version>
 
 		<dubbo.version>2.7.3</dubbo.version>
 		<curator.version>4.2.0</curator.version>

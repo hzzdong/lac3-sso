@@ -64,12 +64,12 @@ public abstract class BaseManagerController {
 		children05.addChild(subChildren0503);
 		Tree subChildren0504 = new Tree("54", children05.getId(), "黑名单日志", "BlackHis", "/BlackHis/main");
 		children05.addChild(subChildren0504);
-		Tree subChildren0505 = new Tree("55", children05.getId(), "服务票据", "StLog", "/StLog/main");
-		children05.addChild(subChildren0505);
-		Tree subChildren0506 = new Tree("56", children05.getId(), "授权票据", "TgtLog", "/TgtLog/main");
-		children05.addChild(subChildren0506);
-		Tree subChildren0507 = new Tree("57", children05.getId(), "代理票据", "PtLog", "/PtLog/main");
-		children05.addChild(subChildren0507);
+//		Tree subChildren0505 = new Tree("55", children05.getId(), "服务票据", "StLog", "/StLog/main");
+//		children05.addChild(subChildren0505);
+//		Tree subChildren0506 = new Tree("56", children05.getId(), "授权票据", "TgtLog", "/TgtLog/main");
+//		children05.addChild(subChildren0506);
+//		Tree subChildren0507 = new Tree("57", children05.getId(), "代理票据", "PtLog", "/PtLog/main");
+//		children05.addChild(subChildren0507);
 
 		Tree children06 = new Tree("6", root.getId(), "系统管理");
 		root.addChild(children06);

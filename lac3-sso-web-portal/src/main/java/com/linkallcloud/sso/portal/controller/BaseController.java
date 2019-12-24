@@ -106,22 +106,20 @@ public abstract class BaseController {
 	 * @return boolean
 	 * @throws SiteException
 	 */
-	protected void checkSiteCanPass(Trace t, String appCode, String appUrl) throws SiteException {
+	protected Application checkSiteCanPass(Trace t, String appCode, String appUrl) throws SiteException {
 		if (Strings.isBlank(appCode) && Strings.isBlank(appUrl)) {// 都为空，直接登录SSO方式
-			return;
+			return null;
 		} else if (!Strings.isBlank(appCode) && !Strings.isBlank(appUrl)) {// 都不为空
-			Application app = null;
 			try {
-				app = applicationKiss.fetchByCode(t, appCode);
-			} catch (Exception e) {// UM异常，为了尽量确保SSO正常使用，放弃检查，放行。
-				log.errorf("########## 调用UM查询应用(code=%s)信息失败。为了尽量确保SSO正常使用，直接放行本次检查。", appCode);
-				return;
-			}
-			if (null != app && app.isValid() && !Strings.isBlank(app.getHost())) {
-				String server = WebUtils.parseServerFromUrl(appUrl);
-				if (!Strings.isBlank(server) && app.getHost().toLowerCase().indexOf(server.toLowerCase()) != -1) {
-					return;
+				Application app = applicationKiss.fetchByCode(t, appCode);
+				if (null != app && app.isValid() && !Strings.isBlank(app.getHost())) {
+					String server = WebUtils.parseServerFromUrl(appUrl);
+					if (!Strings.isBlank(server) && app.getHost().toLowerCase().indexOf(server.toLowerCase()) != -1) {
+						return app;
+					}
 				}
+			} catch (Exception e) {// UM异常，为了尽量确保SSO正常使用，放弃检查，放行。
+				log.errorf("########## 查询应用(code=%s)信息失败。", appCode);
 			}
 			throw new SiteException(AppException.ERROR_CODE_APP, "应用检查失败，可能是应用状态异常或者应用域名/ip未设置白名单");
 		} else {// 一个为空，一个不为空，参数填写错误

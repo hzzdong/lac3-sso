@@ -27,6 +27,7 @@ import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
+import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.vo.LoginVo;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.domain.Account;
@@ -44,6 +45,7 @@ import com.linkallcloud.sso.ticket.ServiceTicket;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.ticket.cache.LoginTicketCache;
 import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
+import com.linkallcloud.um.domain.sys.Application;
 
 @Controller
 @RequestMapping
@@ -78,7 +80,7 @@ public class Login extends BaseController {
 		response.setDateHeader("Expires", -1);
 
 		// The servie can pass?
-		checkSiteCanPass(t, appCode, appUrl);
+		Application app = checkSiteCanPass(t, appCode, appUrl);
 
 		// check to see whether we've been sent a valid TGC
 		TicketGrantingTicket tgt = getTgc(request);
@@ -88,7 +90,7 @@ public class Login extends BaseController {
 		// below. Note that tgt is still active.
 
 		if (tgt != null && Strings.isBlank(renew)) {
-			return grantForService(t, request, response, modelMap, tgt, appCode, appUrl, false);
+			return grantForService(t, request, response, modelMap, tgt, app, appUrl, false);
 		}
 
 		// if not, but if we're passed "gateway", then simply bounce back
@@ -97,7 +99,7 @@ public class Login extends BaseController {
 				modelMap.put("serviceId", appUrl);
 				return "redirect";
 			} else {
-				return grantForService(t, request, response, modelMap, tgt, appCode, appUrl, false);
+				return grantForService(t, request, response, modelMap, tgt, app, appUrl, false);
 			}
 		}
 
@@ -232,15 +234,21 @@ public class Login extends BaseController {
 	 * conveying generic success.
 	 */
 	private String grantForService(Trace t, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
-			TicketGrantingTicket tgt, String from, String serviceId, boolean first)
+			TicketGrantingTicket tgt, Application from, String serviceId, boolean first)
 			throws ServletException, IOException {
+		if (from != null && from.getMappingType() == AccountMapping.Mapping.getCode()) {
+			modelMap.put("from", from.getCode());
+			modelMap.put("serviceId", serviceId);
+			return "mapping";
+		}
+
 		try {
 			// loginSuccess(t, request, tgt, from, serviceId);
 
-			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
+			if (!Strings.isBlank(serviceId) && from != null && !Strings.isBlank(from.getCode())) {
+				ServiceTicket st = new ServiceTicket(tgt, from.getCode(), serviceId, first);
 				String token = stCache.addTicket(st);
-				modelMap.put("from", from);
+				modelMap.put("from", from.getCode());
 				modelMap.put("serviceId", serviceId);
 				modelMap.put("token", token);
 				if (!first) {
@@ -310,9 +318,8 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
-			String from, String serviceId, boolean first, String pwdStrength, Client client)
-			throws ServletException, IOException {
+	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
+			String serviceId, boolean first, String pwdStrength, Client client) throws ServletException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
 		try {
