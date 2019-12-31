@@ -46,6 +46,7 @@ import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.ticket.cache.LoginTicketCache;
 import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.um.domain.sys.Application;
+import com.linkallcloud.web.utils.Controllers;
 
 @Controller
 @RequestMapping
@@ -159,7 +160,7 @@ public class Login extends BaseController {
 		checkBlackAndLock(t, lvo.getLoginName(), WebUtils.getIpAddress(request));
 
 		// The servie can pass?
-		checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
+		Application app = checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
 
 		TicketGrantingTicket tgt = getTgc(request);
 
@@ -179,8 +180,7 @@ public class Login extends BaseController {
 					tgt = sendTgc(trustedUsername, request, response);
 				}
 				sendPrivacyCookie(lvo.getWarn(), request, response);
-				return authSuccess(t, request, tgt, lvo.getFrom(), lvo.getService(), true, lvo.getPwdStrength(),
-						lvo.getClient());
+				return authSuccess(t, request, tgt, app, lvo.getService(), true, lvo.getPwdStrength(), lvo.getClient());
 			} else {
 				// failure: nothing else to be done
 				return authFailure(t, request, lvo.getLoginName(), "TrustHandler", "无法验证用户", lvo.getFrom(),
@@ -209,7 +209,7 @@ public class Login extends BaseController {
 					setRememberMe(lvo.getRememberMe(), lvo.getLoginName(), request, response);
 
 					sendPrivacyCookie(lvo.getWarn(), request, response);
-					return authSuccess(t, request, tgt, lvo.getFrom(), lvo.getService(), true, lvo.getPwdStrength(),
+					return authSuccess(t, request, tgt, app, lvo.getService(), true, lvo.getPwdStrength(),
 							lvo.getClient());
 				} catch (Throwable e) {
 					// failure: record failed password authentication
@@ -277,18 +277,19 @@ public class Login extends BaseController {
 					return "goservice";
 				}
 			} else {
-				return "generic";
+				//return "generic";
+				return Controllers.redirect("/generic");
 			}
 		} catch (TicketException ex) {
 			throw new ServletException(ex.toString());
 		}
 	}
 
-	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
+	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String appCode,
 			String serviceId, Client client) {
 		String ip = WebUtils.getIpAddress(request);
 		lockManager.dealAutoLock(t, true, tgt.getUsername(), ip, "登录验证成功");
-		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, from, serviceId, tgt.getId(), client);
+		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, appCode, serviceId, tgt.getId(), client);
 	}
 
 	private Map<String, String> authFailure(Trace t, HttpServletRequest request, String username, String code,
@@ -318,18 +319,29 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String from,
-			String serviceId, boolean first, String pwdStrength, Client client) throws ServletException, IOException {
+	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
+			Application fromApp, String serviceId, boolean first, String pwdStrength, Client client)
+			throws ServletException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", "0");
-		try {
-			ssoLoginSuccess(t, request, tgt, from, serviceId, client);
 
-			if (!Strings.isBlank(serviceId) && !Strings.isBlank(from)) {
-				ServiceTicket st = new ServiceTicket(tgt, from, serviceId, first);
+		if (fromApp != null && fromApp.getMappingType() == AccountMapping.Mapping.getCode()) {
+			result.put("from", fromApp.getCode());
+			result.put("serviceId", serviceId);
+			StringBuffer gourl = new StringBuffer(request.getContextPath()).append("/mapping?serviceId=")
+					.append(serviceId).append("&from=").append(fromApp.getCode());
+			result.put("go", gourl.toString());
+			return result;
+		}
+
+		try {
+			ssoLoginSuccess(t, request, tgt, fromApp == null ? "" : fromApp.getCode(), serviceId, client);
+
+			if (!Strings.isBlank(serviceId) && fromApp != null) {
+				ServiceTicket st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first);
 				String token = stCache.addTicket(st);
 
-				result.put("from", from);
+				result.put("from", fromApp.getCode());
 				result.put("serviceId", serviceId);
 				result.put("token", token);
 				if (!first) {
@@ -339,7 +351,8 @@ public class Login extends BaseController {
 						} catch (UnsupportedEncodingException e) {
 						}
 						StringBuffer gourl = new StringBuffer(request.getContextPath()).append("/confirm?serviceId=")
-								.append(serviceId).append("&from=").append(from).append("&token=").append(token);
+								.append(serviceId).append("&from=").append(fromApp.getCode()).append("&token=")
+								.append(token);
 						result.put("go", gourl.toString());// "page/confirm";
 					} else {
 						result.put("first", "false");

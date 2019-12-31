@@ -1,77 +1,68 @@
-<!DOCTYPE HTML>
-<html lang="zxx">
-
+<!DOCTYPE html>
+<html>
 <head>
-	<title>Home</title>
-	<!-- Meta-Tags -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta charset="utf-8">
-	<meta name="keywords" content="">
-	<script>
-		addEventListener("load", function () {
-			setTimeout(hideURLbar, 0);
-		}, false);
-
-		function hideURLbar() {
-			window.scrollTo(0, 1);
-		}
-	</script>
-	<!-- //Meta-Tags -->
-	<!-- Stylesheets -->
-	<link href="css/style.css" rel='stylesheet' type='text/css' th:href="@{{path}/apps/login/css/style.css(path=${static_server},v=${static_res_version})}">
-	<link rel="stylesheet" href="plugins/iCheck/square/blue.css" th:href="@{{path}/AdminLTE2410/plugins/iCheck/square/blue.css(path=${static_server},v=${static_res_version})}">
-	<!--// Stylesheets -->
-	<!--online fonts-->
-	<!--<link href="http://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">-->
-	<!--//online fonts-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>登录</title>
+<link rel="stylesheet" href="../static/app/css/style.css" th:href="@{{path}/app/css/style.css(path=${static_server},v=${static_res_version})}">
 </head>
-
 <body>
-	<h1>统一认证中心</h1>
-	<div class="w3ls-login box">
-		<img src="images/logo.png" alt="logo_img" th:src="@{{path}/apps/login/images/logo.png(path=${static_server})}"/>
-		<!-- form starts here -->
-		<form id="loginForm" action="#" method="post">
-			<input type="hidden" id="from" th:value="${from}" />
-			<input type="hidden" id="service" th:value="${service}" />
-			<input type="hidden" id="lt" th:value="${lt}" />
-			<input type="hidden" id="warn" th:value="${warn}" />
-			<div class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></div>
-			<div class="agile-field-txt">
-				<input type="email" id="username" class="form-control" placeholder="请输入您的统一认证账号" th:value="${me}"/> 
+	<div class="login_bg">
+		<section class="login_body flex-c flex-between">
+			<div class="login_item">
+				<h1 class="white align_center login-title">用户统一认证中心</h1>
+				<div class="login_form white_bg flex-r">
+					<div class="login_left flex-c flex-around">
+						<img src="../img/login_img.png" alt="" th:src="@{{path}/app/img/login_img.png(path=${static_server})}">
+					</div>
+					<div class="login_right flex-auto">
+						<form id="loginForm" action="#" method="post">
+							<input type="hidden" id="from" th:value="${from}" />
+							<input type="hidden" id="service" th:value="${service}" />
+							<input type="hidden" id="lt" th:value="${lt}" />
+							<input type="hidden" id="warn" th:value="${warn}" />
+							<h4>welcom欢迎登录</h4>
+							<div class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></div>
+							<div>
+								<div class="flex-r form-item flex-center">
+									<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}"> 
+									<input type="text" id="username" placeholder="请输入您的统一认证账号" th:value="${me}" style="width: 100%;"/> 
+								</div>
+								<div class="flex-r form-item flex-center">
+									<img src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}"> 
+									<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
+								</div>
+								<div class="flex-r form-item flex-center">
+									<img src="../img/code.png" alt="" th:src="@{{path}/app/img/code.png(path=${static_server})}"> 
+									<input type="text" id="vcode" placeholder="请输入验证码"> 
+									<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
+									<div class="refresh">
+										<img src="../img/refresh.png" alt="" th:src="@{{path}/app/img/refresh.png(path=${static_server})}" class="refresh-code"> <span class="refresh-code">刷新</span>
+									</div>
+								</div>
+								<div class="flex-r flex-between">
+									<div class="flex-r flex-center">
+										<input id="rememberMe" name="rememberMe" type="checkbox" value="true" th:checked="${me!=null && me!='' }"><span>记住我</span>
+									</div>
+									<div style="cursor: pointer;">忘记密码？</div>
+								</div>
+								<div>
+									<button type="button" class="login_btn" id="btn_login">登录</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 			</div>
-			<div class="agile-field-txt">
-				<input type="password" id="password" class="form-control" placeholder="请输入您的登录密码"> 
-			</div>
-			<div class="agile-field-txt">
-				<input type="vcode-input" id="vcode" class="form-control" placeholder="请输入验证码"> 
-				<img class="vcode-img refresh-code" id="vcodeImage" th:src="@{/verifyCode}" alt="验证码" />
-				<a class="tip refresh-code" href="#">看不清楚?</a>
-			</div>
-			<div class="agile_label">
-				<input id="rememberMe" name="rememberMe" type="checkbox" value="true" th:checked="${me!=null && me!='' }">
-				<label class="check" for="rememberMe">记住我</label>
-			</div>
-			<div class="w3ls-bot">
-				<input type="submit1" value="登录" id="btn_login">
-			</div>
-		</form>
+			<div class="copyright white">copyright &copy; 2019. Linkallcloud All rights reserved.</div>
+		</section>
 	</div>
-	<!-- //form ends here -->
-	<!--copyright-->
-	<div class="copy-wthree">
-		<p>Copyright &copy; 2019. Linkallcloud All rights reserved.</p>
-	</div>
-	<!--//copyright-->
-	
-<script th:replace="page/base/global :: jsVar"></script>
-<script src="bower_components/jquery/dist/jquery.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/js/bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="plugins/iCheck/icheck.min.js" th:src="@{{path}/AdminLTE2410/plugins/iCheck/icheck.min.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
-<script type="text/javascript" src="client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
-<script type="text/javascript" src="client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="apps/login/js/login.js" th:src="@{{path}/apps/login/js/login.js(path=${static_server},v=${static_res_version})}"></script>
 </body>
+<script th:replace="page/base/global :: jsVar"></script>
+<script src="../static/AdminLTE2410/bower_components/jquery/dist/jquery.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="../static/client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="../static/client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/app/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
 </html>

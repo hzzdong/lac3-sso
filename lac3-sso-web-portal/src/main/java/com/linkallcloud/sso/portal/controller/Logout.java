@@ -1,5 +1,6 @@
 package com.linkallcloud.sso.portal.controller;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
@@ -21,6 +23,7 @@ import com.linkallcloud.sso.portal.utils.IParams;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.um.domain.party.YwUser;
 import com.linkallcloud.um.domain.sys.Application;
+import com.linkallcloud.web.utils.Controllers;
 
 @Controller
 @RequestMapping
@@ -33,7 +36,9 @@ public class Logout extends BaseController {
 	private YwUserKiss ywUserKiss;
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String logout(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap, Trace t) {
+	public String logout(@RequestParam(value = "from", required = false) String appCode,
+			@RequestParam(value = "service", required = false) String appUrl, HttpServletRequest request,
+			HttpServletResponse response, ModelMap modelMap, Trace t) {
 		// avoid caching (in the stupidly numerous ways we must)
 		response.setHeader("pragma", "no-cache");
 		response.setHeader("Cache-Control", "no-cache");
@@ -65,7 +70,18 @@ public class Logout extends BaseController {
 				modelMap.put("apps", apps);
 			}
 		}
-		return "logout";
+		// return "logout";
+
+		if (Strings.isBlank(appCode) || Strings.isBlank(appUrl)) {
+			return Controllers.redirect("/login");
+		} else {
+			String serviceUrl = appUrl;
+			try {
+				serviceUrl = URLEncoder.encode(serviceUrl, "UTF-8");
+			} catch (Exception e) {
+			}
+			return Controllers.redirect("/login?from=" + appCode + "&service=" + serviceUrl);
+		}
 	}
 
 	/** Destroys the browser's TGC. */

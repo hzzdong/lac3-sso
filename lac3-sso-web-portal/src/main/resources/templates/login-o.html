@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html lang="zxx">
+
+<head>
+	<title>Home</title>
+	<!-- Meta-Tags -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="keywords" content="">
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- //Meta-Tags -->
+	<!-- Stylesheets -->
+	<link href="css/style.css" rel='stylesheet' type='text/css' th:href="@{{path}/apps/login/css/style.css(path=${static_server},v=${static_res_version})}">
+	<link rel="stylesheet" href="plugins/iCheck/square/blue.css" th:href="@{{path}/AdminLTE2410/plugins/iCheck/square/blue.css(path=${static_server},v=${static_res_version})}">
+	<!--// Stylesheets -->
+	<!--online fonts-->
+	<!--<link href="http://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">-->
+	<!--//online fonts-->
+</head>
+
+<body>
+	<h1>统一认证中心</h1>
+	<div class="w3ls-login box">
+		<img src="images/logo.png" alt="logo_img" th:src="@{{path}/apps/login/images/logo.png(path=${static_server})}"/>
+		<!-- form starts here -->
+		<form id="loginForm" action="#" method="post">
+			<input type="hidden" id="from" th:value="${from}" />
+			<input type="hidden" id="service" th:value="${service}" />
+			<input type="hidden" id="lt" th:value="${lt}" />
+			<input type="hidden" id="warn" th:value="${warn}" />
+			<div class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></div>
+			<div class="agile-field-txt">
+				<input type="email" id="username" class="form-control" placeholder="请输入您的统一认证账号" th:value="${me}"/> 
+			</div>
+			<div class="agile-field-txt">
+				<input type="password" id="password" class="form-control" placeholder="请输入您的登录密码"> 
+			</div>
+			<div class="agile-field-txt">
+				<input type="vcode-input" id="vcode" class="form-control" placeholder="请输入验证码"> 
+				<img class="vcode-img refresh-code" id="vcodeImage" th:src="@{/verifyCode}" alt="验证码" />
+				<a class="tip refresh-code" href="#">看不清楚?</a>
+			</div>
+			<div class="agile_label">
+				<input id="rememberMe" name="rememberMe" type="checkbox" value="true" th:checked="${me!=null && me!='' }">
+				<label class="check" for="rememberMe">记住我</label>
+			</div>
+			<div class="w3ls-bot">
+				<input type="submit1" value="登录" id="btn_login">
+			</div>
+		</form>
+	</div>
+	<!-- //form ends here -->
+	<!--copyright-->
+	<div class="copy-wthree">
+		<p>Copyright &copy; 2019. Linkallcloud All rights reserved.</p>
+	</div>
+	<!--//copyright-->
+	
+<script th:replace="page/base/global :: jsVar"></script>
+<script src="bower_components/jquery/dist/jquery.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" th:src="@{{path}/AdminLTE2410/bower_components/bootstrap/dist/js/bootstrap.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="plugins/iCheck/icheck.min.js" th:src="@{{path}/AdminLTE2410/plugins/iCheck/icheck.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="apps/login/js/login.js" th:src="@{{path}/apps/login/js/login.js(path=${static_server},v=${static_res_version})}"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+/* 公共start */
+*{
+	box-sizing: border-box;
+}
+html,body{
+	margin:0;padding:0;
+	background-color: #F3F3F3;
+	height:100%;
+	font-size: 14px;
+}
+.flex-r{
+	display: flex;
+}
+.flex-c{
+	display: flex;
+	flex-direction: column;
+}
+.align-center{
+	text-align: center;
+}
+.flex-center{
+	align-items: center;
+}
+.flex-start{
+	align-items: flex-start;
+}
+.flex-between{
+	justify-content: space-between;
+}
+.flex-around{
+	justify-content: space-around;
+}
+.white{
+	color:#fff;
+}
+.white_bg{
+	background-color: #fff;
+}
+.flex-auto{
+	flex:auto;
+}
+.flex-none{
+	flex:none;
+}
+.flex-wrap{
+	flex-wrap: wrap;
+}
+.font12{
+	font-size: 1.2rem;
+}
+.cut {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cut2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.cut4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.cut5 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+.cut3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.posi-re{
+	position: relative;
+}
+.btn{
+	width:100%;
+	height:40px;
+	line-height: 40px;
+	border-radius: 5px;
+	border:none;
+}
+.btn+.btn{
+	
+	margin-left:10px;
+}
+.btn_default{
+	color:#333;
+	background-color: #f3f3f3;
+}
+.btn_primary{
+	background-color:#0094FF;
+	color:#fff;
+}
+.contanier{
+	width:1080px;
+	height:calc(100vh - 102px);
+	padding:20px 0;
+	margin:20px auto 0 auto;
+}
+.align_center{
+	text-align: center;
+}
+header{
+	height:80px;
+	width:1080px;
+	margin:0 auto;
+}
+
+/* 认证页面 */
+.header_right>div{
+	display: flex;
+	align-items: center;
+	margin-right:20px;
+}
+.header_right img{
+	margin-right:5px;
+}
+.header_left>div{
+	background-color: #EAF5FE;
+	height:40px;
+	line-height: 40px;
+	padding:0 30px;
+	color:#3A6DC5;
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+.bg{
+	background: url('../img/bg.png') center no-repeat;
+	background-size: 100% 100%;
+	height:calc(100vh - 130px);
+	padding-bottom:60px;
+}
+.copyright{
+	text-align: center;
+	line-height: 50px;
+}
+.auth_contranier{
+	width:1080px;
+	margin:0 auto;
+	text-align: center;
+}
+.swiper-container {
+    width: 900px;
+    height: 180px;
+}  
+.swiper-slide{
+	height:100%;
+}
+.swiper-wrapper>div{
+	padding:5px 60px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+}
+.s-item img{
+	width:50px;
+}
+.s-item{
+	border-radius:10px;
+	box-shadow: 0 0 3px 4px rgba(58, 109, 197,.5);
+	height:100%;
+	display: flex;
+	color:#2194FF;
+	font-weight: bold;
+	flex-direction: column;
+	justify-content: space-around;
+	background-color: #fff;
+}
+.swiper-button-prev, .swiper-container-rtl .swiper-button-next,.swiper-button-next, .swiper-container-rtl .swiper-button-prev{
+	background-color: rgba(0,0,0,.3);
+	color:#fff;
+}
+.swiper-button-next:after, .swiper-button-prev:after{
+	font-size: 1.2rem;
+}
+/* 登录 */
+.login_bg{
+	background: url('../img/login_bg.png') center no-repeat;	
+	background-size: 100% 100%;
+	height:100vh;
+}
+.login_body{
+	width:800px;
+	height:100%;
+	margin:0 auto;
+}
+.login_form{
+	border-radius:10px;
+}
+.login_bg .copyright{
+	height:120px;
+	line-height: 120px;
+}
+.login_item{
+	padding-top:50px;
+}
+.login_left{
+	width:400px;
+	padding:40px 70px;
+}
+.login_left img{
+	width:100%;
+}
+.login_right{
+	padding-right:70px;
+}
+.form-item img{
+	width:15px;
+	height:15px;
+}
+.form-item{
+	border:1px solid #bdbdbd;
+	padding:5px;
+	height:38px;
+	margin:15px 0;
+}
+.form-item input{
+	border:none;
+	outline: none;
+	padding-left: 5px;
+}
+.form-item .code{
+	width:auto;
+	height:38px;
+}
+.refresh{
+	cursor: pointer;
+	height:38px;
+	line-height: 38px;
+	flex:1;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+.login_btn{
+	width:100%;
+	background: -webkit-gradient(linear, left top , right bottom, from(#3b86ff), to(#44bfff));
+	height:40px;
+	border-radius: 20px;
+	border:none;
+	color:#fff;
+	margin-top:15px;
+	margin-bottom:20px;
+	outline: none;
+	cursor: pointer;
+}
+.login-title{
+	margin:0 0 50px 0;
+	font-size: 2rem;
+}
+.agile-field-error {
+	color:#F00;
+}
