@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Trace;
+import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.portal.kiss.um.YwUserKiss;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
@@ -33,7 +34,7 @@ public class GrantForService extends BaseController {
 	@RequestMapping(value = "/generic", method = RequestMethod.GET)
 	public String generic(HttpServletRequest request, ModelMap modelMap, Trace t) {
 		TicketGrantingTicket tgt = getTgc(request);
-		if (tgt != null) {
+		if (tgt != null && !Strings.isBlank(tgt.getUsername())) {
 			modelMap.put("userName", tgt.getUsername());
 			YwUser user = ywUserKiss.fecthByAccount(t, tgt.getUsername());
 			if (user != null) {

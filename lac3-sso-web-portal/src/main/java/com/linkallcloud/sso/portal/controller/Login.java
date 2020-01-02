@@ -46,6 +46,7 @@ import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.ticket.cache.LoginTicketCache;
 import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.um.domain.sys.Application;
+import com.linkallcloud.um.enums.ScreenType;
 import com.linkallcloud.web.utils.Controllers;
 
 @Controller
@@ -72,7 +73,8 @@ public class Login extends BaseController {
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "renew", required = false) String renew,
 			@RequestParam(value = "gateway", required = false) String gateway,
-			@RequestParam(value = "warn", required = false) String warn, HttpServletRequest request,
+			@RequestParam(value = "warn", required = false) String warn,
+			@RequestParam(value = "screen", required = false) String screenType, HttpServletRequest request,
 			HttpServletResponse response, ModelMap modelMap, Trace t)
 			throws ServletException, SiteException, IOException, AccountException, InvalidTicketException {
 		// avoid caching (in the stupidly numerous ways we must)
@@ -121,7 +123,19 @@ public class Login extends BaseController {
 		String me = getRememberMe(request);
 		modelMap.put("me", me);
 
-		return "login";
+		if (app != null) {
+			ScreenType st = ScreenType.get(app.getScreenType());
+			if (st != null) {
+				screenType = st.name();
+			}
+		}
+		if (!Strings.isBlank(screenType) && screenType.equals(ScreenType.Pad.name())) {
+			return "login-Pad";
+		} else if (!Strings.isBlank(screenType) && screenType.equals(ScreenType.Mobile.name())) {
+			return "login-Mobile";
+		} else {
+			return "login";
+		}
 	}
 
 //	@ResponseBody
@@ -277,7 +291,7 @@ public class Login extends BaseController {
 					return "goservice";
 				}
 			} else {
-				//return "generic";
+				// return "generic";
 				return Controllers.redirect("/generic");
 			}
 		} catch (TicketException ex) {

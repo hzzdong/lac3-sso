@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<title>登录</title>
+<link rel="stylesheet" href="../static/Mobile/css/style.css" th:href="@{{path}/Mobile/css/style.css(path=${static_server},v=${static_res_version})}">
+
+</head>
+<body>
+	<div class="bg">
+		<div class="login_bg posi-re">
+			<h2 class="white" style="position: absolute; bottom: 30px; width: 100%; text-align: center;">用户统一认证中心</h2>
+		</div>
+	</div>
+	<div class="white_bg login_box">
+		<form id="loginForm" action="#" method="post">
+			<input type="hidden" id="from" th:value="${from}" />
+			<input type="hidden" id="service" th:value="${service}" />
+			<input type="hidden" id="lt" th:value="${lt}" />
+			<input type="hidden" id="warn" th:value="${warn}" />
+			<h4>welcomw欢迎登录</h4>
+			<h4 class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></h4>
+			<div>
+				<div class="flex-r form-item flex-center">
+					<img src="../img/user.png" alt="" th:src="@{{path}/Mobile/img/user.png(path=${static_server})}"> 
+					<input type="text" id="username" placeholder="请输入您的统一认证账号" th:value="${me}" /> 
+				</div>
+				<div class="flex-r form-item flex-center">
+					<img src="../img/lock.png" alt="" th:src="@{{path}/Mobile/img/lock.png(path=${static_server})}"> 
+					<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
+				</div>
+				<div class="flex-r form-item flex-center flex-between posi-re"
+					style="padding-right: 0;">
+					<div class="flex-r flex-center">
+						<img src="../img/code.png" alt="" th:src="@{{path}/Mobile/img/code.png(path=${static_server})}"> 
+						<input type="text" id="vcode" placeholder="请输入验证码"> 
+					</div>
+					<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
+				</div>
+				<div class="flex-r flex-between">
+					<div class="flex-r flex-center">
+						<input id="rememberMe" name="rememberMe" type="checkbox" value="true" th:checked="${me!=null && me!='' }"><label for="remanber">记住我</label>
+					</div>
+					<div>忘记密码？</div>
+				</div>
+				<div style="height: 30px;">
+					<button type="button" class="login_btn" id="btn_login">登录</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<script th:replace="page/base/global :: jsVar"></script>
+<script src="../static/jquery/dist/jquery.min.js" th:src="@{{path}/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="../static/client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script type="text/javascript" src="../static/client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/app/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
+</html>

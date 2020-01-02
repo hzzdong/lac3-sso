@@ -43,7 +43,7 @@ import com.linkallcloud.sso.util.Util;
 import com.linkallcloud.um.domain.sys.Application;
 
 public abstract class BaseController {
-	private static final Log log = Logs.get();
+	protected static final Log log = Logs.get();
 
 	// PGT IOU length
 	private static final int PGT_IOU_LENGTH = 50;

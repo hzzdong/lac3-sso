@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>登录</title>
-<link rel="stylesheet" href="../static/pad/css/style.css" th:href="@{{path}/app/css/style.css(path=${static_server},v=${static_res_version})}">
+<link rel="stylesheet" href="../static/app/css/style.css" th:href="@{{path}/pad/css/style.css(path=${static_server},v=${static_res_version})}">
 </head>
 <body>
 	<div class="login_bg">
 		<section class="login_body flex-c flex-between">
-			<div class="login_item">
+			<div class="login_item flex-c flex-around flex-auto">
 				<h1 class="white align_center login-title">用户统一认证中心</h1>
 				<div class="login_form white_bg flex-r">
 					<div class="login_left flex-c flex-around">
-						<img src="../img/login_img.png" alt="" th:src="@{{path}/app/img/login_img.png(path=${static_server})}">
+						<img src="../img/login_img.png" alt="" th:src="@{{path}/pad/img/login_img.png(path=${static_server})}">
 					</div>
 					<div class="login_right flex-auto">
 						<form id="loginForm" action="#" method="post">
@@ -25,24 +25,26 @@
 							<div class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></div>
 							<div>
 								<div class="flex-r form-item flex-center">
-									<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}"> 
-									<input type="text" id="username" placeholder="请输入您的统一认证账号" th:value="${me}" style="width: 100%;"/> 
+									<img src="../img/user.png" alt="" th:src="@{{path}/pad/img/user.png(path=${static_server})}"> 
+									<input type="text" id="username" placeholder="请输入您的统一认证账号" th:value="${me}" style="width: 100%;"/>
 								</div>
 								<div class="flex-r form-item flex-center">
-									<img src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}"> 
+									<img src="../img/lock.png" alt="" th:src="@{{path}/pad/img/lock.png(path=${static_server})}"> 
 									<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 								</div>
 								<div class="flex-r form-item flex-center">
-									<img src="../img/code.png" alt="" th:src="@{{path}/app/img/code.png(path=${static_server})}"> 
-									<input type="text" id="vcode" placeholder="请输入验证码"> 
+									<div class="flex-auto flex-r flex-center">
+										<img src="../img/code.png" alt="" th:src="@{{path}/pad/img/code.png(path=${static_server})}"> 
+										<input type="text" id="vcode" placeholder="请输入验证码"> 
+									</div>
 									<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
-									<div class="refresh">
-										<img src="../img/refresh.png" alt="" th:src="@{{path}/app/img/refresh.png(path=${static_server})}" class="refresh-code"> <span class="refresh-code">刷新</span>
+									<div class="refresh refresh-code">
+										<img src="../img/refresh.png" alt="" th:src="@{{path}/pad/img/refresh.png(path=${static_server})}" class="refresh-code"> <span class="refresh-code">刷新</span>
 									</div>
 								</div>
 								<div class="flex-r flex-between">
 									<div class="flex-r flex-center">
-										<input id="rememberMe" name="rememberMe" type="checkbox" value="true" th:checked="${me!=null && me!='' }"><span>记住我</span>
+										<input id="rememberMe" name="rememberMe" type="checkbox" th:checked="${me!=null && me!='' }"> <label for="remanber">记住我</label>
 									</div>
 									<div style="cursor: pointer;">忘记密码？</div>
 								</div>
@@ -64,5 +66,5 @@
 <script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
 <script type="text/javascript" src="../static/client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script type="text/javascript" src="../static/client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="../static/pad/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/app/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
 </html>

@@ -17,10 +17,10 @@
 				<div>
 					<img width="30px" src="../img/avatar.png" alt="" th:src="@{{path}/app/img/avatar.png(path=${static_server})}"> <span th:text="${userName}">王大拿</span>，欢迎您登录！
 				</div>
-				<div>
+				<div  id="modify_password" style="cursor:pointer;">
 					<img width="18px;" src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}"> <span>修改密码</span>
 				</div>
-				<div class="logout" style="cursor:pointer;">
+				<div id="logout" style="cursor:pointer;">
 					<img width="18px;" src="../img/logout.png" alt="" th:src="@{{path}/app/img/logout.png(path=${static_server})}"> <span>退出</span>
 				</div>
 			</div>
@@ -31,12 +31,20 @@
 			<div class="white" style="margin-bottom: 50px">
 				<h3 style="margin-top: 0;">登录应用选择</h3>
 				<p>请选择您想登录的应用进行登录</p>
+				<select id="screenType" name="screenType">
+					<option value ="">显示全部应用类型</option>
+					<option value ="1">电脑或笔记本</option>
+					<option value ="2">平板(PAD)</option>
+					<option value ="3">手机</option>
+					<option value ="4">电视</option>
+					<option value ="5">其它</option>
+				</select>
 			</div>
 			<div>
 				<div class="swiper-container">
 					<div class="swiper-wrapper">
 						<div class="swiper-slide" th:each="app : ${ apps }">
-							<div class="s-item" th:data-url="${app.url}" th:data-code="${app.code}">
+							<div class="s-item" th:data-url="${app.url}" th:data-code="${app.code}" th:classappend="'screenType'+${app.screenType} ">
 								<div>
 									<img src="../img/default-app-img.png" alt="" th:src="@{{path}/app/img/default-app-img.png(path=${static_server})}" th:if="${app.ico==null || app.ico==''}">
 									<img src="../img/default-app-img.png" alt="" th:src="${app.ico}" th:if="${app.ico!=null && app.ico!=''}">
@@ -59,7 +67,7 @@
 
 </body>
 <script th:replace="page/base/global :: jsVar"></script>
-<script src="../static/AdminLTE2410/bower_components/jquery/dist/jquery.min.js" th:src="@{{path}/AdminLTE2410/bower_components/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../static/jquery/dist/jquery.min.js" th:src="@{{path}/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
 <script src="../static/app/js/swiper.min.js" th:src="@{{path}/app/js/swiper.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script>
@@ -76,7 +84,16 @@
 
 		});
 		
-		//s-item
+		$('#screenType').change(function(){
+	        var st = $(this).children('option:selected').val();
+	        if(st == ""){
+	        	$(".s-item").show();
+	        } else{
+	        	$(".s-item").hide();
+	        	$('.screenType'+st).show();
+	        }
+	    });
+		
 		$(".s-item").on("click", function(){
 			var appCode = $(this).data("code");
 			var appUrl = $(this).data("url");
@@ -87,8 +104,11 @@
 			window.location.href = ctx + "/login?from="+appCode+"&service=" + encodeURIComponent(appUrl);
 		});
 		
-		$(".logout").on("click", function(){
+		$("#logout").on("click", function(){
 			window.location.href = ctx + "/logout";
+		});
+		$("#modify_password").on("click", function(){
+			window.location.href = ctx + "/mp";
 		});
 	})
 </script>
