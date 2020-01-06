@@ -125,9 +125,11 @@ header{
 	background: url('../img/login_bg.png') center no-repeat;	
 	background-size: 100% 100%;
 	height:100vh;
+	    position: absolute;
+	    width: 100%;
 }
 .login_body{
-	width:1000px;
+	width:85%;
 	height:100%;
 	margin:0 auto;
 }
@@ -140,11 +142,11 @@ header{
 	line-height: 120px;
 }
 .login_item{
-	padding:10vh 0;
+	height:calc(100% - 120px);
 }
 .login_left{
-	width:500px;
-	padding:40px 70px;
+	width:50%;
+	padding:20px 35px 20px 35px;
 }
 .login_left img{
 	width:100%;
@@ -153,18 +155,20 @@ header{
 	padding:30px 70px 30px 0;
 }
 .form-item img{
-	width:25px;
-	height:25px;
+	width:13px;
+	height:13px;
 }
 .form-item{
 	border:1px solid #bdbdbd;
-	padding:5px;
-	height:48px;
-	margin:20px 0;
+	padding:3px;
+	/* height:24px; */
+	height:3.5vw;
+	margin:10px 0;
 }
 .form-item input{
-	font-size: 1.2rem;
+	font-size: 1rem;
 	border:none;
+	background: transparent;
 	outline: none;
 	height:25px;
 	line-height: 25px;
@@ -172,14 +176,14 @@ header{
 }
 .form-item .code{
 	width:auto;
-	height:38px;
+	height:3.5vw;
 }
 .refresh{
 	width:55px;
 	flex:none;
 	cursor: pointer;
-	height:38px;
-	line-height: 38px;
+	height:3.5vw;
+	line-height: 3.5vw;
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
@@ -187,20 +191,22 @@ header{
 .login_btn{
 	width:100%;
 	background: -webkit-gradient(linear, left top , right bottom, from(#3b86ff), to(#44bfff));
-	height:54px;
-	border-radius: 27px;
+	height:3.8vw;
+	border-radius: 1.9vw;
 	border:none;
 	color:#fff;
-	margin-top:15px;
-	margin-bottom:20px;
+	margin-top:8px;
+	margin-bottom:10px;
 	outline: none;
-	font-size: 1.3rem;
+	font-size: 1.1rem;
 	cursor: pointer;
 }
 .login-title{
-	margin-bottom:60px;
+	margin-bottom:30px;
 	font-size: 2rem;
 }
 .agile-field-error {
 	color:#F00;
+	margin: 0 0 5px 0; 
+	text-align: left
 }
