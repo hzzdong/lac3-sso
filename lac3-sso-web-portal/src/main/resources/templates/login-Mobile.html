@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 <title>登录</title>
-<link rel="stylesheet" href="../static/Mobile/css/style.css" th:href="@{{path}/Mobile/css/style.css(path=${static_server},v=${static_res_version})}">
+<link rel="stylesheet" href="../static/mobile/css/style.css" th:href="@{{path}/mobile/css/style.css(path=${static_server},v=${static_res_version})}">
 
 </head>
 <body>
@@ -23,17 +23,17 @@
 			<h4 class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></h4>
 			<div>
 				<div class="flex-r form-item flex-center">
-					<img src="../img/user.png" alt="" th:src="@{{path}/Mobile/img/user.png(path=${static_server})}"> 
+					<img src="../img/user.png" alt="" th:src="@{{path}/mobile/img/user.png(path=${static_server})}"> 
 					<input type="text" id="username" placeholder="请输入您的统一认证账号" th:value="${me}" /> 
 				</div>
 				<div class="flex-r form-item flex-center">
-					<img src="../img/lock.png" alt="" th:src="@{{path}/Mobile/img/lock.png(path=${static_server})}"> 
+					<img src="../img/lock.png" alt="" th:src="@{{path}/mobile/img/lock.png(path=${static_server})}"> 
 					<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 				</div>
 				<div class="flex-r form-item flex-center flex-between posi-re"
 					style="padding-right: 0;">
 					<div class="flex-r flex-center">
-						<img src="../img/code.png" alt="" th:src="@{{path}/Mobile/img/code.png(path=${static_server})}"> 
+						<img src="../img/code.png" alt="" th:src="@{{path}/mobile/img/code.png(path=${static_server})}"> 
 						<input type="text" id="vcode" placeholder="请输入验证码"> 
 					</div>
 					<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
