@@ -101,7 +101,8 @@
 				alert("此应用未设置登录地址，请联系管理员进行设置！");
 				return;
 			}
-			window.location.href = ctx + "/login?from="+appCode+"&service=" + encodeURIComponent(appUrl);
+			//window.location.href = ctx + "/login?from="+appCode+"&service=" + encodeURIComponent(appUrl);
+			window.location.href = appUrl;
 		});
 		
 		$("#logout").on("click", function(){

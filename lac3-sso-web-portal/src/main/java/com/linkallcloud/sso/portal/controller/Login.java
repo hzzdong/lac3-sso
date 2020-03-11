@@ -1,8 +1,6 @@
 package com.linkallcloud.sso.portal.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +25,6 @@ import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
-import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.vo.LoginVo;
 import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.domain.Account;
@@ -40,11 +37,8 @@ import com.linkallcloud.sso.portal.auth.PasswordHandler;
 import com.linkallcloud.sso.portal.auth.TrustHandler;
 import com.linkallcloud.sso.portal.auth.provider.DbPasswordHandler;
 import com.linkallcloud.sso.portal.utils.IParams;
-import com.linkallcloud.sso.portal.utils.LacSessionValidateCode;
-import com.linkallcloud.sso.ticket.ServiceTicket;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.ticket.cache.LoginTicketCache;
-import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.um.domain.sys.Application;
 import com.linkallcloud.um.enums.ScreenType;
 import com.linkallcloud.web.utils.Controllers;
@@ -56,14 +50,9 @@ public class Login extends BaseController {
 	private static final Log log = Logs.get();
 
 	@Autowired
-	private ServiceTicketCache stCache;
-	@Autowired
 	private LoginTicketCache ltCache;
 	@Autowired
 	private DbPasswordHandler handler;
-
-	@Autowired
-	private LacSessionValidateCode sessionValidateCode;
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ILoginHisManager loginHisManager;
@@ -250,55 +239,19 @@ public class Login extends BaseController {
 	private String grantForService(Trace t, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
 			TicketGrantingTicket tgt, Application from, String serviceId, boolean first)
 			throws ServletException, IOException {
-		if (from != null && from.getMappingType() == AccountMapping.Mapping.getCode()) {
-			modelMap.put("from", from.getCode());
-			modelMap.put("serviceId", serviceId);
-			return "mapping";
-		}
-
-		try {
-			// loginSuccess(t, request, tgt, from, serviceId);
-
-			if (!Strings.isBlank(serviceId) && from != null && !Strings.isBlank(from.getCode())) {
-				ServiceTicket st = new ServiceTicket(tgt, from.getCode(), serviceId, first);
-				String token = stCache.addTicket(st);
-				modelMap.put("from", from.getCode());
-				modelMap.put("serviceId", serviceId);
-				modelMap.put("token", token);
-				if (!first) {
-					if (privacyRequested(request)) {
-						String gourl = serviceId;
-						try {
-							gourl = WebUtils.urlAppend(gourl, "token", token);
-						} catch (UnsupportedEncodingException e) {
-						}
-						modelMap.put("go", gourl);
-						return "confirm";
-					} else {
-						modelMap.put("first", "false");
-						String gourl = serviceId;
-						gourl = WebUtils.urlAppend(gourl, "ticket", token);
-						gourl = WebUtils.urlAppend(gourl, "first", "false");
-						modelMap.put("go", gourl);
-						return "goservice";
-					}
-				} else {
-					modelMap.put("first", "true");
-					String gourl = serviceId;
-					gourl = WebUtils.urlAppend(gourl, "ticket", token);
-					gourl = WebUtils.urlAppend(gourl, "first", "true");
-					modelMap.put("go", gourl);
-					return "goservice";
-				}
-			} else {
-				// return "generic";
-				return Controllers.redirect("/generic");
-			}
-		} catch (TicketException ex) {
-			throw new ServletException(ex.toString());
+		doGrantForService(t, request, tgt, from, serviceId, first, modelMap);
+		if (modelMap.containsKey("redirect")) {
+			return (String) modelMap.get("redirect");
+		} else if (modelMap.containsKey("goPage")) {
+			return (String) modelMap.get("goPage");
+		} else {
+			return Controllers.redirect((String) modelMap.get("go"));
 		}
 	}
 
+	/**
+	 * 用户通过密码登录成功后，处理锁和黑名单等
+	 */
 	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String appCode,
 			String serviceId, Client client) {
 		String ip = WebUtils.getIpAddress(request);
@@ -333,62 +286,15 @@ public class Login extends BaseController {
 	 * TicketGrantingTicket. If no 'service' is specified, simply forward to message
 	 * conveying generic success.
 	 */
-	private Map<String, String> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
+	private Map<String, Object> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
 			Application fromApp, String serviceId, boolean first, String pwdStrength, Client client)
 			throws ServletException, IOException {
-		Map<String, String> result = new HashMap<String, String>();
+		ssoLoginSuccess(t, request, tgt, fromApp == null ? "" : fromApp.getCode(), serviceId, client);
+
+		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("code", "0");
 
-		if (fromApp != null && fromApp.getMappingType() == AccountMapping.Mapping.getCode()) {
-			result.put("from", fromApp.getCode());
-			result.put("serviceId", serviceId);
-			StringBuffer gourl = new StringBuffer(request.getContextPath()).append("/mapping?serviceId=")
-					.append(serviceId).append("&from=").append(fromApp.getCode());
-			result.put("go", gourl.toString());
-			return result;
-		}
-
-		try {
-			ssoLoginSuccess(t, request, tgt, fromApp == null ? "" : fromApp.getCode(), serviceId, client);
-
-			if (!Strings.isBlank(serviceId) && fromApp != null) {
-				ServiceTicket st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first);
-				String token = stCache.addTicket(st);
-
-				result.put("from", fromApp.getCode());
-				result.put("serviceId", serviceId);
-				result.put("token", token);
-				if (!first) {
-					if (privacyRequested(request)) {
-						try {
-							serviceId = URLEncoder.encode(serviceId, "UTF-8");
-						} catch (UnsupportedEncodingException e) {
-						}
-						StringBuffer gourl = new StringBuffer(request.getContextPath()).append("/confirm?serviceId=")
-								.append(serviceId).append("&from=").append(fromApp.getCode()).append("&token=")
-								.append(token);
-						result.put("go", gourl.toString());// "page/confirm";
-					} else {
-						result.put("first", "false");
-						String gourl = serviceId;
-						gourl = WebUtils.urlAppend(gourl, "ticket", token);
-						gourl = WebUtils.urlAppend(gourl, "first", "false");
-						result.put("go", gourl);// "page/service";
-					}
-				} else {
-					result.put("first", "true");
-					String gourl = serviceId;
-					gourl = WebUtils.urlAppend(gourl, "ticket", token);
-					gourl = WebUtils.urlAppend(gourl, "first", "true");
-					result.put("go", gourl);// "page/service";
-				}
-			} else {
-				result.put("go", request.getContextPath() + "/generic");// "page/generic";
-			}
-		} catch (TicketException ex) {
-			result.put("code", ex.getCode());
-			result.put("message", ex.getMessage());
-		}
+		doGrantForService(t, request, tgt, fromApp, serviceId, first, result);
 		return result;
 	}
 
@@ -418,19 +324,6 @@ public class Login extends BaseController {
 			privacy.setPath(request.getContextPath());
 			response.addCookie(privacy);
 		}
-	}
-
-	/**
-	 * Returns true if privacy has been requested, false otherwise.
-	 */
-	private boolean privacyRequested(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (int i = 0; i < cookies.length; i++)
-				if (cookies[i].getName().equals(IParams.PRIVACY_ID) && cookies[i].getValue().equals("enabled"))
-					return true;
-		}
-		return false;
 	}
 
 	private String getRememberMe(HttpServletRequest request) {

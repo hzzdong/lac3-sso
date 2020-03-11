@@ -12,7 +12,7 @@
 
 	<groupId>com.linkallcloud</groupId>
 	<artifactId>lac3-sso</artifactId>
-	<version>0.0.4.2</version>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>Linkallcloud Project sso</name>
@@ -34,11 +34,11 @@
 	<modules>
 		<module>lac3-sso-iapi</module>
 		<module>lac3-sso-oapi</module>
+		<module>lac3-sso-client</module>
 		<module>lac3-sso-server</module>
 		<module>lac3-sso-web-oapi</module>
 		<module>lac3-sso-web-portal</module>
 		<module>lac3-sso-web-pc</module>
-		<module>lac3-sso-client</module>
 	</modules>
 
 	<properties>
@@ -48,12 +48,12 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<java.version>1.8</java.version>
 
-		<lac3-core.version>0.0.9</lac3-core.version>
-		<lac3-cache.version>0.0.9</lac3-cache.version>
-		<lac3-handshake.version>0.0.9</lac3-handshake.version>
-		<lac3-web.version>0.0.9</lac3-web.version>
+		<lac3-core.version>0.1.3</lac3-core.version>
+		<lac3-cache.version>0.1.3</lac3-cache.version>
+		<lac3-handshake.version>0.1.3</lac3-handshake.version>
+		<lac3-web.version>0.1.3</lac3-web.version>
 
-		<lac3-um.version>0.0.6.2</lac3-um.version>
+		<lac3-um.version>0.1.1</lac3-um.version>
 
 		<dubbo.version>2.7.3</dubbo.version>
 		<curator.version>4.2.0</curator.version>

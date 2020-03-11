@@ -1,24 +1,21 @@
-package com.linkallcloud.sso.server.oapi.um;
+package com.linkallcloud.sso.server.kiss;
 
-import com.linkallcloud.sh.sm.ISignatureMessage;
-import com.linkallcloud.sh.sm.SignatureMessage;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.TypeReference;
+import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.face.message.request.FaceRequest;
 import com.linkallcloud.core.face.message.request.ObjectFaceRequest;
 import com.linkallcloud.core.face.message.response.ObjectFaceResponse;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
+import com.linkallcloud.sh.sm.ISignatureMessage;
+import com.linkallcloud.sh.sm.SignatureMessage;
 import com.linkallcloud.um.domain.sys.Application;
 
-public abstract class BaseOapi {
-
+public abstract class BaseKiss {
 	protected static Log log = Logs.get();
-
-	@Value("${oapi.url.um}")
-	protected String umOapiUrl;
 
 	@Value("${oapi.appcode}")
 	protected String myAppCode;// 签名者ID(appKey)//用code替代
@@ -31,7 +28,7 @@ public abstract class BaseOapi {
 	@Value("${oapi.signatureKey}")
 	protected String signatureKey;// 签名密钥
 
-	public FaceRequest convertToFaceRequest(Object message) {
+	public FaceRequest convertToFaceRequest(Trace t, Object message) {
 		FaceRequest request = null;
 		if (message == null) {
 			request = new ObjectFaceRequest<Object>();
@@ -47,12 +44,13 @@ public abstract class BaseOapi {
 		} else {
 			request = (FaceRequest) message;
 		}
+		request.setT(t);
 		return request;
 	}
 
-	public String packMessage(Object message) {
+	public String packMessage(Trace t, Object message) {
 		try {
-			FaceRequest request = convertToFaceRequest(message);
+			FaceRequest request = convertToFaceRequest(t, message);
 			ISignatureMessage sendSM = new SignatureMessage(request, myAppCode, signatureAlg);
 			sendSM.sign(signatureKey);// 签名
 			String sendMsgPkg = sendSM.packMessage();// 打包后的安全消息
@@ -79,9 +77,9 @@ public abstract class BaseOapi {
 		return null;
 	}
 
-	public String packMessage4App(Object message, Application app) {
+	public String packMessage4App(Trace t, Object message, Application app) {
 		try {
-			FaceRequest request = convertToFaceRequest(message);
+			FaceRequest request = convertToFaceRequest(t, message);
 			ISignatureMessage sendSM = new SignatureMessage(request, app.getCode(), app.getSignatureAlg());
 			sendSM.sign(app.getSignatureKey());// 签名
 			String sendMsgPkg = sendSM.packMessage();// 打包后的安全消息
@@ -108,9 +106,7 @@ public abstract class BaseOapi {
 		return null;
 	}
 
-	public String getUmOapiUrl() {
-		return umOapiUrl;
-	}
+	public abstract String getOapiUrl();
 
 	public String getMyAppCode() {
 		return myAppCode;

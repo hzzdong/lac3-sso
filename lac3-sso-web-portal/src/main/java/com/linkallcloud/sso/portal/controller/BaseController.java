@@ -1,7 +1,10 @@
 package com.linkallcloud.sso.portal.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -19,18 +22,23 @@ import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
+import com.linkallcloud.core.principal.AccountMapping;
+import com.linkallcloud.core.www.UrlPattern;
 import com.linkallcloud.core.www.utils.HttpClientFactory;
 import com.linkallcloud.core.www.utils.WebUtils;
+import com.linkallcloud.sso.domain.AppAccount;
 import com.linkallcloud.sso.domain.AppLoginHis;
 import com.linkallcloud.sso.exception.AppException;
 import com.linkallcloud.sso.exception.ArgException;
 import com.linkallcloud.sso.exception.SiteException;
 import com.linkallcloud.sso.exception.TicketException;
+import com.linkallcloud.sso.manager.IAppAccountManager;
 import com.linkallcloud.sso.manager.IAppLoginHisManager;
 import com.linkallcloud.sso.manager.IBlackManager;
 import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.sso.portal.kiss.um.ApplicationKiss;
 import com.linkallcloud.sso.portal.utils.IParams;
+import com.linkallcloud.sso.portal.utils.LacSessionValidateCode;
 import com.linkallcloud.sso.ticket.ActiveTicket;
 import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.ticket.ProxyTicket;
@@ -38,9 +46,11 @@ import com.linkallcloud.sso.ticket.ServiceTicket;
 import com.linkallcloud.sso.ticket.TicketBox;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
 import com.linkallcloud.sso.ticket.cache.ProxyGrantingTicketCache;
+import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
 import com.linkallcloud.sso.ticket.cache.TicketGrantingTicketCache;
 import com.linkallcloud.sso.util.Util;
 import com.linkallcloud.um.domain.sys.Application;
+import com.linkallcloud.web.utils.Controllers;
 
 public abstract class BaseController {
 	protected static final Log log = Logs.get();
@@ -53,12 +63,18 @@ public abstract class BaseController {
 
 	@Autowired
 	protected TicketGrantingTicketCache tgcCache;
+	
+	@Autowired
+	protected ServiceTicketCache stCache;
 
 	@Autowired
 	protected ProxyGrantingTicketCache pgtCache;
 
 	@Autowired
 	protected ApplicationKiss applicationKiss;
+	
+	@Autowired
+	protected LacSessionValidateCode sessionValidateCode;
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	protected IBlackManager blackManager;
@@ -68,6 +84,9 @@ public abstract class BaseController {
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	protected IAppLoginHisManager appLoginHisManager;
+	
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	protected IAppAccountManager appAccountManager;
 
 	public void checkBlackAndLock(Trace t, String account, String ip) {
 		if (!Strings.isBlank(account)) {
@@ -113,6 +132,10 @@ public abstract class BaseController {
 			try {
 				Application app = applicationKiss.fetchByCode(t, appCode);
 				if (null != app && app.isValid() && !Strings.isBlank(app.getHost())) {
+					try {
+						appUrl = URLDecoder.decode(appUrl, "UTF-8");
+		            } catch (UnsupportedEncodingException e) {
+		            }
 					String server = WebUtils.parseServerFromUrl(appUrl);
 					if (!Strings.isBlank(server) && app.getHost().toLowerCase().indexOf(server.toLowerCase()) != -1) {
 						return app;
@@ -297,6 +320,87 @@ public abstract class BaseController {
 			return getTgtFromPt((ProxyTicket) pgt.getParent());
 		}
 		return null;
+	}
+	
+
+	/**
+	 * Returns true if privacy has been requested, false otherwise.
+	 */
+	protected boolean privacyRequested(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++)
+				if (cookies[i].getName().equals(IParams.PRIVACY_ID) && cookies[i].getValue().equals("enabled"))
+					return true;
+		}
+		return false;
+	}
+	
+	protected void doGrantForService(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, Application fromApp,
+			String serviceId, boolean first, Map<String, Object> result) {
+		try {
+			if (fromApp == null || Strings.isBlank(serviceId) || Strings.isBlank(fromApp.getCode())) {
+				result.put("go", request.getContextPath() + "/generic");// "/sso/generic";
+				result.put("redirect", Controllers.redirect("/generic"));// "/generic";
+			} else {
+				ServiceTicket st = null;
+				String service = serviceId;
+				try {
+					service = URLEncoder.encode(serviceId, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+				}
+
+				if (fromApp.getCode().startsWith(Util.APP_TYPE_MAPPING)) {// AccountMapping.Mapping.getCode().equals(fromApp.getMappingType())
+					AppAccount appAccount = appAccountManager.fetch(t, fromApp.getId(), tgt.getUsername());
+					if (appAccount != null) {
+						st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first, appAccount.getAppLoginName(),
+								AccountMapping.Mapping.getCode());
+					} else {
+						String gourl = new UrlPattern("/bind").append("serviceId", service)
+								.append("from", fromApp.getCode()).url();
+						result.put("go", request.getContextPath() + gourl);
+						result.put("redirect", Controllers.redirect(gourl));// "/bind";
+						return;
+					}
+				} else {
+					st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first);
+				}
+
+				String token = stCache.addTicket(st);
+				result.put("from", fromApp.getCode());
+				result.put("serviceId", serviceId);
+				result.put("token", token);
+				if (!first) {
+					if (privacyRequested(request)) {
+						String gourl = new UrlPattern(request.getContextPath() + "/confirm")
+								.append("serviceId", service).append("from", fromApp.getCode()).append("token", token)
+								.url();
+						result.put("go", gourl);// "/sso/confirm";
+
+						result.put("goPage", "confirm");// "page/confirm";
+						String goPageGo = new UrlPattern(serviceId).append("token", token).url();
+						result.put("goPageGo", goPageGo);
+					} else {
+						String gourl = new UrlPattern(serviceId).append("ticket", token).append("first", "false").url();
+						result.put("go", gourl);// "/sso/service";
+
+						result.put("first", "false");
+						result.put("goPage", "goservice");// "page/goservice";
+						result.put("goPageGo", gourl);
+					}
+				} else {
+					String gourl = new UrlPattern(serviceId).append("ticket", token).append("first", "true").url();
+					result.put("go", gourl);// "/sso/service";
+
+					result.put("first", "true");
+					result.put("goPage", "goservice");// "page/goservice";
+					result.put("goPageGo", gourl);
+				}
+			}
+		} catch (Throwable e) {
+			result.put("code", "1");
+			result.put("message", e.getMessage());
+		}
 	}
 
 }

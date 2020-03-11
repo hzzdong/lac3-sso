@@ -9,8 +9,8 @@ public class ArgException extends SsoException {
 		super(ARG_CODE_ARG, "参数错误");
 	}
 
-	public ArgException(String code) {
-		super(code);
+	public ArgException(String message) {
+		super(ARG_CODE_ARG, message);
 	}
 
 	public ArgException(String code, String message) {

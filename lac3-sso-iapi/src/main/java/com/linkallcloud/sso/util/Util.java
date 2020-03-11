@@ -8,6 +8,7 @@ import com.linkallcloud.core.lang.Lang;
  * Some static utility methods.
  */
 public class Util {
+	public static final String APP_TYPE_MAPPING = "mapping_";
 
 	public static final String INNER_TICKET_ID_FREFIX = "INTID-";
 

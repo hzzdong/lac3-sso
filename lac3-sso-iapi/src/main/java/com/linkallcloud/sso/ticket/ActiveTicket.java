@@ -14,7 +14,7 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 
 	private SimpleService service;
 	private String siteUser;
-	private int siteMaping;// 账号映射类型：MappingType
+	private int siteMaping;// 账号映射类型：com.linkallcloud.core.principal.AccountMapping
 
 	public ActiveTicket() {
 		super();
@@ -35,7 +35,7 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin, String siteUser, int siteMaping) {
 		this(t, appCode, service, fromNewLogin);
 		this.siteUser = siteUser;
-		this.siteMaping = siteMaping == AccountMapping.Mapping.getCode().intValue() ? siteMaping
+		this.siteMaping = AccountMapping.Mapping.getCode().equals(siteMaping) ? siteMaping
 				: AccountMapping.Unified.getCode();
 	}
 

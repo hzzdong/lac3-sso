@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>账号绑定</title>
+		<link rel="stylesheet" href="../static/app/css/style.css" th:href="@{{path}/app/css/style.css(path=${static_server},v=${static_res_version})}">
+	</head>
+	<body>
+		<div class="sso_header">
+			<div style="background-color:#EAF5FE;float:left;height:40px;padding:0 10px;">
+				<img src="../img/sso_header_logo.png" alt="" th:src="@{{path}/app/img/sso_header_logo.png(path=${static_server})}">
+			</div>
+			<div class="sso_header_box">
+				<ul>
+					<li>
+						<img class="avatar" src="../img/avatar.png" alt="" th:src="@{{path}/app/img/avatar.png(path=${static_server})}">
+						<span th:text="${loginname?:''}">张三</span><span >，欢迎您</span>
+					</li>
+					<li>
+						<img class="sso_power" src="../img/logout.png" alt="" th:src="@{{path}/app/img/logout.png(path=${static_server})}">
+						<span>退出</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="sso_bg">
+			<section class="login_body flex-c flex-between">
+				<form id="bindForm" action="#" method="post">
+				<input type="hidden" id="from" th:value="${from}" />
+				<input type="hidden" id="fromId" th:value="${app.id}" />
+				<input type="hidden" id="service" th:value="${serviceId}" />
+				<div class="sso_item">
+					<h1 class="white align_center sso-title">应用账号绑定</h1>
+					<p class="white align_center">为保障系统运行安全,"芒种云"相关系统登录认证全面升级</p>
+					<div class="login_form white_bg flex-r">
+						<div class="flex-auto">
+							<div style="background-color:#f2f2f2;padding:20px 0 10px 0;text-align:center">
+								<h4 style="margin:0;font-size:1.1rem">
+									统一认证上线后您是首次访问“<span th:text="${app.name?:''}"></span>”，可您通过此操作绑定已有账号？</br>
+									绑定老账号后，您在此系统中的信息将保留。若您还没有账号，请选择“我没有账号”。
+								</h4>
+								<p style="color:red" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></p>
+							</div>
+							<div style="padding:0 10vw;margin-bottom:30px">
+								<div class="flex-r form-item flex-center">
+									<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}">
+									<input type="text" id="username" placeholder="请输入账号" th:placeholder="${'请输入 '+app.name+' 账号'}">
+								</div>
+								<div class="flex-r form-item flex-center">
+									<img src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}">
+									<input type="password" id="password" placeholder="请输入密码" th:placeholder="${'请输入 '+app.name+' 密码'}">
+								</div>
+								<div class="flex-r form-item flex-center">
+									<img src="../img/code.png" alt="" th:src="@{{path}/app/img/code.png(path=${static_server})}">
+									<input id="vcode" type="text" placeholder="请输入验证码">
+									<img id="vcodeImage" class="code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
+									<div class="refresh">
+										<img src="../img/refresh.png" alt="" th:src="@{{path}/app/img/refresh.png(path=${static_server})}" class="refresh-code">
+										<span class="refresh-code">刷新</span>
+									</div>
+								</div>
+								<div style="height:50px;position: relative;">
+									<button class="sso_bind_btn" id="btn_bind">立即绑定</button>
+									<button class="sso_no_btn" id="btn_bind_no">我没有账号</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				</form>
+			</section>
+		</div>
+		<div class="copyright">
+			copyright &copy; 2020. Linkallcloud All rights reserved.
+		</div>
+	</body>
+	<script th:replace="page/base/global :: jsVar"></script>
+	<script src="../static/jquery/dist/jquery.min.js" th:src="@{{path}/jquery/dist/jquery.min.js(path=${static_server},v=${static_res_version})}"></script>
+	<script src="../static/lac/encryption/md5.js" th:src="@{{path}/lac/encryption/md5.js(path=${static_server},v=${static_res_version})}"></script>
+	<script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
+	<script type="text/javascript" src="../static/client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
+	<script type="text/javascript" src="../static/client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
+	<script src="../static/pad/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
+</html>

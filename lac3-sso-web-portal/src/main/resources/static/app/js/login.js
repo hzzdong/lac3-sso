@@ -84,5 +84,54 @@ $(function() {
 			});
 		}
 	});
+	
+	$('#btn_bind').on('click', function() {
+		var username = $.trim($("#username").val());
+		var password = $.trim($("#password").val());
+		var vcode = $.trim($("#vcode").val());
+
+		if (vcode == "") {
+			showErrorInfo("验证码不能为空，请重新输入！");
+			$("#vcode").focus();
+			return;
+		} else if (username == "") {
+			showErrorInfo("用户登录帐号不能为空，请重新输入！");
+			$("#username").focus();
+		} else if (password == "") {
+			showErrorInfo("密码不能为空，请重新输入！");
+			$("#password").focus();
+		} else if (password.length < 6) {
+			showErrorInfo("密码长度不能小于6，请重新输入！");
+			$("#password").focus();
+		} else {
+			var mpass = hex_md5(password);
+			var bindvo = {
+				from : $("#from").val(),
+				fromId : $("#fromId").val(),
+				service : $("#service").val(),
+				loginName : username,
+				password : mpass,
+				vcode : vcode,
+				client:browserOsInfo
+			};
+			$.ajax({
+				url : ctx + "/doBind",
+				type : 'post',
+				cache : false,
+				dataType:'json',
+        	    contentType: "application/json; charset=utf-8",
+				data : JSON2.stringify(bindvo),
+				async : false, // 默认为true 异步
+				success : function(ret) {
+					if(ret && ret.code=="0"){
+		        		window.location.href = ret.go;
+					} else {
+						refreshImageCode();
+						showErrorInfo(ret.message || "应用账号验证失败，请核对后重试！");
+		        	}
+				}
+			});
+		}
+	});
 
 });

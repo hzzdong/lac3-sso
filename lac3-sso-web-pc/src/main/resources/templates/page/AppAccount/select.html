@@ -1,0 +1,269 @@
+<section class="find-tools">
+	<div class="searchBox">
+		<div class="pull-left">
+			<i class="fa fa-list"></i>&nbsp;应用账号列表
+		</div>
+		<div class="pull-right">
+			<ul>
+				<li th:if="${multi == true}"><button class="btn-appaccount-selects btn btn-block btn-primary btn-sm"><i class="fa fa-check"></i>&nbsp;选择应用账号</button></li>
+				<li><button class="btn-superSearch-appaccount btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button></li>
+				<li><button class="btn_appaccount_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button></li>
+				<li>
+					<form id="f_appaccount_search" class="form-inline">
+						<input type="text" id="appId" name="appId" oper="eq" stype="L" class="form-control form-search" placeholder="应用ID快速查询">
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="superSearch">
+		<form id="f_appaccount_search_s" class="form-inline">
+			
+					
+			<div class="form-group">
+				<label class="control-label">应用ID：</label>
+				<div class="control-inline">
+					<input type="text" id="appId" name="appId" oper="eq" stype="L" class="form-control form-search" placeholder="应用ID精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">应用编码：</label>
+				<div class="control-inline">
+					<input type="text" id="appCode" name="appCode" oper="eq" stype="S" class="form-control form-search" placeholder="应用编码精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">应用名称：</label>
+				<div class="control-inline">
+					<input type="text" id="appName" name="appName" oper="eq" stype="S" class="form-control form-search" placeholder="应用名称精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">应用账号：</label>
+				<div class="control-inline">
+					<input type="text" id="appLoginName" name="appLoginName" oper="eq" stype="S" class="form-control form-search" placeholder="应用账号精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">统一账号id：</label>
+				<div class="control-inline">
+					<input type="text" id="accountId" name="accountId" oper="eq" stype="L" class="form-control form-search" placeholder="统一账号id精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">统一账号：</label>
+				<div class="control-inline">
+					<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="统一账号精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">姓名：</label>
+				<div class="control-inline">
+					<input type="text" id="name" name="name" oper="eq" stype="S" class="form-control form-search" placeholder="姓名精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">描述：</label>
+				<div class="control-inline">
+					<input type="text" id="remark" name="remark" oper="eq" stype="S" class="form-control form-search" placeholder="描述精确匹配">
+				</div>
+			</div>
+					
+			
+			<div class="form-group">
+				<label class="control-label">状态：</label>
+				<div class="control-inline">
+					<select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
+						<option value="">全部</option>
+						<option value="0">启用</option>
+						<option value="1">禁用</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<button type="button" class="btn btn-primary btn-sm btn_appaccount_search_s">查询</button>
+				<button type="reset" class="btn btn-default btn-sm btn_appaccount_search_reset">重置</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<section class="content">
+	<table id="dt_appaccount" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+						<th>应用ID</th>
+						<th>应用编码</th>
+						<th>应用名称</th>
+						<th>应用账号</th>
+						<th>统一账号id</th>
+						<th>统一账号</th>
+						<th>姓名</th>
+						<th>描述</th>
+				<th>状态</th>
+				<th th:if="${multi != true}">操作</th>
+			</tr>
+		</thead>
+	</table>
+
+</section>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var rules4AppAccount = /*[[${cnds}]]*/'';
+	var multi4AppAccount = /*[[${multi}]]*/'';
+	/*]]>*/
+
+	var dtable4AppAccount, curRow4AppAccount;
+
+	function getCnds4AppAccount() {
+		return rules4AppAccount || [];
+	}
+
+	$(function() {
+		
+		initDataTable4AppAccount();
+		bindEvents4DataTable4AppAccount();
+	});
+
+	function bindEvents4DataTable4AppAccount() {
+		/* 快速查询 */
+		$(".btn_appaccount_search").on(
+				"click",
+				function() {
+					$('.btn-superSearch-appaccount').removeClass('active');
+					$('.superSearch').css('display', 'none');
+					$("#f_appaccount_search").search4DataTable(dtable4AppAccount, rules4AppAccount);
+				});
+
+		$(".btn_appaccount_search_s").on(
+				"click",
+				function() {
+					$("#f_appaccount_search_s").search4DataTable(dtable4AppAccount, rules4AppAccount);
+				});
+				
+		$(".btn_appaccount_search_reset").on("click", function() {
+		});
+
+		$('.btn-superSearch-appaccount').on(
+				'click',
+				function() {
+					$('.btn_appaccount_search').removeClass('active');
+					$(this).toggleClass('active');
+					if ($(this).hasClass('active')) {
+						$("#f_appaccount_search").hide();
+						$(".btn_appaccount_search").hide();
+					} else {
+						$("#f_appaccount_search").show();
+						$(".btn_appaccount_search").show();
+					}
+					$(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
+				});
+
+		$('#dt_appaccount tbody').on(
+			'click',
+			'.btn-appaccount-select',
+			function(event) {
+				curRow4AppAccount = dtable4AppAccount.row($(this).parents('tr'));
+				var rowData = curRow4AppAccount.data();
+				if (multi4AppAccount == true) {
+					var rows = [];
+					rows.push(rowData);
+					LAC.getModel("dlg_appaccount_select").getCallback()(rows);
+				} else {
+					LAC.getModel("dlg_appaccount_select").getCallback()(rowData);
+				}
+		});
+
+		$(".btn-appaccount-selects").on("click", function() {
+			var rows = dtable4AppAccount.rows('.selected').data();
+			if (rows && rows.length < 1) {
+				LAC.showWarn("请至少选择一行。");
+			} else {
+				LAC.getModel("dlg_appaccount_select").getCallback()(rows);
+			}
+		});
+
+	}
+
+	function initDataTable4AppAccount() {
+		var options = {
+			order : [ [ 1, "desc" ] ],
+			url : ctx + "/AppAccount/page4Select",
+			autoCheckBox : multi4AppAccount ? true : false,
+			cnds : getCnds4AppAccount,
+			columns : [
+					{
+						"data" : "id",
+						"visible" : false
+					},
+					{
+						"data" : "name",
+						"width" : "120px",
+						"defaultContent" : "",
+						"render" : function(data, type, row) {
+							return '<i class="text-light-blue btn-appaccount-select" style="cursor:pointer">' + data + '</i>';
+						}
+					},
+					{
+						"data" : "phone",
+						"width" : "60px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "areaName",
+						"width" : "150px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "agentName",
+						"orderable" : false,
+						"defaultContent" : ""
+					},
+					{
+						"data" : "status",
+						"width" : "40px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-green">正常</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-yellow">停用</span>';
+							} else {
+								return "";
+							}
+						}
+					},
+					{
+						"data" : null,
+						"defaultContent" : "",
+						"width" : "30px",
+						"orderable" : false,
+						"searchable" : false,
+						"render" : function(data, type, row) {
+							return '<span class="badge bg-light-blue btn-block btn-appaccount-select" style="cursor:pointer">选择</span>';
+						}
+					} ]
+		};
+
+		if (multi4AppAccount == true) {
+			options.columns.splice(6, 1);
+		}
+		dtable4AppAccount = $('#dt_appaccount').LacDTable(options);
+	}
+</script>

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.linkallcloud</groupId>
 		<artifactId>lac3-sso</artifactId>
-		<version>0.0.4.2</version>
+		<version>0.1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -28,6 +28,17 @@
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-handshake</artifactId>
 			<version>${lac3-handshake.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.linkallcloud</groupId>
+			<artifactId>lac3-um-iapi</artifactId>
+			<version>${lac3-um.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jeecg</groupId>

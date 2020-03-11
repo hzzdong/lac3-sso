@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkallcloud.sso.server.dao.IAppAccountDao">
+
+	<sql id="Base_Column_List">
+		u.id,u.uuid,u.status,u.createTime,u.updateTime
+		,u.appId
+		,u.appCode
+		,u.appName
+		,u.appLoginName
+		,u.accountId
+		,u.loginname
+		,u.name
+		,u.remark
+	</sql>
+	
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.AppAccount">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_app_account u
+		where 
+			u.id=#{id}
+	</select>
+	
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.AppAccount">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_app_account u 
+		WHERE
+			u.id = #{id} and u.uuid=#{uuid} 
+	</select>
+	
+	<select id="fetch" resultType="com.linkallcloud.sso.domain.AppAccount">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_app_account u 
+		where 
+			u.appId=#{appId} and u.loginname=#{ssoLoginName}
+	</select>
+	
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.AppAccount">
+		select
+			<include refid="Base_Column_List" />
+		from tab_app_account u 
+		where u.status &lt;&gt; 9 and  u.id in
+			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.AppAccount">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_app_account u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+				
+			<if test="page.cnds!=null and page.cnds.appId != null"> AND u.appId = #{page.cnds.appId}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appName != null"> AND u.appName = #{page.cnds.appName}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appLoginName != null"> AND u.appLoginName = #{page.cnds.appLoginName}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.accountId != null"> AND u.accountId = #{page.cnds.accountId}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.loginname != null"> AND u.loginname = #{page.cnds.loginname}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name = #{page.cnds.name}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.remark != null"> AND u.remark = #{page.cnds.remark}</if>
+				
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.AppAccount">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_app_account u 
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
+				
+			<if test="page.cnds!=null and page.cnds.appId != null"> AND u.appId = #{page.cnds.appId}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appCode != null"> AND u.appCode = #{page.cnds.appCode}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appName != null"> AND u.appName = #{page.cnds.appName}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.appLoginName != null"> AND u.appLoginName = #{page.cnds.appLoginName}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.accountId != null"> AND u.accountId = #{page.cnds.accountId}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.loginname != null"> AND u.loginname = #{page.cnds.loginname}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.name != null"> AND u.name = #{page.cnds.name}</if>
+				
+				
+			<if test="page.cnds!=null and page.cnds.remark != null"> AND u.remark = #{page.cnds.remark}</if>
+				
+		<choose>
+			<when test="page.orders != null and page.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="page.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="find" resultType="com.linkallcloud.sso.domain.AppAccount">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_app_account u
+		WHERE
+			u.status &lt;&gt; 9 
+			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.appId != null"> AND u.appId = #{query.cnds.appId}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.appCode != null"> AND u.appCode = #{query.cnds.appCode}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.appName != null"> AND u.appName = #{query.cnds.appName}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.appLoginName != null"> AND u.appLoginName = #{query.cnds.appLoginName}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.accountId != null"> AND u.accountId = #{query.cnds.accountId}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.loginname != null"> AND u.loginname = #{query.cnds.loginname}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.name != null"> AND u.name = #{query.cnds.name}</if>
+				
+				
+			<if test="query!=null and query.cnds!=null and query.cnds.remark != null"> AND u.remark = #{query.cnds.remark}</if>
+				
+		<choose>
+			<when test="query != null and query.orders != null and query.orders.length > 0">
+				order by <foreach item="ord" index="index" collection="query.orders" separator=","> u.${ord} </foreach>
+			</when>
+			<otherwise>
+				order by u.id
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.AppAccount" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into tab_app_account 
+			( uuid,status,createTime,updateTime
+			,appId
+			,appCode
+			,appName
+			,appLoginName
+			,accountId
+			,loginname
+			,name
+			,remark
+			)
+		values
+			(#{entity.uuid},0,now(),now()
+			,#{entity.appId}
+			,#{entity.appCode}
+			,#{entity.appName}
+			,#{entity.appLoginName}
+			,#{entity.accountId}
+			,#{entity.loginname}
+			,#{entity.name}
+			,#{entity.remark}
+			)
+	</insert>
+	
+	<update id="update">
+		update 
+			tab_app_account 
+		set 
+			updateTime=now()
+			,appId=#{entity.appId}
+			,appCode=#{entity.appCode}
+			,appName=#{entity.appName}
+			,appLoginName=#{entity.appLoginName}
+			,accountId=#{entity.accountId}
+			,loginname=#{entity.loginname}
+			,name=#{entity.name}
+			,remark=#{entity.remark}
+		where 
+			id=#{entity.id} and uuid=#{entity.uuid}
+	</update>
+	
+	<delete id="delete">
+		update 
+			tab_app_account 
+		set
+			status=9,updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</delete>
+
+	<update id="updateStatus">
+		update
+			tab_app_account
+		set
+			status=#{status},updateTime=now()
+		where
+			id=#{id} and uuid=#{uuid}
+	</update>
+	
+</mapper>

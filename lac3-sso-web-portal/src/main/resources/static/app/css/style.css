@@ -250,7 +250,7 @@ header {
 	line-height: 120px;
 	position: absolute;
 	bottom: 0;
-	width:800px;
+	width: 800px;
 }
 
 .login_item {
@@ -278,7 +278,7 @@ header {
 
 .form-item {
 	border: 1px solid #bdbdbd;
-	padding: 5px;
+	padding: 1rem;
 	height: 38px;
 	margin: 15px 0;
 }
@@ -287,6 +287,7 @@ header {
 	border: none;
 	outline: none;
 	padding-left: 5px;
+	flex: 1;
 }
 
 .form-item .code {
@@ -299,7 +300,7 @@ header {
 	height: 38px;
 	min-width: 3rem;
 	line-height: 38px;
-	flex: 1;
+	flex: none;
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
@@ -326,6 +327,92 @@ header {
 	margin: 0 0 50px 0;
 	font-size: 2rem;
 }
+
 .agile-field-error {
 	color:#F00;
+}
+
+/* sso */
+.sso_bg {
+	background: url('../img/login_bg.png') center no-repeat;
+	background-size: 100% 100%;
+	height: calc(100vh - 110px);
+}
+
+.sso_item {
+	padding-top: 50px;
+}
+
+.sso_header {
+	height: 60px;
+	line-height: 40px;
+	background-color: #fff;
+	padding: 10px 10vw;
+}
+
+.sso-title {
+	font-size: 2rem;
+	margin: 0;
+}
+
+.sso_bind_btn {
+	position: absolute;
+	height: 50px;
+	line-height: 50px;
+	color: #fff;
+	background: -webkit-gradient(linear, left top, right bottom, from(#3b86ff), to(#44bfff));
+	width: 57%;
+	border: none;
+	font-size: 1.2rem;
+	border-radius: 25px;
+	outline: none;
+	cursor: pointer;
+}
+
+.sso_no_btn {
+	position: absolute;
+	height: 50px;
+	line-height: 50px;
+	background-color: #EAF5FE;
+	color: #33A0FD;
+	width: 38%;
+	border: none;
+	border-radius: 25px;
+	right: 0;
+	font-size: 1.2rem;
+	outline: none;
+	cursor: pointer;
+}
+
+.sso_header>div>img {
+	height: 80%;
+}
+
+.sso_header_box {
+	float: right;
+}
+
+.sso_header_box img.avatar {
+	height: 30px;
+	vertical-align: middle;
+}
+
+.sso_header_box img.sso_lock {
+	height: 18px;
+	vertical-align: middle;
+}
+
+.sso_header_box img.sso_power {
+	height: 18px;
+	vertical-align: middle;
+}
+
+.sso_header_box ul {
+	margin: 0;
+	list-style: none;
+}
+
+.sso_header_box li {
+	float: left;
+	margin-right: 20px;
 }
