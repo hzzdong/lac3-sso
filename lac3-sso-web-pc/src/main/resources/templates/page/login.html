@@ -19,40 +19,38 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" th:href="@{{path}/AdminLTE2410/bower_components/fonts.googleapis/fonts.css(path=${static_server},v=${static_res_version})}">
 </head>
 <body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <a href="#"><b>用户</b>中心</a>
-  </div>
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-    <p class="login-box-msg">系统登陆</p>
+	<div class="login-box">
+		<div class="login-logo">
+			<a href="#"><b>统一</b>认证</a>
+		</div>
+		<!-- /.login-logo -->
+		<div class="login-box-body">
+			<p class="login-box-msg">系统登陆</p>
 
-    <form id="loginForm">
-      <div class="form-group has-feedback">
-        <input type="text" id="username" class="form-control" placeholder="请输入登录账号"> 
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <input type="password" id="password" class="form-control" placeholder="请输入登录密码"> 
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div>
-      <div class="row">
-        <div class="col-xs-8">
-        </div>
-        <!-- /.col -->
-        <div class="col-xs-4">
-          <button type="button" class="btn btn-primary btn-block btn-flat" id="btn_login">登录</button>
-        </div>
-        <!-- /.col -->
-      </div>
-    </form>
+			<form id="loginForm">
+				<div class="form-group has-feedback">
+					<input type="text" id="username" class="form-control" placeholder="请输入登录账号"> <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="password" id="password" class="form-control" placeholder="请输入登录密码"> <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+				</div>
+				<div class="row">
+					<div class="col-xs-8"></div>
+					<!-- /.col -->
+					<div class="col-xs-4">
+						<button type="button" class="btn btn-primary btn-block btn-flat" id="btn_login">登录</button>
+					</div>
+					<!-- /.col -->
+				</div>
+			</form>
 
-    <a href="#">忘记密码</a><br>
+			<a href="#">忘记密码</a><br>
 
-  </div>
-  <!-- /.login-box-body -->
-</div>
-<!-- /.login-box -->
+		</div>
+		<!-- /.login-box-body -->
+		<div class="text-muted" style="position:absolute;left;0;bottom:0;">copyright &copy; 2020 mzlink.net版权所有.   ICP证：<a href="http://www.beian.miit.gov.cn" target="_blank" class="text-muted">浙ICP备18030140号-1</a></div>
+	</div>
+	<!-- /.login-box -->
 
 <script src="../../static/lac/utils.js" th:src="@{{path}/lac/utils.js(path=${static_server},v=${static_res_version})}"></script>
 <script>
