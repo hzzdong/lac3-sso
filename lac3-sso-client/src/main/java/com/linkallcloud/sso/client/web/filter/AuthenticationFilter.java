@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2011 www.public.zj.cn
- *
- * cn.zj.pubinfo.sso.client.web.filter.AuthenticationFilter.java 
- *
- * 2011-5-22
- * 
- */
 package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
@@ -18,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.principal.Assertion;
 import com.linkallcloud.sso.client.util.CommonUtils;
 
@@ -25,10 +18,7 @@ import com.linkallcloud.sso.client.util.CommonUtils;
  * Filter implementation to intercept all requests and attempt to authenticate
  * the user by redirecting them to SSO (unless the user has a ticket).
  * 
- * 2011-6-14
- * 
- * @author <a href="mailto:hzzdong@gmail.com">ZhouDong</a>
- * 
+ * @author <a href="mailto:hzzdong@qq.com">ZhouDong</a>
  */
 public final class AuthenticationFilter extends AbstractSSOFilter {
 
@@ -93,6 +83,11 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 			return;
 		}
 
+		if (!Strings.isBlank(getLacToken(request))) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		final HttpSession session = request.getSession(isUseSession());
 		final String ticket = request.getParameter(PARAM_TICKET);
 		final Assertion assertion = session != null
@@ -116,7 +111,8 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 				log.debug("redirecting to \"" + urlToRedirectTo + "\"");
 			}
 
-			response.sendRedirect(urlToRedirectTo);
+			// response.sendRedirect(urlToRedirectTo);
+			toLogin(urlToRedirectTo, request, response);
 			return;
 		}
 

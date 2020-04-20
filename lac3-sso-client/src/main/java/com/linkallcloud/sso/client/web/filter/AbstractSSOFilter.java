@@ -2,6 +2,7 @@ package com.linkallcloud.sso.client.web.filter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -13,9 +14,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.linkallcloud.core.dto.Result;
+import com.linkallcloud.core.exception.Exceptions;
 import com.linkallcloud.core.lang.Lang;
+import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.log.Log;
 import com.linkallcloud.core.log.Logs;
+import com.linkallcloud.core.www.utils.WebUtils;
 import com.linkallcloud.sso.client.util.CommonUtils;
 
 /**
@@ -34,8 +39,8 @@ public abstract class AbstractSSOFilter implements Filter {
 
 	// 不过滤的uri
 	protected List<String> notFilterResources = Lang.list("/static/", "/js/", "/css/", "/images/", "/img/", ".jpg",
-			".png", ".jpeg", ".js", ".css", "/imageValidate", "/verifyCode", "/exit", "/nnl/", "/unsupport", "/error",
-			"/pub/");
+			".png", ".jpeg", ".js", ".css", "/login", "/imageValidate", "/verifyCode", "/exit", "/nnl/", "/unsupport",
+			"/error", "/pub/");
 
 	/**
 	 * Constant string representing the ticket parameter.
@@ -228,4 +233,38 @@ public abstract class AbstractSSOFilter implements Filter {
 	protected final boolean isUseSession() {
 		return this.useSession;
 	}
+
+	protected void toLogin(String loginUrl, HttpServletRequest request, HttpServletResponse hResponse)
+			throws IOException {
+		if ((!Strings.isBlank(loginUrl)) && (!loginUrl.startsWith("http"))
+				&& (!loginUrl.startsWith(request.getContextPath()))) {
+			loginUrl = request.getContextPath() + loginUrl;
+		}
+		if (WebUtils.isAjax(request)) {
+			hResponse.setCharacterEncoding("UTF-8");
+			Result<Object> result = Exceptions.makeErrorResult(Exceptions.CODE_ERROR_SESSION_TIMEOUT, "会话超时");
+			result.setData(loginUrl);
+
+			WebUtils.out(hResponse, result);
+		} else {
+			hResponse.sendRedirect(loginUrl);
+		}
+	}
+
+	protected String getLacToken(HttpServletRequest request) {
+		String token = request.getParameter("token");
+		log.info("################  paream token:" + token);
+		if (Strings.isBlank(token)) {
+			token = request.getHeader("token");
+			try {
+				if (!Strings.isBlank(token)) {
+					token = URLDecoder.decode(token, "UTF8");
+				}
+			} catch (UnsupportedEncodingException localUnsupportedEncodingException) {
+			}
+			log.info("################ header token:" + token);
+		}
+		return token;
+	}
+
 }
