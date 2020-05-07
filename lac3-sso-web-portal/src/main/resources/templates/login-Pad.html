@@ -5,6 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>登录</title>
 <link rel="stylesheet" href="../static/pad/css/style.css" th:href="@{{path}/pad/css/style.css(path=${static_server},v=${static_res_version})}">
+<style>
+	.login_body{
+		width: 90%;
+	}
+
+	.welTitle {
+		font-weight: normal;
+		color: #7F7F7F;
+	}
+	
+	.login_left {
+		padding: 0px 0px 0px 0px;
+		background-color: #EDFDFF;
+		margin-right: 20px;
+	}
+	
+	.login_left img {
+		height:320px;
+		background-color: #EDFDFF;
+	}
+	
+	.login_right {
+		margin-left: 20px;
+	}
+	
+	.form-item {
+		margin: 15px 0px;
+	}
+	
+	.remanber {
+		color: #7F7F7F;
+	}
+	
+	.missPwd {
+		cursor: pointer;
+		color: #7F7F7F;
+	}
+	
+	.refresh-code {
+		color: #7F7F7F;
+	}
+</style>
 </head>
 <body>
 	<div class="login_bg">
@@ -14,7 +56,7 @@
 					<h1 class="white align_center login-title">用户统一认证中心</h1>
 					<div class="login_form white_bg flex-r">
 						<div class="login_left flex-c flex-around">
-							<img src="../img/login_img.png" alt="" th:src="@{{path}/pad/img/login_img.png(path=${static_server})}">
+							<img src="../img/login_img.png" alt="" th:src="@{{path}/pad/img/ssoinimg.png(path=${static_server})}">
 						</div>
 						<div class="login_right flex-auto">
 							<form id="loginForm" action="#" method="post">
@@ -22,7 +64,7 @@
 								<input type="hidden" id="service" th:value="${service}" />
 								<input type="hidden" id="lt" th:value="${lt}" />
 								<input type="hidden" id="warn" th:value="${warn}" />
-								<h4 style="margin: 0 0 5px 0; text-align: left">welcom欢迎登录</h4>
+								<h4 class="welTitle" style="margin: 0 0 5px 0; text-align: left">Welcom欢迎登录</h4>
 								<div class="agile-field-error" th:text="${message?:''}" th:classappend="${message==null}? 'hide'"></div>
 								<div>
 									<div class="flex-r form-item flex-center">
@@ -45,9 +87,9 @@
 									</div>
 									<div class="flex-r flex-between" style="margin: 10px 0">
 										<div class="flex-r flex-center">
-											<input id="rememberMe" name="rememberMe" type="checkbox" th:checked="${me!=null && me!='' }"> <label for="remanber">记住我</label>
+											<input id="rememberMe" name="rememberMe" type="checkbox" th:checked="${me!=null && me!='' }"> <label class="remanber" for="remanber">记住我</label>
 										</div>
-										<div style="cursor: pointer;">忘记密码？</div>
+										<div class="missPwd">忘记密码？</div>
 									</div>
 									<div>
 										<button type="button" class="login_btn" id="btn_login">登录</button>
