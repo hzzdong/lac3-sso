@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../static/pad/css/style.css" th:href="@{{path}/pad/css/style.css(path=${static_server},v=${static_res_version})}">
 <style>
 	.login_body{
-		width: 90%;
+		width: 85%;
 	}
 
 	.welTitle {
@@ -19,15 +19,19 @@
 		padding: 0px 0px 0px 0px;
 		background-color: #EDFDFF;
 		margin-right: 20px;
+		width: 52%;
+		border-radius: 10px;
 	}
 	
 	.login_left img {
 		height:320px;
 		background-color: #EDFDFF;
+		padding: 0 30px;
 	}
 	
 	.login_right {
 		margin-left: 20px;
+		width: 47%;
 	}
 	
 	.form-item {
@@ -45,6 +49,10 @@
 	
 	.refresh-code {
 		color: #7F7F7F;
+	}
+	
+	.lastInput {
+		padding-right: 0px;
 	}
 </style>
 </head>
@@ -75,15 +83,15 @@
 										<img src="../img/lock.png" alt="" th:src="@{{path}/pad/img/lock.png(path=${static_server})}"> 
 										<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 									</div>
-									<div class="flex-r form-item flex-center">
+									<div class="flex-r form-item flex-center lastInput">
 										<div class="flex-auto flex-r flex-center">
 											<img src="../img/code.png" alt="" th:src="@{{path}/pad/img/code.png(path=${static_server})}"> 
 											<input type="text" id="vcode" placeholder="请输入验证码"> 
 										</div>
 										<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
-										<div class="refresh refresh-code">
+										<!-- <div class="refresh refresh-code">
 											<img src="../img/refresh.png" alt="" th:src="@{{path}/pad/img/refresh.png(path=${static_server})}" class="refresh-code"> <span class="refresh-code">刷新</span>
-										</div>
+										</div> -->
 									</div>
 									<div class="flex-r flex-between" style="margin: 10px 0">
 										<div class="flex-r flex-center">

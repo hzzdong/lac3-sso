@@ -16,7 +16,7 @@
 	}
 
 	.form-item {
-		border: none;
+		/* border: none; */
 	}
 	
 	.bottomImg {
@@ -27,13 +27,24 @@
 	}
 	
 	.login_box {
-		padding:20px 20px 60px 20px;
+		padding:20px 20px 70px 20px;
 		border: 1px solid #F2F2F2; 
 		margin-top: -100px;
+		border-radius: 6px;
+	}
+	
+	.lastInput {
+		border-right: none;
+	}
+	
+	.loginDiv {
+		height: 30px;
 	}
 	
 	.login_btn {
-		margin-bottom: 40px;
+		margin-bottom: 55px;
+		left: auto;
+		width: 90%;
 	}
 </style>
 
@@ -61,7 +72,7 @@
 					<img src="../img/lock.png" alt="" th:src="@{{path}/mobile/img/lock.png(path=${static_server})}"> 
 					<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 				</div>
-				<div class="flex-r form-item flex-center flex-between posi-re"
+				<div class="flex-r form-item flex-center flex-between posi-re lastInput"
 					style="padding-right: 0;">
 					<div class="flex-r flex-center">
 						<img src="../img/code.png" alt="" th:src="@{{path}/mobile/img/code.png(path=${static_server})}"> 
@@ -75,7 +86,7 @@
 					</div>
 					<div>忘记密码？</div>
 				</div>
-				<div style="height: 30px;">
+				<div class="loginDiv">
 					<button type="button" class="login_btn" id="btn_login">登录</button>
 				</div>
 			</div>

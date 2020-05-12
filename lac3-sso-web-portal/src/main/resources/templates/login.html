@@ -55,11 +55,13 @@
 	}
 	
 	.login_right {
-		padding: 0 70px 0px 60px;
+		/* padding: 0 70px 0px 60px; */
+		padding: 0px;
+		width: 300px;
 	}
 	
 	.form-item {
-		margin: 30px 0;
+		margin: 20px 0;
 	}
 	
 	.login_btn {
@@ -84,6 +86,16 @@
 		bottom: 0;
 		width: 100%;
 		margin: 0 auto;
+	}
+	
+	.lastInput {
+		padding-right: 0px;
+		border-right: none;
+	}
+	
+	form {
+		width:380px;
+		margin-left: 40px;
 	}
 </style>
 <body>
@@ -113,13 +125,13 @@
 									<img src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}"> 
 									<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 								</div>
-								<div class="flex-r form-item flex-center">
+								<div class="flex-r form-item flex-center lastInput">
 									<img src="../img/code.png" alt="" th:src="@{{path}/app/img/code.png(path=${static_server})}"> 
 									<input type="text" id="vcode" placeholder="请输入验证码"> 
 									<img id="vcodeImage" class="code refresh-code" src="../img/code-exp.png" alt="验证码" th:src="@{/verifyCode}">
-									<div class="refresh">
+									<!-- <div class="refresh">
 										<img src="../img/refresh.png" alt="" th:src="@{{path}/app/img/refresh.png(path=${static_server})}" class="refresh-code"> <span class="refresh-code">刷新</span>
-									</div>
+									</div> -->
 								</div>
 								<div class="flex-r flex-between">
 									<div class="flex-r flex-center">
