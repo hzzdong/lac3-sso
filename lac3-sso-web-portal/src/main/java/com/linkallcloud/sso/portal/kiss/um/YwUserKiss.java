@@ -46,7 +46,7 @@ public class YwUserKiss extends BaseKiss {
 	}
 
 	public YwUser fetchById(Trace t, Long id) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(id.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(id, null));
 		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/YwUser/fetchById", sendMsgPkg);
 		YwUser result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<YwUser>>() {
 		});

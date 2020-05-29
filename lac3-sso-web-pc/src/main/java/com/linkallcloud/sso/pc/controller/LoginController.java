@@ -34,7 +34,7 @@ public class LoginController extends BaseManagerController {
 	private static final Log log = Logs.get();
 
 	@Value("${lac.appid}")
-	private String myAppId;
+	private Long myAppId;
 
 	@Value("${lac.appcode}")
 	private String myAppCode;
@@ -94,9 +94,9 @@ public class LoginController extends BaseManagerController {
 		try {
 			Manager manager = managerManager.loginValidate(t, lvo.getLoginName(), lvo.getPassword());
 			if (manager != null) {
-				SessionUser su = new SessionUser(manager.getId().toString(), manager.getUuid(), manager.getLoginname(),
+				SessionUser su = new SessionUser(manager.getId(), manager.getUuid(), manager.getLoginname(),
 						manager.getName(), "");
-				su.setAppInfo(myAppId, myAppCode);
+				su.setAppInfo(myAppId, null, myAppCode, "");
 				su.setMenuPermissions(getMenuPermissionResources());
 
 				Controllers.login(myAppCode, su);

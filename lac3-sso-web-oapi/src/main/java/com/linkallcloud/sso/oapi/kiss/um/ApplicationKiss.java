@@ -35,7 +35,7 @@ public class ApplicationKiss extends BaseKiss {
 	}
 
 	public Map<String, String[]> loadAppUriRescodeMap(Trace t, Long appId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId, null));
 		String responseJson = HttpClientFactory.me(false).post(getUmOapiUrl() + "/face/Application/loadAppUriRescodeMap",
 				sendMsgPkg);
 		Map<String, String[]> result = unpackMessage(responseJson,

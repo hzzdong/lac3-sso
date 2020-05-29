@@ -122,7 +122,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 			for (Lock dbEntity : checkedEntities) {
 				dbEntity.setCount(dbEntity.getCount() + 1);
 				dbEntity.setLockedTime(new Date());
-				dbEntity.setOperator(av != null ? av.getName() : "");
+				dbEntity.setOperator(av != null ? av.name() : "");
 				dbEntity.setReason(LockReson.LockByHand.getCode());
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.Lock.getCode());
@@ -143,7 +143,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 		if (checkedEntities != null && !checkedEntities.isEmpty() && checkedEntities.size() == uuidIds.size()) {
 			for (Lock dbEntity : checkedEntities) {
 				dbEntity.setLockedTime(new Date());
-				dbEntity.setOperator(av != null ? av.getName() : "");
+				dbEntity.setOperator(av != null ? av.name() : "");
 				dbEntity.setReason(LockReson.UnLockByHand.getCode());
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.UnLock.getCode());

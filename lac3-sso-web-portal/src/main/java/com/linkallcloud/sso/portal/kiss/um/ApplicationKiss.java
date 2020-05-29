@@ -25,7 +25,7 @@ public class ApplicationKiss extends BaseKiss {
 	}
 
 	public Map<String, String[]> loadAppUriRescodeMap(Trace t, Long appId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId, null));
 		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Application/loadAppUriRescodeMap",
 				sendMsgPkg);
 		Map<String, String[]> result = unpackMessage(responseJson,
@@ -35,7 +35,7 @@ public class ApplicationKiss extends BaseKiss {
 	}
 
 	public List<Application> findByYwUserId(Trace t, Long ywUserId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId, null));
 		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Application/findByYwUserId",
 				sendMsgPkg);
 		List<Application> apps = unpackMessage(responseJson,

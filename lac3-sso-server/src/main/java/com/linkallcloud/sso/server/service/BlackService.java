@@ -129,7 +129,7 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 			for (Black dbEntity : checkedEntities) {
 				if (!BlackStatus.Black.getCode().equals(dbEntity.getStatus())) {
 					dbEntity.setBlackTime(new Date());
-					dbEntity.setOperator(av != null ? av.getName() : "");
+					dbEntity.setOperator(av != null ? av.name() : "");
 					dbEntity.setReason(BlackReson.BlackByHand.getCode());
 					dbEntity.setRemark(remark);
 					dbEntity.setStatus(BlackStatus.Black.getCode());
@@ -153,7 +153,7 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 			for (Black dbEntity : checkedEntities) {
 				if (BlackStatus.Black.getCode().equals(dbEntity.getStatus())) {
 					dbEntity.setBlackTime(new Date());
-					dbEntity.setOperator(av != null ? av.getName() : "");
+					dbEntity.setOperator(av != null ? av.name() : "");
 					dbEntity.setReason(BlackReson.UnBlackByHand.getCode());
 					dbEntity.setRemark(remark);
 					dbEntity.setStatus(BlackStatus.UnBlack.getCode());

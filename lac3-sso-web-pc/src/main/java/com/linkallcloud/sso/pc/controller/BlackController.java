@@ -70,7 +70,7 @@ public abstract class BlackController extends BaseLController<Black, IBlackManag
 		entity.setStatus(BlackStatus.Black.getCode());
 		entity.setReason(BlackReson.BlackByHand.getCode());
 		entity.setBlackTime(new Date());
-		entity.setOperator(av != null ? av.getName() : "");
+		entity.setOperator(av != null ? av.name() : "");
 		return super.doSave(entity, t, av);
 	}
 
@@ -100,7 +100,7 @@ public abstract class BlackController extends BaseLController<Black, IBlackManag
 		entity.setStatus(BlackStatus.UnBlack.getCode());
 		entity.setReason(BlackReson.UnBlackByHand.getCode());
 		entity.setBlackTime(new Date());
-		entity.setOperator(av != null ? av.getName() : "");
+		entity.setOperator(av != null ? av.name() : "");
 		entity.setStatus(BlackStatus.UnBlack.getCode());
 		return super.doSave(entity, t, av);
 	}

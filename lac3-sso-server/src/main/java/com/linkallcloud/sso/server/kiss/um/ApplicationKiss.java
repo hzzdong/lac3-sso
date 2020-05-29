@@ -26,7 +26,7 @@ public class ApplicationKiss extends UmBaseKiss {
 	}
 
 	public Application fetchById(Trace t, Long appId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/Application/fetchById",
 				sendMsgPkg);
 		Application app = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Application>>() {
@@ -44,7 +44,7 @@ public class ApplicationKiss extends UmBaseKiss {
 	}
 
 	public Map<String, String[]> loadAppUriRescodeMap(Trace t, Long appId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(appId, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/Application/loadAppUriRescodeMap",
 				sendMsgPkg);
 		Map<String, String[]> result = unpackMessage(responseJson,
@@ -54,7 +54,7 @@ public class ApplicationKiss extends UmBaseKiss {
 	}
 
 	public Page<Application> findPageByYwUserId(Trace t, Long ywUserId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/Application/findByYwUserId",
 				sendMsgPkg);
 		List<Application> apps = unpackMessage(responseJson,
@@ -71,7 +71,7 @@ public class ApplicationKiss extends UmBaseKiss {
 	}
 
 	public List<Application> findByYwUserId(Trace t, Long ywUserId) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/Application/findByYwUserId",
 				sendMsgPkg);
 		List<Application> result = unpackMessage(responseJson,

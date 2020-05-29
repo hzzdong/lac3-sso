@@ -28,7 +28,7 @@ public class AreaKiss extends BaseKiss {
 	}
 
 	public Area fetchById(Trace t, Long id) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(id.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(id, null));
 		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Area/fetchById", sendMsgPkg);
 		Area result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Area>>() {
 		});

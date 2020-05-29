@@ -70,7 +70,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 		entity.setReason(LockReson.LockByHand.getCode());
 		entity.setCount(1);
 		entity.setLockedTime(new Date());
-		entity.setOperator(av != null ? av.getName() : "");
+		entity.setOperator(av != null ? av.name() : "");
 		return super.doSave(entity, t, av);
 	}
 
@@ -100,7 +100,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 		entity.setStatus(LockStatus.UnLock.getCode());
 		entity.setReason(LockReson.UnLockByHand.getCode());
 		entity.setLockedTime(new Date());
-		entity.setOperator(av != null ? av.getName() : "");
+		entity.setOperator(av != null ? av.name() : "");
 		entity.setStatus(LockStatus.UnLock.getCode());
 		return super.doSave(entity, t, av);
 	}

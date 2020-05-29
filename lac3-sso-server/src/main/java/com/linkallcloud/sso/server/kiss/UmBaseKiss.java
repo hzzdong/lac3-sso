@@ -36,7 +36,7 @@ public abstract class UmBaseKiss extends BaseKiss {
 	}
 
 	public YwCompany fetchYwCompanyById(Trace t, Long id) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(id.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(id, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/YwCompany/fetchById", sendMsgPkg);
 		YwCompany result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<YwCompany>>() {
 		});
@@ -53,7 +53,7 @@ public abstract class UmBaseKiss extends BaseKiss {
 	}
 
 	public Area fetchAreaById(Trace t, Long id) {
-		String sendMsgPkg = packMessage(t, new IdFaceRequest(id.toString(), null));
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(id, null));
 		String responseJson = HttpClientFactory.me(false).post(getOapiUrl() + "/face/Area/fetchById", sendMsgPkg);
 		Area result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Area>>() {
 		});
