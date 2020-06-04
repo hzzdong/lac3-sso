@@ -34,4 +34,9 @@ public class AppAccountManager extends BaseManager<AppAccount, IAppAccountServic
 		return service().validBind(t, appId, ssoLoginName, appLoginName, appPassword);
 	}
 
+	@Override
+	public AppAccount fetchByAppCode(Trace t, String appCode, String ssoLoginName) {
+		return service().fetchByAppCode(t, appCode, ssoLoginName);
+	}
+
 }

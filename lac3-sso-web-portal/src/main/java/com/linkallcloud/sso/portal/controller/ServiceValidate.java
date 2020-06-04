@@ -18,6 +18,7 @@ import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.ticket.ServiceTicket;
 import com.linkallcloud.sso.ticket.TicketBox;
 import com.linkallcloud.sso.ticket.cache.ServiceTicketCache;
+import com.linkallcloud.um.domain.sys.Application;
 
 /**
  * Handles ST validation and PGT acquisition.
@@ -60,11 +61,11 @@ public class ServiceValidate extends BaseController {
 				TicketBox<ProxyGrantingTicket> pgtIOU = null;
 				if (!Strings.isBlank(pgtUrl) && !Strings.isBlank(pgtAppCode)) {
 					try {
-						checkSiteCanPass(t, pgtAppCode, pgtUrl);
+						Application app = checkSiteCanPass(t, pgtAppCode, pgtUrl);
+						pgtIOU = sendPgt(st, pgtUrl, pgtAppCode, app.getClazz());
 					} catch (SiteException e) {
 						return validationFailure(INVALID_SERVICE, String.format("代理服务(%,%)未许可", pgtAppCode, pgtUrl));
 					}
-					pgtIOU = sendPgt(st, pgtUrl, pgtAppCode);
 				}
 
 				return validationSuccess(t, st, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);

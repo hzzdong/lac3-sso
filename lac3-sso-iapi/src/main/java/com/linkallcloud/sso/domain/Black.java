@@ -14,6 +14,7 @@ public class Black extends Domain {
 	private static final long serialVersionUID = 5750266573536145328L;
 
 	private String blackTarget;// 加黑目标
+	private int appClazz;// 加黑应用类别，0：运维，1：客户
 	private int type;// 加黑类型LockBlackType
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date blackTime;// 加黑时间
@@ -25,10 +26,11 @@ public class Black extends Domain {
 		super();
 	}
 
-	public Black(int type, String blackTarget, int status, int reason, String operator, String remark) {
+	public Black(int type, int appClazz, String blackTarget, int status, int reason, String operator, String remark) {
 		super();
 		this.status = status;
 		this.type = type;
+		this.appClazz = appClazz;
 		this.blackTarget = blackTarget;
 		this.blackTime = new Date();
 		this.reason = reason;
@@ -58,6 +60,14 @@ public class Black extends Domain {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public int getAppClazz() {
+		return appClazz;
+	}
+
+	public void setAppClazz(int appClazz) {
+		this.appClazz = appClazz;
 	}
 
 	public Date getBlackTime() {

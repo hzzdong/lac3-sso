@@ -58,7 +58,9 @@ public abstract class AbstractSSOFilter implements Filter {
 	 */
 	private final String serverName;
 
-	protected final String siteCode;
+	private final int siteClazz;// 应用的类别，0：运维，1：客户
+
+	private final String siteCode;
 
 	/**
 	 * The exact service url to match to.
@@ -70,20 +72,22 @@ public abstract class AbstractSSOFilter implements Filter {
 	 */
 	private final boolean useSession;
 
-	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl) {
-		this(siteCode, serverName, serviceUrl, true, null, false);
+	protected AbstractSSOFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl) {
+		this(siteClazz, siteCode, serverName, serviceUrl, true, null, false);
 	}
 
-	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl,
-			List<String> ignoreRes) {
-		this(siteCode, serverName, serviceUrl, true, ignoreRes, false);
+	protected AbstractSSOFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl, List<String> ignoreRes) {
+		this(siteClazz, siteCode, serverName, serviceUrl, true, ignoreRes, false);
 	}
 
-	protected AbstractSSOFilter(final String siteCode, final String serverName, final String serviceUrl,
-			final boolean useSession, List<String> ignoreRes, boolean override) {
+	protected AbstractSSOFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl, final boolean useSession, List<String> ignoreRes, boolean override) {
 		CommonUtils.assertTrue(CommonUtils.isNotBlank(serverName) || CommonUtils.isNotBlank(serviceUrl),
 				"either serverName or serviceUrl must be set");
 
+		this.siteClazz = siteClazz;
 		this.siteCode = siteCode;
 		this.serverName = serverName;
 		this.serviceUrl = serviceUrl;
@@ -265,6 +269,14 @@ public abstract class AbstractSSOFilter implements Filter {
 			log.info("################ header token:" + token);
 		}
 		return token;
+	}
+
+	public int getSiteClazz() {
+		return siteClazz;
+	}
+
+	public String getSiteCode() {
+		return siteCode;
 	}
 
 }

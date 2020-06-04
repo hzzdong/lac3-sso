@@ -6,23 +6,23 @@ import com.linkallcloud.core.dao.IDao;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.sso.domain.Account;
 
-public interface IAccountDao extends IDao<Account> {
+public interface IAccountDao<T extends Account> extends IDao<T> {
 
-	Account fetchByLoginname(@Param("t") Trace t, @Param("loginname") String loginname);
+	T fetchByLoginname(@Param("t") Trace t, @Param("loginname") String loginname);
 
-	Account fetchByMobile(@Param("t") Trace t, @Param("mobile") String mobile);
+	T fetchByMobile(@Param("t") Trace t, @Param("mobile") String mobile);
 
-	Account fetchByEmail(@Param("t") Trace t, @Param("email") String email);
+	T fetchByEmail(@Param("t") Trace t, @Param("email") String email);
 
 	int updateLastLoginDate(@Param("t") Trace t, @Param("id") Long accountId);
 
-	int updatePassword(@Param("t") Trace t, @Param("entity") Account entity);
+	int updatePassword(@Param("t") Trace t, @Param("entity") T entity);
 
-	Account fetchByWechatOpenId(@Param("t") Trace t, @Param("openid") String openid);
+	T fetchByWechatOpenId(@Param("t") Trace t, @Param("openid") String openid);
 
 	int updateWechatOpenId(@Param("t") Trace t, @Param("id") Long accountId, @Param("openid") String openid);
 
-	Account fetchByAlipayOpenId(@Param("t") Trace t, @Param("openid") String openid);
+	T fetchByAlipayOpenId(@Param("t") Trace t, @Param("openid") String openid);
 
 	int updateAlipayOpenId(@Param("t") Trace t, @Param("id") Long accountId, @Param("openid") String openid);
 

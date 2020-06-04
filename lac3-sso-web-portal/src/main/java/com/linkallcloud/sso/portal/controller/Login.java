@@ -58,7 +58,8 @@ public class Login extends BaseController {
 	private ILoginHisManager loginHisManager;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String login(@RequestParam(value = "from", required = false) String appCode,
+	public String login(@RequestParam(value = "clazz", required = false) Integer appClazz,
+			@RequestParam(value = "from", required = false) String appCode,
 			@RequestParam(value = "service", required = false) String appUrl,
 			@RequestParam(value = "renew", required = false) String renew,
 			@RequestParam(value = "gateway", required = false) String gateway,
@@ -73,6 +74,11 @@ public class Login extends BaseController {
 
 		// The servie can pass?
 		Application app = checkSiteCanPass(t, appCode, appUrl);
+		if (app != null) {
+			appClazz = app.getClazz();
+		} else if (appClazz == null) {
+			appClazz = -1;
+		}
 
 		// check to see whether we've been sent a valid TGC
 		TicketGrantingTicket tgt = getTgc(request);
@@ -82,7 +88,7 @@ public class Login extends BaseController {
 		// below. Note that tgt is still active.
 
 		if (tgt != null && Strings.isBlank(renew)) {
-			return grantForService(t, request, response, modelMap, tgt, app, appUrl, false);
+			return grantForService(t, request, response, modelMap, tgt, appClazz, appCode, appUrl, false);
 		}
 
 		// if not, but if we're passed "gateway", then simply bounce back
@@ -91,11 +97,12 @@ public class Login extends BaseController {
 				modelMap.put("serviceId", appUrl);
 				return "redirect";
 			} else {
-				return grantForService(t, request, response, modelMap, tgt, app, appUrl, false);
+				return grantForService(t, request, response, modelMap, tgt, appClazz, appCode, appUrl, false);
 			}
 		}
 
 		// record the service in the request
+		modelMap.put("clazz", appClazz);
 		modelMap.put("from", appCode);
 		modelMap.put("service", appUrl);
 		modelMap.put("warn", warn);
@@ -151,19 +158,25 @@ public class Login extends BaseController {
 		response.setHeader("Cache-Control", "no-store");
 		response.setDateHeader("Expires", -1);
 
+		// The servie can pass?
+		Application app = checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
+		Integer appClazz = app != null ? app.getClazz() : lvo.getClazz();
+		if (appClazz == null || !(appClazz == 0 || appClazz == 1)) {
+			log.error("未知的应用类别， " + appClazz);
+			return authFailure(t, request, lvo.getLoginName(), "AppClazz", "未知的应用类别", appClazz, lvo.getFrom(),
+					lvo.getService());
+		}
+
 		if (!sessionValidateCode.validate(request, response, lvo.getVcode())) {
 			// horrible way of logging, I know
 			log.error("验证码错误， " + request.getRemoteAddr());
 			// failure: record invalid login ticket
-			return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", lvo.getFrom(),
+			return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", appClazz, lvo.getFrom(),
 					lvo.getService());
 		}
 
 		// blacklist and lock check
-		checkBlackAndLock(t, lvo.getLoginName(), WebUtils.getIpAddress(request));
-
-		// The servie can pass?
-		Application app = checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
+		checkBlackAndLock(t, appClazz, lvo.getLoginName(), WebUtils.getIpAddress(request));
 
 		TicketGrantingTicket tgt = getTgc(request);
 
@@ -174,19 +187,20 @@ public class Login extends BaseController {
 			if (trustedUsername != null) {
 				// success: send a new TGC if we don't have a valid TGT from above
 				if (tgt == null) {
-					tgt = sendTgc(trustedUsername, request, response);
+					tgt = sendTgc(trustedUsername, appClazz, request, response);
 				} else if (!tgt.getUsername().equals(trustedUsername)) {
 					// we're coming into a renew=true as a different user...
 					// expire the old tgt
 					tgt.expire();
 					// and send a new one
-					tgt = sendTgc(trustedUsername, request, response);
+					tgt = sendTgc(trustedUsername, appClazz, request, response);
 				}
 				sendPrivacyCookie(lvo.getWarn(), request, response);
-				return authSuccess(t, request, tgt, app, lvo.getService(), true, lvo.getPwdStrength(), lvo.getClient());
+				return authSuccess(t, request, tgt, appClazz, lvo.getFrom(), lvo.getService(), true,
+						lvo.getPwdStrength(), lvo.getClient());
 			} else {
 				// failure: nothing else to be done
-				return authFailure(t, request, lvo.getLoginName(), "TrustHandler", "无法验证用户", lvo.getFrom(),
+				return authFailure(t, request, lvo.getLoginName(), "TrustHandler", "无法验证用户", appClazz, lvo.getFrom(),
 						lvo.getService());
 			}
 		} else if (handler instanceof PasswordHandler && lvo.getLoginName() != null && lvo.getPassword() != null
@@ -195,40 +209,41 @@ public class Login extends BaseController {
 			if (ltCache.getTicket(lvo.getLt()) != null) {
 				// do we have a valid username and password?
 				try {
-					Account account = handler.authenticate(t, request, lvo.getLoginName(), lvo.getPassword());
+					Account account = handler.authenticate(t, request, lvo.getLoginName(), lvo.getPassword(), appClazz);
 					lvo.setLoginName(account.getLoginname());
 					// success: send a new TGC if we don't have a valid TGT from above
 					if (tgt == null) {
-						tgt = sendTgc(lvo.getLoginName(), request, response);
+						tgt = sendTgc(lvo.getLoginName(), appClazz, request, response);
 					} else if (!tgt.getUsername().equals(lvo.getLoginName())) {
 						// we're coming into a renew=true as a different user...
 						// expire the old tgt
 						tgt.expire();
 						// and send a new one
-						tgt = sendTgc(lvo.getLoginName(), request, response);
+						tgt = sendTgc(lvo.getLoginName(), appClazz, request, response);
 					}
 
 					// set remember me
 					setRememberMe(lvo.getRememberMe(), lvo.getLoginName(), request, response);
 
 					sendPrivacyCookie(lvo.getWarn(), request, response);
-					return authSuccess(t, request, tgt, app, lvo.getService(), true, lvo.getPwdStrength(),
-							lvo.getClient());
+					return authSuccess(t, request, tgt, appClazz, lvo.getFrom(), lvo.getService(), true,
+							lvo.getPwdStrength(), lvo.getClient());
 				} catch (Throwable e) {
 					// failure: record failed password authentication
-					return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", lvo.getFrom(),
+					return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", appClazz, lvo.getFrom(),
 							lvo.getService());
 				}
 			} else {
 				// horrible way of logging, I know
 				log.error("Invalid login ticket from " + request.getRemoteAddr());
 				// failure: record invalid login ticket
-				return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", lvo.getFrom(),
+				return authFailure(t, request, lvo.getLoginName(), "Lt-VCODE", "验证码错误，请重新输入", appClazz, lvo.getFrom(),
 						lvo.getService());
 			}
 		}
 
-		return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", lvo.getFrom(), lvo.getService());
+		return authFailure(t, request, lvo.getLoginName(), "Account", "登录名或者密码错误", appClazz, lvo.getFrom(),
+				lvo.getService());
 	}
 
 	/**
@@ -237,9 +252,9 @@ public class Login extends BaseController {
 	 * conveying generic success.
 	 */
 	private String grantForService(Trace t, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
-			TicketGrantingTicket tgt, Application from, String serviceId, boolean first)
+			TicketGrantingTicket tgt, int appClazz, String appCode, String serviceId, boolean first)
 			throws ServletException, IOException {
-		doGrantForService(t, request, tgt, from, serviceId, first, modelMap);
+		doGrantForService(t, request, tgt, appClazz, appCode, serviceId, first, modelMap);
 		if (modelMap.containsKey("redirect")) {
 			return (String) modelMap.get("redirect");
 		} else if (modelMap.containsKey("goPage")) {
@@ -252,16 +267,16 @@ public class Login extends BaseController {
 	/**
 	 * 用户通过密码登录成功后，处理锁和黑名单等
 	 */
-	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, String appCode,
-			String serviceId, Client client) {
+	private void ssoLoginSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, int appClazz,
+			String appCode, String serviceId, Client client) {
 		String ip = WebUtils.getIpAddress(request);
-		lockManager.dealAutoLock(t, true, tgt.getUsername(), ip, "登录验证成功");
+		lockManager.dealAutoLock(t, true, appClazz, tgt.getUsername(), ip, "登录验证成功");
 		loginHisManager.loginSuccess(t, tgt.getUsername(), ip, appCode, serviceId, tgt.getId(), client);
 	}
 
 	private Map<String, String> authFailure(Trace t, HttpServletRequest request, String username, String code,
-			String message, String from, String serviceId) {
-		loginFailure(t, request, username, from, serviceId, message);
+			String message, int fromClazz, String from, String serviceId) {
+		loginFailure(t, request, username, fromClazz, from, serviceId, message);
 
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("code", code);
@@ -274,10 +289,10 @@ public class Login extends BaseController {
 		return result;
 	}
 
-	private void loginFailure(Trace t, HttpServletRequest request, String username, String from, String serviceId,
-			String message) {
+	private void loginFailure(Trace t, HttpServletRequest request, String username, int appClazz, String from,
+			String serviceId, String message) {
 		String ip = WebUtils.getIpAddress(request);
-		lockManager.dealAutoLock(t, false, username, ip, message);
+		lockManager.dealAutoLock(t, false, appClazz, username, ip, message);
 		// loginHisManager.loginFailure(t, username, ip, from, serviceId);
 	}
 
@@ -287,14 +302,14 @@ public class Login extends BaseController {
 	 * conveying generic success.
 	 */
 	private Map<String, Object> authSuccess(Trace t, HttpServletRequest request, TicketGrantingTicket tgt,
-			Application fromApp, String serviceId, boolean first, String pwdStrength, Client client)
+			int fromAppClazz, String fromAppCode, String serviceId, boolean first, String pwdStrength, Client client)
 			throws ServletException, IOException {
-		ssoLoginSuccess(t, request, tgt, fromApp == null ? "" : fromApp.getCode(), serviceId, client);
+		ssoLoginSuccess(t, request, tgt, fromAppClazz, fromAppCode, serviceId, client);
 
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("code", "0");
 
-		doGrantForService(t, request, tgt, fromApp, serviceId, first, result);
+		doGrantForService(t, request, tgt, fromAppClazz, fromAppCode, serviceId, first, result);
 		return result;
 	}
 

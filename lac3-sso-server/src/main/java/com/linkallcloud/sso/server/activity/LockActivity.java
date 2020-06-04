@@ -48,8 +48,8 @@ public class LockActivity extends BaseActivity<Lock, ILockDao> implements ILockA
 		
 		entity.setStatus(LockStatus.UnLock.getCode());
 		entity.setLockedTime(new Date());
-		entity.setCount(0);
-		entity.setErr(0);
+		//entity.setCount(0);
+		//entity.setErr(0);
 		saveLockHis(t, entity);
 		
 		return ret;

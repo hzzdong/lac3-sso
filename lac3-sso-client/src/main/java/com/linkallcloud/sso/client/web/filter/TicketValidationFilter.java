@@ -49,14 +49,14 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 	 * @param ticketValidator the validator to validate the tickets.
 	 * @param excludePattern
 	 */
-	public TicketValidationFilter(final String siteCode, final String serverName, final String serviceUrl,
-			final TicketValidator ticketValidator) {
-		this(siteCode, serverName, serviceUrl, ticketValidator, null);
+	public TicketValidationFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl, final TicketValidator ticketValidator) {
+		this(siteClazz, siteCode, serverName, serviceUrl, ticketValidator, null);
 	}
 
-	public TicketValidationFilter(final String siteCode, final String serverName, final String serviceUrl,
-			final TicketValidator ticketValidator, final List<String> ignoreRes) {
-		this(siteCode, serverName, serviceUrl, true, ticketValidator, false, ignoreRes, false);
+	public TicketValidationFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl, final TicketValidator ticketValidator, final List<String> ignoreRes) {
+		this(siteClazz, siteCode, serverName, serviceUrl, true, ticketValidator, false, ignoreRes, false);
 	}
 
 	/**
@@ -74,10 +74,10 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 	 * @param redirectAfterValidation whether to redirect to remove the ticket.
 	 * @param excludePattern
 	 */
-	public TicketValidationFilter(final String siteCode, final String serverName, final String serviceUrl,
-			final boolean useSession, final TicketValidator ticketValidator, final boolean redirectAfterValidation,
-			final List<String> ignoreRes, boolean override) {
-		super(siteCode, serverName, serviceUrl, useSession, ignoreRes, override);
+	public TicketValidationFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String serviceUrl, final boolean useSession, final TicketValidator ticketValidator,
+			final boolean redirectAfterValidation, final List<String> ignoreRes, boolean override) {
+		super(siteClazz, siteCode, serverName, serviceUrl, useSession, ignoreRes, override);
 		CommonUtils.assertNotNull(ticketValidator, "ticketValidator cannot be null.");
 		this.ticketValidator = ticketValidator;
 		this.redirectAfterValidation = redirectAfterValidation;
@@ -106,18 +106,18 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 			}
 
 			try {
-				final Assertion assertion = this.ticketValidator.validate(ticket,
-						new SimpleService(constructServiceUrl(request, response), this.siteCode));
+				final Assertion assertion = this.ticketValidator.validate(ticket, new SimpleService(
+						constructServiceUrl(request, response), this.getSiteCode(), this.getSiteClazz()));
 
 				if (log.isDebugEnabled()) {
 					log.debug("Successfully authenticated user: " + assertion.getPrincipal().getId());
 				}
 
 				request.setAttribute(Principal.PRINCIPAL_KEY, assertion.getPrincipal());
-				request.setAttribute(siteCode + Assertion.ASSERTION_KEY, assertion);
+				request.setAttribute(this.getSiteCode() + Assertion.ASSERTION_KEY, assertion);
 
 				if (isUseSession()) {
-					request.getSession().setAttribute(siteCode + Assertion.ASSERTION_KEY, assertion);
+					request.getSession().setAttribute(this.getSiteCode() + Assertion.ASSERTION_KEY, assertion);
 				}
 			} catch (final ValidationException e) {
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);

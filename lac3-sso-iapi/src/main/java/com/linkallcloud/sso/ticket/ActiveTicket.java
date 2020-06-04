@@ -3,6 +3,7 @@ package com.linkallcloud.sso.ticket;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.principal.AccountMapping;
 import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.exception.AuthException;
 import com.linkallcloud.sso.util.Util;
 
 public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
@@ -21,19 +22,23 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	}
 
 	/** Constructs a new, immutable service ticket. */
-	public ActiveTicket(G grantor, String appCode, String service, boolean fromNewLogin) {
+	public ActiveTicket(G grantor, int appClazz, String appCode, String service, boolean fromNewLogin) {
+		if (appClazz != grantor.getAppClazz()) {
+			throw new AuthException("本次访问应用类型和上次访问应用类型不一致。");
+		}
 		this.setGrantor(grantor);
 		this.grantorId = Util.getInnerTicketId(grantor.getId());
 
 		this.fromNewLogin = fromNewLogin;
-		this.service = new SimpleService(service, appCode);
+		this.service = new SimpleService(service, appCode, appClazz);
 		this.siteMaping = AccountMapping.Unified.getCode();
 		this.siteUser = grantor.getUsername();
 	}
 
 	/** Constructs a new, immutable service ticket. */
-	public ActiveTicket(G t, String appCode, String service, boolean fromNewLogin, String siteUser, int siteMaping) {
-		this(t, appCode, service, fromNewLogin);
+	public ActiveTicket(G t, int appClazz, String appCode, String service, boolean fromNewLogin, String siteUser,
+			int siteMaping) {
+		this(t, appClazz, appCode, service, fromNewLogin);
 		this.siteUser = siteUser;
 		this.siteMaping = AccountMapping.Mapping.getCode().equals(siteMaping) ? siteMaping
 				: AccountMapping.Unified.getCode();
@@ -43,6 +48,11 @@ public abstract class ActiveTicket<G extends GrantingTicket> extends Ticket {
 	@Override
 	public String getUsername() {
 		return getGrantor() == null ? "" : getGrantor().getUsername();
+	}
+
+	@JSONField(serialize = false)
+	public int getAppClazz() {
+		return service == null ? 0 : service.getClazz();
 	}
 
 	@JSONField(serialize = false)

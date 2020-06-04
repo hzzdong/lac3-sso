@@ -43,13 +43,13 @@ public class LockManager extends BaseManager<Lock, ILockService> implements ILoc
 	}
 
 	@Override
-	public void check(Trace t, String lockedTarget) throws LockException {
-		service().check(t, lockedTarget);
+	public void check(Trace t, int appClazz, String lockedTarget) throws LockException {
+		service().check(t, appClazz, lockedTarget);
 	}
 
 	@Override
-	public void dealAutoLock(Trace t, boolean success, String account, String ip, String remark) {
-		service().dealAuthAutoLock(t, success, account, ip, remark, lockConfigure.loadLockConfig(t));
+	public void dealAutoLock(Trace t, boolean success, int appClazz, String account, String ip, String remark) {
+		service().dealAuthAutoLock(t, success, appClazz, account, ip, remark, lockConfigure.loadLockConfig(t));
 	}
 
 }

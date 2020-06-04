@@ -16,12 +16,12 @@ public class RedisLockBlackCache extends RedisCache {
 	@Resource
 	private RedisTemplate<String, Date> lockBlackTemplate;
 
-	public static String getBlackKey(String blackTarget) {
-		return "Black:" + blackTarget;
+	public static String getBlackKey(int appClazz, String blackTarget) {
+		return "Black:" + appClazz + ":" + blackTarget;
 	}
 
-	public static String getLockKey(String lockTarget) {
-		return "Lock:" + lockTarget;
+	public static String getLockKey(int appClazz, String lockTarget) {
+		return "Lock:" + appClazz + ":" + lockTarget;
 	}
 
 	/**

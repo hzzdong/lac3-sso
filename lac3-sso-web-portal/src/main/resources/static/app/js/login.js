@@ -32,6 +32,12 @@ $(function() {
 		var password = $.trim($("#password").val());
 		var vcode = $.trim($("#vcode").val());
 		var rememberMe = $("#rememberMe").is(":checked") ? "1" : "0";
+		
+		var clazz = -1;
+		try {
+			clazz = $("#appClazz").val()
+		} catch(err) {
+		}
 
 		if (vcode == "") {
 			showErrorInfo("验证码不能为空，请重新输入！");
@@ -52,6 +58,7 @@ $(function() {
 			var weakPwdPatten = /^.*(?=.{8,16})(?=.*\d)(?=.*[a-zA-Z]{2,})(?=.*[!@#$%^&*?\(\)]).*$/;
 			var pwdStrength = weakPwdPatten.test(password);
 			var lvo = {
+				clazz : clazz,
 				from : $("#from").val(),
 				service : $("#service").val(),
 				loginName : username,

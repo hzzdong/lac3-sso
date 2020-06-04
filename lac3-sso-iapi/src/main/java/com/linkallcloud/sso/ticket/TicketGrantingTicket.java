@@ -14,8 +14,8 @@ public class TicketGrantingTicket extends GrantingTicket {
 		super();
 	}
 
-	public TicketGrantingTicket(String username) {
-		super(username);
+	public TicketGrantingTicket(String username, int appClazz) {
+		super(username, appClazz);
 	}
 
 	@Override

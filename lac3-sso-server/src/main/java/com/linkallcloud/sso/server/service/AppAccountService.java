@@ -47,6 +47,11 @@ public class AppAccountService extends BaseService<AppAccount, IAppAccountActivi
 		return activity().fetch(t, appId, ssoLoginName);
 	}
 
+	@Override
+	public AppAccount fetchByAppCode(Trace t, String appCode, String ssoLoginName) {
+		return activity().fetchByAppCode(t, appCode, ssoLoginName);
+	}
+
 	@Transactional(readOnly = false)
 	@Override
 	public AppAccount validBind(Trace t, Long appId, String ssoLoginName, String appLoginName, String appPassword) {

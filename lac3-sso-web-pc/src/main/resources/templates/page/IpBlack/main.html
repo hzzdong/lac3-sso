@@ -98,6 +98,7 @@
 				<tr>
 					<th>ID</th>
 					<th>黑名单Ip</th>
+					<th>应用类别</th>
 					<th>加黑操作</th>
 					<th>状态</th>
 					<th>加黑/除黑时间</th>
@@ -321,8 +322,21 @@
 						"defaultContent" : ""
 					}, 
 					{
+						"data" : "appClazz",
+						"width" : "60px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-blue">运维应用</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-green">客户应用</span>';
+							} else {
+								return "";
+							}
+						}
+					}, 
+					{
 						"data" : "reason",
-						"width" : "100px",
+						"width" : "80px",
 						"render" : function(data, type, row) {
 							if (data == 1) {
 								return '<span class="badge bg-red">自动加黑</span>';
@@ -339,7 +353,7 @@
 					}, 
 					{
 						"data" : "status",
-						"width" : "100px",
+						"width" : "60px",
 						"render" : function(data, type, row) {
 							if (data == 0) {
 								return '<span class="badge bg-red">已加黑</span>';
@@ -352,7 +366,7 @@
 					}, 
 					{
 						"data" : "blackTime",
-						"width" : "150px",
+						"width" : "130px",
 						"defaultContent" : ""
 					}, 
 					{

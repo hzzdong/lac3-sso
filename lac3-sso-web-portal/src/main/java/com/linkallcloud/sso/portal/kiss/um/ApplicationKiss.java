@@ -43,5 +43,15 @@ public class ApplicationKiss extends BaseKiss {
 				});
 		return apps;
 	}
+	
+	public List<Application> findByKhUserId(Trace t, Long ywUserId) {
+		String sendMsgPkg = packMessage(t, new IdFaceRequest(ywUserId, null));
+		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Application/findByKhUserId",
+				sendMsgPkg);
+		List<Application> apps = unpackMessage(responseJson,
+				new TypeReference<ObjectFaceResponse<List<Application>>>() {
+				});
+		return apps;
+	}
 
 }

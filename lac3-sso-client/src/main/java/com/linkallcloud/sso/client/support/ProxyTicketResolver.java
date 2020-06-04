@@ -42,7 +42,7 @@ public class ProxyTicketResolver implements HandlerMethodArgumentResolver {
 		String appCode = ptAnnotation.code();
 		String url = ptAnnotation.url();
 		if (!Strings.isBlank(appCode) && !Strings.isBlank(url)) {
-			Service targetService = new SimpleService(url, appCode);
+			Service targetService = new SimpleService(url, appCode, ptAnnotation.clazz());
 			Assertion as = (Assertion) Controllers.getSessionObject(fromAppCode + Assertion.ASSERTION_KEY);
 			if (as != null) {
 				return proxyRetriever.getProxyTicketIdFor(as.getProxyGrantingTicketId(), targetService);

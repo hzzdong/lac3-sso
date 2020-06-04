@@ -14,6 +14,7 @@ public class Lock extends Domain {
 	private static final long serialVersionUID = -8765203997616550354L;
 
 	private String lockedTarget;// 锁定目标
+	private int appClazz;// 锁定应用类别，0：运维，1：客户
 	private int type;// 锁定类型
 	private int count;// 锁定次数
 	private int err;// 错误次数
@@ -28,12 +29,13 @@ public class Lock extends Domain {
 		this.lockedTime = new Date();
 	}
 
-	public Lock(int type, String lockedTarget, int status, int count, int err, int reason, String operator,
-			String remark) {
+	public Lock(int type, int appClazz, String lockedTarget, int status, int count, int err, int reason,
+			String operator, String remark) {
 		super();
 		this.status = status;
 		this.lockedTime = new Date();
 		this.type = type;
+		this.appClazz = appClazz;
 		this.lockedTarget = lockedTarget;
 		this.count = count;
 		this.err = err;
@@ -74,6 +76,14 @@ public class Lock extends Domain {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public int getAppClazz() {
+		return appClazz;
+	}
+
+	public void setAppClazz(int appClazz) {
+		this.appClazz = appClazz;
 	}
 
 	public int getCount() {

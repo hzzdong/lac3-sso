@@ -63,7 +63,7 @@ public abstract class BaseController {
 
 	@Autowired
 	protected TicketGrantingTicketCache tgcCache;
-	
+
 	@Autowired
 	protected ServiceTicketCache stCache;
 
@@ -72,7 +72,7 @@ public abstract class BaseController {
 
 	@Autowired
 	protected ApplicationKiss applicationKiss;
-	
+
 	@Autowired
 	protected LacSessionValidateCode sessionValidateCode;
 
@@ -84,19 +84,19 @@ public abstract class BaseController {
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	protected IAppLoginHisManager appLoginHisManager;
-	
+
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	protected IAppAccountManager appAccountManager;
 
-	public void checkBlackAndLock(Trace t, String account, String ip) {
+	public void checkBlackAndLock(Trace t, int appClazz, String account, String ip) {
 		if (!Strings.isBlank(account)) {
-			blackManager.check(t, account);
-			lockManager.check(t, account);
+			blackManager.check(t, appClazz, account);
+			lockManager.check(t, appClazz, account);
 		}
 
 		if (!Strings.isBlank(ip)) {
-			blackManager.check(t, ip);
-			lockManager.check(t, ip);
+			blackManager.check(t, appClazz, ip);
+			lockManager.check(t, appClazz, ip);
 		}
 	}
 
@@ -134,8 +134,8 @@ public abstract class BaseController {
 				if (null != app && app.isValid() && !Strings.isBlank(app.getHost())) {
 					try {
 						appUrl = URLDecoder.decode(appUrl, "UTF-8");
-		            } catch (UnsupportedEncodingException e) {
-		            }
+					} catch (UnsupportedEncodingException e) {
+					}
 					String server = WebUtils.parseServerFromUrl(appUrl);
 					if (!Strings.isBlank(server) && app.getHost().toLowerCase().indexOf(server.toLowerCase()) != -1) {
 						return app;
@@ -154,10 +154,10 @@ public abstract class BaseController {
 	 * Creates, sends (to the given ServletResponse), and returns a
 	 * TicketGrantingTicket for the given username.
 	 */
-	protected TicketGrantingTicket sendTgc(String username, HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	protected TicketGrantingTicket sendTgc(String username, int appClazz, HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
 		try {
-			TicketGrantingTicket t = new TicketGrantingTicket(username);
+			TicketGrantingTicket t = new TicketGrantingTicket(username, appClazz);
 			String token = tgcCache.addTicket(t);
 			Cookie tgc = new Cookie(IParams.TGC_ID, token);
 			if (!Strings.isBlank(ssoMode) && ssoMode.equalsIgnoreCase("https")) {
@@ -198,10 +198,10 @@ public abstract class BaseController {
 	}
 
 	/** Creates and sends a new PGT, returning a unique IOU for this PGT. */
-	protected TicketBox<ProxyGrantingTicket> sendPgt(ActiveTicket<?> st, String callbackUrl, String pgtAppCode)
-			throws TicketException {
+	protected TicketBox<ProxyGrantingTicket> sendPgt(ActiveTicket<?> st, String callbackUrl, String pgtAppCode,
+			int pgtAppClazz) throws TicketException {
 		// first, create the PGT and save it to the cache
-		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl, pgtAppCode);
+		ProxyGrantingTicket pgt = new ProxyGrantingTicket(st, callbackUrl, pgtAppCode, pgtAppClazz);
 		String pgtToken = pgtCache.addTicket(pgt);
 
 		// now, create an IOU (with a serial and a random component)
@@ -321,7 +321,6 @@ public abstract class BaseController {
 		}
 		return null;
 	}
-	
 
 	/**
 	 * Returns true if privacy has been requested, false otherwise.
@@ -335,11 +334,11 @@ public abstract class BaseController {
 		}
 		return false;
 	}
-	
-	protected void doGrantForService(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, Application fromApp,
-			String serviceId, boolean first, Map<String, Object> result) {
+
+	protected void doGrantForService(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, int fromAppClazz,
+			String fromAppCode, String serviceId, boolean first, Map<String, Object> result) {
 		try {
-			if (fromApp == null || Strings.isBlank(serviceId) || Strings.isBlank(fromApp.getCode())) {
+			if (Strings.isBlank(serviceId) || Strings.isBlank(fromAppCode)) {
 				result.put("go", request.getContextPath() + "/generic");// "/sso/generic";
 				result.put("redirect", Controllers.redirect("/generic"));// "/generic";
 			} else {
@@ -350,31 +349,30 @@ public abstract class BaseController {
 				} catch (UnsupportedEncodingException e) {
 				}
 
-				if (fromApp.getCode().startsWith(Util.APP_TYPE_MAPPING)) {// AccountMapping.Mapping.getCode().equals(fromApp.getMappingType())
-					AppAccount appAccount = appAccountManager.fetch(t, fromApp.getId(), tgt.getUsername());
+				if (fromAppCode.startsWith(Util.APP_TYPE_MAPPING)) {// AccountMapping.Mapping.getCode().equals(fromApp.getMappingType())
+					AppAccount appAccount = appAccountManager.fetchByAppCode(t, fromAppCode, tgt.getUsername());
 					if (appAccount != null) {
-						st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first, appAccount.getAppLoginName(),
-								AccountMapping.Mapping.getCode());
+						st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, serviceId, first,
+								appAccount.getAppLoginName(), AccountMapping.Mapping.getCode());
 					} else {
-						String gourl = new UrlPattern("/bind").append("serviceId", service)
-								.append("from", fromApp.getCode()).url();
+						String gourl = new UrlPattern("/bind").append("serviceId", service).append("from", fromAppCode)
+								.url();
 						result.put("go", request.getContextPath() + gourl);
 						result.put("redirect", Controllers.redirect(gourl));// "/bind";
 						return;
 					}
 				} else {
-					st = new ServiceTicket(tgt, fromApp.getCode(), serviceId, first);
+					st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, serviceId, first);
 				}
 
 				String token = stCache.addTicket(st);
-				result.put("from", fromApp.getCode());
+				result.put("from", fromAppCode);
 				result.put("serviceId", serviceId);
 				result.put("token", token);
 				if (!first) {
 					if (privacyRequested(request)) {
 						String gourl = new UrlPattern(request.getContextPath() + "/confirm")
-								.append("serviceId", service).append("from", fromApp.getCode()).append("token", token)
-								.url();
+								.append("serviceId", service).append("from", fromAppCode).append("token", token).url();
 						result.put("go", gourl);// "/sso/confirm";
 
 						result.put("goPage", "confirm");// "page/confirm";

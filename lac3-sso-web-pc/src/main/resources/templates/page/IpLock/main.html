@@ -106,6 +106,7 @@
 				<tr>
 					<th>ID</th>
 					<th>锁定Ip</th>
+					<th>应用类别</th>
 					<th>锁定次数</th>
 					<th>错误次数</th>
 					<th>锁定操作</th>
@@ -331,13 +332,26 @@
 									"defaultContent" : ""
 								}, 
 								{
+									"data" : "appClazz",
+									"width" : "40px",
+									"render" : function(data, type, row) {
+										if (data == 0) {
+											return '<span class="badge bg-blue">运维应用</span>';
+										} else if (data == 1) {
+											return '<span class="badge bg-green">客户应用</span>';
+										} else {
+											return "";
+										}
+									}
+								}, 
+								{
 									"data" : "count",
-									"width" : "60px",
+									"width" : "30px",
 									"defaultContent" : ""
 								}, 
 								{
 									"data" : "err",
-									"width" : "60px",
+									"width" : "30px",
 									"defaultContent" : ""
 								}, 
 								{
@@ -363,7 +377,7 @@
 								}, 
 								{
 									"data" : "status",
-									"width" : "100px",
+									"width" : "40px",
 									"render" : function(data, type, row) {
 										if (data == 0) {
 											return '<span class="badge bg-red">已锁定</span>';
@@ -386,7 +400,7 @@
 								{
 									"data" : null,
 									"defaultContent" : "",
-									"width" : "75px",
+									"width" : "55px",
 									"orderable" : false,
 									"searchable" : false,
 									"sClass" : "text-center",

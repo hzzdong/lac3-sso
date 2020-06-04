@@ -17,14 +17,14 @@ public class ServiceTicket extends ActiveTicket<TicketGrantingTicket> {
 	}
 
 	/** Constructs a new, immutable service ticket. */
-	public ServiceTicket(TicketGrantingTicket t, String appCode, String service, boolean fromNewLogin, String siteUser,
-			int siteMaping) {
-		super(t, appCode, service, fromNewLogin, siteUser, siteMaping);
+	public ServiceTicket(TicketGrantingTicket t, int appClazz, String appCode, String service, boolean fromNewLogin,
+			String siteUser, int siteMaping) {
+		super(t, appClazz, appCode, service, fromNewLogin, siteUser, siteMaping);
 	}
 
 	/** Constructs a new, immutable service ticket. */
-	public ServiceTicket(TicketGrantingTicket t, String appCode, String service, boolean fromNewLogin) {
-		super(t, appCode, service, fromNewLogin);
+	public ServiceTicket(TicketGrantingTicket t, int appClazz, String appCode, String service, boolean fromNewLogin) {
+		super(t, appClazz, appCode, service, fromNewLogin);
 	}
 
 	@JSONField(serialize = false, deserialize = false)

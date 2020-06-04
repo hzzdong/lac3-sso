@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.principal.SimpleService;
+import com.linkallcloud.sso.exception.AuthException;
 import com.linkallcloud.sso.redis.ticket.RedisTicketCache;
 
 /**
@@ -40,8 +41,11 @@ public class ProxyGrantingTicket extends GrantingTicket {
 	}
 
 	/** Constructs a new, immutable ProxyGrantingTicket. */
-	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl, String pgtAppCode) {
-		super(parent.getUsername());
+	public ProxyGrantingTicket(ActiveTicket<?> parent, String pgtUrl, String pgtAppCode, int pgtAppClazz) {
+		super(parent.getUsername(), pgtAppClazz);
+		if (pgtAppClazz != parent.getService().getClazz()) {
+			throw new AuthException("本次访问应用类型和上次访问应用类型不一致。");
+		}
 		this.parent = parent;
 		// this.parentId = Util.getInnerTicketId(parent.getId());
 		if (parent instanceof ServiceTicket) {
@@ -49,7 +53,7 @@ public class ProxyGrantingTicket extends GrantingTicket {
 		} else {
 			this.ptParent = (ProxyTicket) parent;
 		}
-		this.proxyId = new SimpleService(pgtUrl, pgtAppCode);
+		this.proxyId = new SimpleService(pgtUrl, pgtAppCode, pgtAppClazz);
 	}
 
 	// *********************************************************************

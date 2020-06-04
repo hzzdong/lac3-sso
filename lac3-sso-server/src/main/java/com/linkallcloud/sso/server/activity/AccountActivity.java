@@ -1,8 +1,5 @@
 package com.linkallcloud.sso.server.activity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.linkallcloud.core.activity.BaseActivity;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
@@ -14,34 +11,26 @@ import com.linkallcloud.sso.exception.ArgException;
 import com.linkallcloud.sso.exception.AuthException;
 import com.linkallcloud.sso.server.dao.IAccountDao;
 
-@Component
-public class AccountActivity extends BaseActivity<Account, IAccountDao> implements IAccountActivity {
-
-	@Autowired
-	private IAccountDao accountDao;
+public abstract class AccountActivity<T extends Account, TD extends IAccountDao<T>> extends BaseActivity<T, TD>
+		implements IAccountActivity<T> {
 
 	@Override
-	public IAccountDao dao() {
-		return accountDao;
-	}
-
-	@Override
-	public Account fetchByLoginname(Trace t, String loginname) {
+	public T fetchByLoginname(Trace t, String loginname) {
 		return dao().fetchByLoginname(t, loginname);
 	}
 
 	@Override
-	public Account fetchByMobile(Trace t, String mobile) {
+	public T fetchByMobile(Trace t, String mobile) {
 		return dao().fetchByMobile(t, mobile);
 	}
 
 	@Override
-	public Account fetchByEmail(Trace t, String email) {
+	public T fetchByEmail(Trace t, String email) {
 		return dao().fetchByEmail(t, email);
 	}
 
 	@Override
-	public Account loginValidate(Trace t, Account account, String password) {
+	public T loginValidate(Trace t, T account, String password) {
 		if (account == null) {
 			throw new AuthException(ArgException.ARG_CODE_ARG, "登录名或者密码错误，请重新输入！");
 		}
@@ -59,7 +48,7 @@ public class AccountActivity extends BaseActivity<Account, IAccountDao> implemen
 	}
 
 	@Override
-	public boolean updatePassword(Trace t, Account account, String oldPwd, String newPwd) {
+	public boolean updatePassword(Trace t, T account, String oldPwd, String newPwd) {
 		if (Securities.validePassword4Md5Src(oldPwd, account.getSalt(), account.getPasswd())) {
 			account.retSetSalt();
 			account.setPasswd(Securities.password4Md5Src(newPwd, account.getSalt()));
@@ -71,7 +60,7 @@ public class AccountActivity extends BaseActivity<Account, IAccountDao> implemen
 	}
 
 	@Override
-	public Account fetchByWechatOpenId(Trace t, String openid) {
+	public T fetchByWechatOpenId(Trace t, String openid) {
 		return dao().fetchByWechatOpenId(t, openid);
 	}
 
@@ -82,7 +71,7 @@ public class AccountActivity extends BaseActivity<Account, IAccountDao> implemen
 	}
 
 	@Override
-	public Account fetchByAlipayOpenId(Trace t, String openid) {
+	public T fetchByAlipayOpenId(Trace t, String openid) {
 		return dao().fetchByAlipayOpenId(t, openid);
 	}
 
@@ -93,7 +82,7 @@ public class AccountActivity extends BaseActivity<Account, IAccountDao> implemen
 	}
 
 	@Override
-	protected void before(Trace t, boolean isNew, Account entity) {
+	protected void before(Trace t, boolean isNew, T entity) {
 		super.before(t, isNew, entity);
 		if (exist(t, entity, "loginname", entity.getLoginname())) {
 			throw new AccountException(AccountException.ARG_CODE_ACCOUNT, "已经存在相同账号的用户！");

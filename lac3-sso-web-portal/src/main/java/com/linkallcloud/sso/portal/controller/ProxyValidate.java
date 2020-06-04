@@ -21,6 +21,7 @@ import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.ticket.ProxyTicket;
 import com.linkallcloud.sso.ticket.TicketBox;
 import com.linkallcloud.sso.ticket.cache.ProxyTicketCache;
+import com.linkallcloud.um.domain.sys.Application;
 
 @Controller
 @RequestMapping
@@ -60,11 +61,11 @@ public class ProxyValidate extends BaseController {
 				TicketBox<ProxyGrantingTicket> pgtIOU = null;
 				if (!Strings.isBlank(pgtUrl) && !Strings.isBlank(pgtAppCode)) {
 					try {
-						checkSiteCanPass(t, pgtAppCode, pgtUrl);
+						Application app = checkSiteCanPass(t, pgtAppCode, pgtUrl);
+						pgtIOU = sendPgt(pt, pgtUrl, pgtAppCode, app.getClazz());
 					} catch (SiteException e) {
 						return validationFailure(INVALID_SERVICE, String.format("代理服务(%,%)未许可", pgtAppCode, pgtUrl));
 					}
-					pgtIOU = sendPgt(pt, pgtUrl, pgtAppCode);
 				}
 				return validationSuccess(t, pt, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
 			}
@@ -74,7 +75,7 @@ public class ProxyValidate extends BaseController {
 	private ProxyAuthenticationResult validationSuccess(Trace t, ProxyTicket pt, String appCode, String appUrl,
 			TicketBox<ProxyGrantingTicket> pgtIOU, String pgtAppCode, String pgtUrl) {
 		// app login log
-		appProxyAuthSuccess(t, pt,  appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
+		appProxyAuthSuccess(t, pt, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
 
 		ProxyAuthenticationResult result = new ProxyAuthenticationResult(pt.getUsername(), pt.getSiteUser(),
 				pt.getSiteMaping());

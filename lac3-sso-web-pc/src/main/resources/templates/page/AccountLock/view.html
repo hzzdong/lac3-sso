@@ -41,18 +41,24 @@
 					<tr>
 						<td style="width: 15%" align="right">锁定账号:</td>
 						<td style="width: 35%" th:text="${entity.lockedTarget}"></td>
-						<td style="width: 15%" align="right">锁定类型:</td>
-						<td style="width: 35%" th:text="${entity.typeStr}"></td>
+						<td style="width: 15%" align="right">应用类别:</td>
+						<td style="width: 35%" th:text="${entity.appClazz==0?'运维应用':'客户应用'}"></td>
+					</tr>
+					<tr>
+						<td align="right">锁定状态:</td>
+						<td th:text="${entity.status==0?'已锁定':'已解锁'}"></td>
+						<td align="right" th:text="${entity.status==0?'锁定时间:':'解锁时间:'}">锁定时间:</td>
+						<td th:text="${entity.lockedTimeStr}"></td>
 					</tr>
 					<tr>
 						<td align="right">锁定次数:</td>
 						<td th:text="${entity.count}"></td>
-						<td align="right">锁定操作:</td>
-						<td th:text="${entity.reasonStr}"></td>
+						<td align="right">错误次数:</td>
+						<td th:text="${entity.err}"></td>
 					</tr>
 					<tr>
-						<td align="right">锁定时间:</td>
-						<td th:text="${entity.lockedTimeStr}"></td>
+						<td align="right">锁定操作:</td>
+						<td th:text="${entity.reasonStr}"></td>
 						<td align="right">操作员:</td>
 						<td th:text="${entity.operator}"></td>
 					</tr>
@@ -78,12 +84,12 @@
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>锁定目标</th>
-					<th>锁定类型</th>
+					<th>锁定账号</th>
+					<th>应用类别</th>
 					<th>锁定次数</th>
 					<th>锁定操作</th>
 					<th>锁定状态</th>
-					<th>锁定时间</th>
+					<th>锁定/解锁时间</th>
 					<th>描述</th>
 					<th>操作</th>
 				</tr>
@@ -152,13 +158,13 @@
 						"defaultContent" : ""
 					}, 
 					{
-						"data" : "type",
+						"data" : "appClazz",
 						"width" : "60px",
 						"render" : function(data, type, row) {
 							if (data == 1) {
-								return '<span class="badge bg-green">账号锁</span>';
-							} else if (data == 2) {
-								return '<span class="badge bg-blue">Ip锁</span>';
+								return '<span class="badge bg-green">客户应用</span>';
+							} else if (data == 0) {
+								return '<span class="badge bg-blue">运维应用</span>';
 							} else {
 								return "";
 							}

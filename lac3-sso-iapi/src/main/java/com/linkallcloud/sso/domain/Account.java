@@ -4,11 +4,9 @@ import java.util.Date;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.linkallcloud.core.domain.Domain;
-import com.linkallcloud.core.domain.annotation.ShowName;
 import com.linkallcloud.core.lang.Strings;
 
-@ShowName(value = "账号", logFields = "id,name")
-public class Account extends Domain {
+public abstract class Account extends Domain {
 	private static final long serialVersionUID = -4024160560441177135L;
 
 	private String loginname;// 登录名

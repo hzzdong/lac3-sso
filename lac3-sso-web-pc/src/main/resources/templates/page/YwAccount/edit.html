@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" th:href="@{{path}/AdminLTE2410/bower_components/fonts.googleapis/fonts.css(path=${static_server},v=${static_res_version})}">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
-<form id="f_entity_addedit" class="form-horizontal" method="post" action="/Account/save" th:action="@{/Account/save}">
+<form id="f_entity_addedit" class="form-horizontal" method="post" action="/YwAccount/save" th:action="@{/YwAccount/save}">
 	<input type="hidden" id="id" name="id" th:value="${id}"/>
 	<input type="hidden" id="uuid" name="uuid" th:value="${uuid}"/>
 	<div class="box box-outline">
@@ -213,7 +213,7 @@
 		</div>
 		<div class="box-footer">
 			<button id="btn_entity_cancel" type="button" class="btn btn-default pull-right" style="margin:0px 10px;">取消</button>
-			<button id="btn_entity_save" type="button" class="btn btn-primary pull-right" data-res="Account">保存</button>
+			<button id="btn_entity_save" type="button" class="btn btn-primary pull-right" data-res="YwAccount">保存</button>
 		</div>
 	</div>
 </form>
@@ -258,7 +258,7 @@
 			todayHighlight : true
 		});
 		
-		$("#f_entity_addedit").initLacForm(ctx + "/Account/get?id=" + $("#id").val() + "&uuid=" + $("#uuid").val(), function(){
+		$("#f_entity_addedit").initLacForm(ctx + "/YwAccount/get?id=" + $("#id").val() + "&uuid=" + $("#uuid").val(), function(){
 			$("#btn_entity_save").permissionEnabled();
 		});
 

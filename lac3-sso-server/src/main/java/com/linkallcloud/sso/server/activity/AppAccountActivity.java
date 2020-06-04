@@ -12,6 +12,8 @@ import com.linkallcloud.sso.domain.AppAccount;
 import com.linkallcloud.sso.exception.ArgException;
 import com.linkallcloud.sso.server.dao.IAccountDao;
 import com.linkallcloud.sso.server.dao.IAppAccountDao;
+import com.linkallcloud.sso.server.dao.IKhAccountDao;
+import com.linkallcloud.sso.server.dao.IYwAccountDao;
 import com.linkallcloud.sso.server.kiss.um.ApplicationKiss;
 import com.linkallcloud.um.domain.sys.Application;
 
@@ -22,7 +24,10 @@ public class AppAccountActivity extends BaseActivity<AppAccount, IAppAccountDao>
 	private IAppAccountDao appAccountDao;
 
 	@Autowired
-	private IAccountDao accountDao;
+	private IYwAccountDao ywAccountDao;
+
+	@Autowired
+	private IKhAccountDao khAccountDao;
 
 	@Autowired
 	private ApplicationKiss applicationKiss;
@@ -38,12 +43,25 @@ public class AppAccountActivity extends BaseActivity<AppAccount, IAppAccountDao>
 	}
 
 	@Override
+	public AppAccount fetchByAppCode(Trace t, String appCode, String ssoLoginName) {
+		return dao().fetchByAppCode(t, appCode, ssoLoginName);
+	}
+
+	private IAccountDao<? extends Account> getAccountDao(int clazz) {
+		if (clazz == 0) {
+			return ywAccountDao;
+		} else {
+			return khAccountDao;
+		}
+	}
+
+	@Override
 	public AppAccount bind(Trace t, Long appId, String ssoLoginName, String appLoginName) {
 		if (appId != null && !Strings.isBlank(ssoLoginName) && !Strings.isBlank(appLoginName)) {
 			AppAccount dbEntity = fetch(t, appId, ssoLoginName);
 			if (dbEntity == null) {
 				Application app = applicationKiss.fetchById(t, appId);
-				Account account = accountDao.fetchByLoginname(t, ssoLoginName);
+				Account account = getAccountDao(app.getClazz()).fetchByLoginname(t, ssoLoginName);
 				if (app != null && account != null) {
 					AppAccount entity = new AppAccount(app, account, appLoginName);
 					int rows = dao().insert(t, entity);

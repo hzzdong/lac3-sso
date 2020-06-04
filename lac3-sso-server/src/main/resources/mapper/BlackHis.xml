@@ -6,6 +6,7 @@
 		u.id,u.uuid,u.status,u.createTime,u.updateTime
 		,u.hisId
 		,u.blackTarget
+		,u.appClazz
 		,u.type
 		,u.blackTime
 		,u.reason
@@ -60,6 +61,7 @@
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
 			<if test="page.cnds!=null and page.cnds.hisId != null"> AND u.hisId = #{page.cnds.hisId}</if>
 			<if test="page.cnds!=null and page.cnds.blackTarget != null"> AND u.blackTarget = #{page.cnds.blackTarget}</if>
+			<if test="page.cnds!=null and page.cnds.appClazz != null"> AND u.appClazz = #{page.cnds.appClazz}</if>
 			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
 			<if test="page.cnds!=null and page.cnds.blackTime != null"> AND u.blackTime = #{page.cnds.blackTime}</if>
 			<if test="page.cnds!=null and page.cnds.blackTimeGe != null"> AND u.blackTime &gt;= #{page.cnds.blackTimeGe}</if>
@@ -86,6 +88,7 @@
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
 			<if test="page.cnds!=null and page.cnds.hisId != null"> AND u.hisId = #{page.cnds.hisId}</if>
 			<if test="page.cnds!=null and page.cnds.blackTarget != null"> AND u.blackTarget = #{page.cnds.blackTarget}</if>
+			<if test="page.cnds!=null and page.cnds.appClazz != null"> AND u.appClazz = #{page.cnds.appClazz}</if>
 			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
 			<if test="page.cnds!=null and page.cnds.blackTime != null"> AND u.blackTime = #{page.cnds.blackTime}</if>
 			<if test="page.cnds!=null and page.cnds.blackTimeGe != null"> AND u.blackTime &gt;= #{page.cnds.blackTimeGe}</if>
@@ -112,6 +115,7 @@
 			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.hisId != null"> AND u.hisId = #{query.cnds.hisId}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.blackTarget != null"> AND u.blackTarget = #{query.cnds.blackTarget}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.appClazz != null"> AND u.appClazz = #{query.cnds.appClazz}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.type != null"> AND u.type = #{query.cnds.type}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.blackTime != null"> AND u.blackTime = #{query.cnds.blackTime}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.blackTimeGe != null"> AND u.blackTime &gt;= #{query.cnds.blackTimeGe}</if>
@@ -133,6 +137,7 @@
 			( uuid,status,createTime,updateTime
 			,hisId
 			,blackTarget
+			,appClazz
 			,type
 			,blackTime
 			,reason
@@ -143,6 +148,7 @@
 			(#{entity.uuid},#{entity.status},now(),now()
 			,#{entity.hisId}
 			,#{entity.blackTarget}
+			,#{entity.appClazz}
 			,#{entity.type}
 			,#{entity.blackTime}
 			,#{entity.reason}
@@ -158,6 +164,7 @@
 			updateTime=now()
 			,hisId=#{entity.hisId}
 			,blackTarget=#{entity.blackTarget}
+			,appClazz=#{entity.appClazz}
 			,type=#{entity.type}
 			,blackTime=#{entity.blackTime}
 			,reason=#{entity.reason}

@@ -35,10 +35,12 @@ public abstract class BaseManagerController {
 
 		Tree children02 = new Tree("2", root.getId(), "账号管理");
 		root.addChild(children02);
-		Tree subChildren0201 = new Tree("21", children02.getId(), "SSO账号", "Account", "/Account/main");
+		Tree subChildren0201 = new Tree("21", children02.getId(), "运维用户账号", "YwAccount", "/YwAccount/main");
 		children02.addChild(subChildren0201);
-		Tree subChildren0202 = new Tree("22", children02.getId(), "应用账号", "AppAccount", "/AppAccount/main");
+		Tree subChildren0202 = new Tree("22", children02.getId(), "客户用户账号", "KhAccount", "/KhAccount/main");
 		children02.addChild(subChildren0202);
+		Tree subChildren0203 = new Tree("23", children02.getId(), "应用映射账号", "AppAccount", "/AppAccount/main");
+		children02.addChild(subChildren0203);
 
 		Tree children03 = new Tree("3", root.getId(), "锁管理");
 		root.addChild(children03);

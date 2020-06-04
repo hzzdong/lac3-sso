@@ -28,9 +28,10 @@ import com.linkallcloud.core.www.UrlPattern;
 import com.linkallcloud.sso.domain.AppAccount;
 import com.linkallcloud.sso.exception.AccountException;
 import com.linkallcloud.sso.exception.SiteException;
+import com.linkallcloud.sso.portal.kiss.um.KhUserKiss;
 import com.linkallcloud.sso.portal.kiss.um.YwUserKiss;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
-import com.linkallcloud.um.domain.party.YwUser;
+import com.linkallcloud.um.domain.party.User;
 import com.linkallcloud.um.domain.sys.Application;
 import com.linkallcloud.web.utils.Controllers;
 
@@ -42,14 +43,30 @@ public class GrantForService extends BaseController {
 	@Autowired
 	private YwUserKiss ywUserKiss;
 
+	@Autowired
+	private KhUserKiss KhUserKiss;
+
+	private User fecthByAccount(Trace t, int appClazz, String account) {
+		if (appClazz == 0) {
+			return ywUserKiss.fecthByAccount(t, account);
+		} else {
+			return KhUserKiss.fecthByAccount(t, account);
+		}
+	}
+
 	@RequestMapping(value = "/generic", method = RequestMethod.GET)
 	public String generic(HttpServletRequest request, ModelMap modelMap, Trace t) {
 		TicketGrantingTicket tgt = getTgc(request);
 		if (tgt != null && !Strings.isBlank(tgt.getUsername())) {
 			modelMap.put("userName", tgt.getUsername());
-			YwUser user = ywUserKiss.fecthByAccount(t, tgt.getUsername());
+			User user = fecthByAccount(t, tgt.getAppClazz(), tgt.getUsername());
 			if (user != null) {
-				List<Application> apps = applicationKiss.findByYwUserId(t, user.getId());
+				List<Application> apps = null;
+				if (tgt.getAppClazz() == 0) {
+					apps = applicationKiss.findByYwUserId(t, user.getId());
+				} else {
+					apps = applicationKiss.findByKhUserId(t, user.getId());
+				}
 				modelMap.put("apps", apps);
 				modelMap.put("user", user);
 			}
@@ -127,7 +144,7 @@ public class GrantForService extends BaseController {
 			AppAccount appAccount = appAccountManager.validBind(t, app.getId(), tgt.getUsername(),
 					bindVo.getLoginName(), bindVo.getPassword());
 			if (appAccount != null) {
-				doGrantForService(t, request, tgt, app, bindVo.getService(), true, result);
+				doGrantForService(t, request, tgt, app.getClazz(), app.getCode(), bindVo.getService(), true, result);
 			} else {
 				result.put("code", "1");
 				result.put("message", "应用账号验证失败，请核对后重试！");

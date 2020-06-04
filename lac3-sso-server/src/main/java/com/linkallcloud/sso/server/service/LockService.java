@@ -48,17 +48,17 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 
 	private void lockCache(Trace t, Lock l) {
 		if (LockStatus.Lock.getCode().equals(l.getStatus())) {// 加锁
-			lockBlackCache.put(RedisLockBlackCache.getLockKey(l.getLockedTarget()), l.getLockedTime());
+			lockBlackCache.put(RedisLockBlackCache.getLockKey(l.getAppClazz(), l.getLockedTarget()), l.getLockedTime());
 		} else {// 除黑
-			lockBlackCache.remove(RedisLockBlackCache.getLockKey(l.getLockedTarget()));
+			lockBlackCache.remove(RedisLockBlackCache.getLockKey(l.getAppClazz(), l.getLockedTarget()));
 		}
 	}
 
 	private void blackCache(Trace t, Black b) {
 		if (BlackStatus.Black.getCode().equals(b.getStatus())) {// 加黑
-			lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getBlackTarget()), b.getBlackTime());
+			lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getAppClazz(), b.getBlackTarget()), b.getBlackTime());
 		} else {// 除黑
-			lockBlackCache.remove(RedisLockBlackCache.getBlackKey(b.getBlackTarget()));
+			lockBlackCache.remove(RedisLockBlackCache.getBlackKey(b.getAppClazz(), b.getBlackTarget()));
 		}
 	}
 
@@ -68,7 +68,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 		if (entity.getId() != null && entity.getId().longValue() > 0) {
 			dbEntity = activity().fetchById(t, entity.getId());
 		} else {
-			dbEntity = fetchExistLock(t, entity.getType(), entity.getLockedTarget(), null);
+			dbEntity = fetchExistLock(t, entity.getAppClazz(), entity.getType(), entity.getLockedTarget(), null);
 		}
 
 		if (dbEntity == null) {
@@ -92,8 +92,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	@Override
-	public Lock fetchExistLock(Trace t, Integer type, String lockedTarget, Integer status) {
-		List<Lock> entities = findExistLocks(t, type, lockedTarget, status);
+	public Lock fetchExistLock(Trace t, Integer AppClazz, Integer type, String lockedTarget, Integer status) {
+		List<Lock> entities = findExistLocks(t, AppClazz, type, lockedTarget, status);
 		if (entities != null && !entities.isEmpty()) {
 			return entities.get(0);
 		}
@@ -101,8 +101,11 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	@Override
-	public List<Lock> findExistLocks(Trace t, Integer type, String lockedTarget, Integer status) {
+	public List<Lock> findExistLocks(Trace t, Integer appClazz, Integer type, String lockedTarget, Integer status) {
 		Query q = new Query();
+		if (appClazz != null) {
+			q.addRule(new Equal("appClazz", appClazz));
+		}
 		if (type != null) {
 			q.addRule(new Equal("type", type));
 		}
@@ -127,7 +130,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.Lock.getCode());
 
-				lockBlackCache.put(RedisLockBlackCache.getLockKey(dbEntity.getLockedTarget()),
+				lockBlackCache.put(RedisLockBlackCache.getLockKey(dbEntity.getAppClazz(), dbEntity.getLockedTarget()),
 						dbEntity.getLockedTime());
 				activity().update(t, dbEntity);
 			}
@@ -148,7 +151,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 				dbEntity.setRemark(remark);
 				dbEntity.setStatus(LockStatus.UnLock.getCode());
 
-				lockBlackCache.remove(RedisLockBlackCache.getLockKey(dbEntity.getLockedTarget()));
+				lockBlackCache
+						.remove(RedisLockBlackCache.getLockKey(dbEntity.getAppClazz(), dbEntity.getLockedTarget()));
 				activity().update(t, dbEntity);
 			}
 			return true;
@@ -159,18 +163,19 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 
 	@Override
 	public void load2Cache(Trace t) {
-		List<Lock> all = findExistLocks(t, null, null, LockStatus.Lock.getCode());
+		List<Lock> all = findExistLocks(t, null, null, null, LockStatus.Lock.getCode());
 		if (all != null && !all.isEmpty()) {
 			for (Lock l : all) {
-				lockBlackCache.put(RedisLockBlackCache.getLockKey(l.getLockedTarget()), l.getLockedTime());
+				lockBlackCache.put(RedisLockBlackCache.getLockKey(l.getAppClazz(), l.getLockedTarget()),
+						l.getLockedTime());
 			}
 		}
 	}
 
 	@Override
-	public void check(Trace t, String lockedTarget) throws LockException {
+	public void check(Trace t, int appClazz, String lockedTarget) throws LockException {
 		if (!Strings.isBlank(lockedTarget)) {
-			String key = RedisLockBlackCache.getLockKey(lockedTarget);
+			String key = RedisLockBlackCache.getLockKey(appClazz, lockedTarget);
 			if (lockBlackCache.exists(key)) {
 				throw new LockException();
 			}
@@ -179,7 +184,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 
 	@Override
 	public void autoUnLockBlack(Trace t, LockConfig config) {
-		List<Lock> all = findExistLocks(t, null, null, LockStatus.Lock.getCode());
+		List<Lock> all = findExistLocks(t, null, null, null, LockStatus.Lock.getCode());
 		if (all != null && !all.isEmpty()) {
 			for (Lock l : all) {
 				if (LockStatus.Lock.getCode().equals(l.getStatus())) {// 锁定
@@ -206,7 +211,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	private void autoBlack(Trace t, Lock l) {
-		Black b = new Black(l.getType(), l.getLockedTarget(), BlackStatus.Black.getCode(),
+		Black b = new Black(l.getType(), l.getAppClazz(), l.getLockedTarget(), BlackStatus.Black.getCode(),
 				BlackReson.BlackByLock.getCode(), "系统", "锁定次数超过系统设置的连续锁定次数，自动加黑。");
 		blackCache(t, b);
 		blackActivity.autoBlack(t, b);
@@ -226,15 +231,15 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	}
 
 	@Override
-	public void dealAuthAutoLock(Trace t, boolean success, String account, String ip, String remark,
+	public void dealAuthAutoLock(Trace t, boolean success, int appClazz, String account, String ip, String remark,
 			LockConfig config) {
-		dealAuthAutoLockByType(t, success, LockBlackType.Account.getCode(), account, remark, config);
-		dealAuthAutoLockByType(t, success, LockBlackType.Ip.getCode(), ip, remark, config);
+		dealAuthAutoLockByType(t, success, LockBlackType.Account.getCode(), appClazz, account, remark, config);
+		dealAuthAutoLockByType(t, success, LockBlackType.Ip.getCode(), appClazz, ip, remark, config);
 	}
 
-	private void dealAuthAutoLockByType(Trace t, boolean success, int type, String lockedTarget, String remark,
-			LockConfig config) {
-		List<Lock> entities = findExistLocks(t, type, lockedTarget, null);
+	private void dealAuthAutoLockByType(Trace t, boolean success, int type, int appClazz, String lockedTarget,
+			String remark, LockConfig config) {
+		List<Lock> entities = findExistLocks(t, appClazz, type, lockedTarget, null);
 		if (success) {
 			if (entities != null && !entities.isEmpty()) {
 				for (Lock accountLock : entities) {
@@ -259,7 +264,7 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 					}
 				}
 			} else {
-				Lock entity = new Lock(type, lockedTarget, LockStatus.UnLock.getCode(), 0, 1,
+				Lock entity = new Lock(type, appClazz, lockedTarget, LockStatus.UnLock.getCode(), 0, 1,
 						LockReson.LockByLoginFailure.getCode(), "系统", Strings.isBlank(remark) ? "登录验证失败" : remark);
 				activity().insert(t, entity);
 			}
@@ -311,8 +316,8 @@ public class LockService extends BaseService<Lock, ILockActivity> implements ILo
 	private void removeLock(Trace t, Lock entity, int reson, String remark) {
 		entity.setStatus(LockStatus.UnLock.getCode());
 		entity.setLockedTime(new Date());
-		entity.setCount(0);
-		entity.setErr(0);
+		//entity.setCount(0);
+		//entity.setErr(0);
 		entity.setReason(reson);
 		entity.setOperator("系统");
 		entity.setRemark(Strings.isBlank(remark) ? "登录验证成功" : remark);

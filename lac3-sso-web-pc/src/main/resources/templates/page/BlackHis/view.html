@@ -40,16 +40,24 @@
 					<td style="width: 35%" th:text="${entity.typeStr}"></td>
 				</tr>
 				<tr>
-					<td align="right">加黑操作:</td>
-					<td th:text="${entity.reasonStr}"></td>
-					<td align="right">加黑时间:</td>
+					<td align="right">状态:</td>
+					<td th:text="${entity.status==0?'已加黑':'已除黑'}"></td>
+					<td align="right" th:text="${entity.status==0?'加黑时间:':'除黑时间:'}">加黑时间:</td>
 					<td th:text="${entity.blackTimeStr}"></td>
 				</tr>
 				<tr>
+					<td align="right">应用类别:</td>
+					<td th:text="${entity.appClazz==0?'运维应用':'客户应用'}"></td>
+					<td align="right">加黑操作:</td>
+					<td th:text="${entity.reasonStr}"></td>
+				</tr>
+				<tr>
 					<td align="right">操作员:</td>
-					<td th:text="${entity.operator}"></td>
+					<td th:text="${entity.operator}" colspan="3"></td>
+				</tr>
+				<tr>
 					<td align="right">描述:</td>
-					<td th:text="${entity.remark}"></td>
+					<td th:text="${entity.remark}" colspan="3"></td>
 				</tr>
 			</tbody>
 		</table>

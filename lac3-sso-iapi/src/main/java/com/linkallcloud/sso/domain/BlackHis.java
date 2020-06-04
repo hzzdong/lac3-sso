@@ -15,6 +15,7 @@ public class BlackHis extends Domain {
 
 	private Long hisId;// ID
 	private String blackTarget;// 加黑目标
+	private int appClazz;// 加黑应用类别，0：运维，1：客户
 	private int type;// 加黑类型
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date blackTime;// 加黑时间
@@ -31,6 +32,7 @@ public class BlackHis extends Domain {
 		this.hisId = entity.getId();
 		this.status = entity.getStatus();
 		this.blackTarget = entity.getBlackTarget();
+		this.appClazz = entity.getAppClazz();
 		this.type = entity.getType();
 		this.reason = entity.getReason();
 		this.blackTime = entity.getBlackTime();
@@ -52,6 +54,14 @@ public class BlackHis extends Domain {
 
 	public void setBlackTarget(String blackTarget) {
 		this.blackTarget = blackTarget;
+	}
+
+	public int getAppClazz() {
+		return appClazz;
+	}
+
+	public void setAppClazz(int appClazz) {
+		this.appClazz = appClazz;
 	}
 
 	public int getType() {

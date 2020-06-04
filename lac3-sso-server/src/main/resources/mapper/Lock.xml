@@ -5,6 +5,7 @@
 	<sql id="Base_Column_List">
 		u.id,u.uuid,u.status,u.createTime,u.updateTime
 		,u.lockedTarget
+		,u.appClazz
 		,u.type
 		,u.count
 		,u.err
@@ -60,6 +61,7 @@
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
 			<if test="page.cnds!=null and page.cnds.lockedTarget != null"> AND u.lockedTarget = #{page.cnds.lockedTarget}</if>
+			<if test="page.cnds!=null and page.cnds.appClazz != null"> AND u.appClazz = #{page.cnds.appClazz}</if>
 			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
 			<if test="page.cnds!=null and page.cnds.count != null"> AND u.count = #{page.cnds.count}</if>
 			<if test="page.cnds!=null and page.cnds.reason != null"> AND u.reason = #{page.cnds.reason}</if>
@@ -85,6 +87,7 @@
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
 			<if test="page.cnds!=null and page.cnds.lockedTarget != null"> AND u.lockedTarget = #{page.cnds.lockedTarget}</if>
+			<if test="page.cnds!=null and page.cnds.appClazz != null"> AND u.appClazz = #{page.cnds.appClazz}</if>
 			<if test="page.cnds!=null and page.cnds.type != null"> AND u.type = #{page.cnds.type}</if>
 			<if test="page.cnds!=null and page.cnds.count != null"> AND u.count = #{page.cnds.count}</if>
 			<if test="page.cnds!=null and page.cnds.reason != null"> AND u.reason = #{page.cnds.reason}</if>
@@ -110,6 +113,7 @@
 			u.status &lt;&gt; 9 
 			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.lockedTarget != null"> AND u.lockedTarget = #{query.cnds.lockedTarget}</if>
+			<if test="query!=null and query.cnds!=null and query.cnds.appClazz != null"> AND u.appClazz = #{query.cnds.appClazz}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.type != null"> AND u.type = #{query.cnds.type}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.count != null"> AND u.count = #{query.cnds.count}</if>
 			<if test="query!=null and query.cnds!=null and query.cnds.reason != null"> AND u.reason = #{query.cnds.reason}</if>
@@ -130,6 +134,7 @@
 		insert into tab_lock 
 			( uuid,status,createTime,updateTime
 			,lockedTarget
+			,appClazz
 			,type
 			,count
 			,err
@@ -141,6 +146,7 @@
 		values
 			(#{entity.uuid},#{entity.status},now(),now()
 			,#{entity.lockedTarget}
+			,#{entity.appClazz}
 			,#{entity.type}
 			,#{entity.count}
 			,#{entity.err}
@@ -157,6 +163,7 @@
 		set 
 			updateTime=now()
 			,lockedTarget=#{entity.lockedTarget}
+			,appClazz=#{entity.appClazz}
 			,type=#{entity.type}
 			,count=#{entity.count}
 			,err=#{entity.err}

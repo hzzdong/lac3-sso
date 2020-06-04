@@ -9,8 +9,8 @@ public class AuthException extends SsoException {
 		super(ARG_CODE_AUTH, "验证错误");
 	}
 
-	public AuthException(String code) {
-		super(code);
+	public AuthException(String message) {
+		super(ARG_CODE_AUTH, message);
 	}
 
 	public AuthException(String code, String message) {

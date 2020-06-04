@@ -40,16 +40,26 @@
 						<td style="width: 35%" th:text="${entity.typeStr}"></td>
 					</tr>
 					<tr>
-						<td align="right">锁定次数:</td>
-						<td th:text="${entity.count}"></td>
+						<td align="right">应用类别:</td>
+						<td th:text="${entity.appClazz==0?'运维应用':'客户应用'}"></td>
 						<td align="right">锁定操作:</td>
 						<td th:text="${entity.reasonStr}"></td>
 					</tr>
 					<tr>
-						<td align="right">锁定时间:</td>
-						<td th:text="${entity.lockedTimeStr}"></td>
+						<td style="width: 15%" align="right">锁定状态:</td>
+						<td style="width: 35%" th:text="${entity.status==0?'已锁定':'已解锁'}"></td>
+						<td style="width: 15%" align="right" th:text="${entity.status==0?'锁定时间:':'解锁时间:'}">锁定时间:</td>
+						<td style="width: 35%" th:text="${entity.lockedTimeStr}"></td>
+					</tr>
+					<tr>
+						<td align="right">锁定次数:</td>
+						<td th:text="${entity.count}"></td>
+						<td align="right">错误次数:</td>
+						<td th:text="${entity.err}"></td>
+					</tr>
+					<tr>
 						<td align="right">操作员:</td>
-						<td th:text="${entity.operator}"></td>
+						<td colspan="3" th:text="${entity.operator}"></td>
 					</tr>
 					<tr>
 						<td align="right">描述:</td>

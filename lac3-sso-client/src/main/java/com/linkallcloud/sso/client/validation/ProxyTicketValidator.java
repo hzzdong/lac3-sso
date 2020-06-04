@@ -42,7 +42,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 	 */
 	public ProxyTicketValidator(final String ssoServerUrl, final boolean renew, List<SimpleService[]> proxyChains,
 			boolean acceptAnyProxy) {
-		this(ssoServerUrl, renew, null, null, proxyChains, acceptAnyProxy, null);
+		this(ssoServerUrl, renew, null, null, 0, proxyChains, acceptAnyProxy, null);
 	}
 
 	/**
@@ -56,9 +56,11 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
 	 * @param proxyRetriever
 	 */
 	public ProxyTicketValidator(final String ssoServerUrl, final boolean renew, final String proxyCallbackUrl,
-			final String proxyAppCode, List<SimpleService[]> proxyChains, boolean acceptAnyProxy,
-			final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {// , final ProxyRetriever proxyRetriever
-		super(ssoServerUrl, renew, proxyCallbackUrl, proxyAppCode, proxyGrantingTicketStorage);
+			final String proxyAppCode, final int proxyAppClazz, List<SimpleService[]> proxyChains,
+			boolean acceptAnyProxy, final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {// , final
+																									// ProxyRetriever
+																									// proxyRetriever
+		super(ssoServerUrl, renew, proxyCallbackUrl, proxyAppCode, proxyAppClazz, proxyGrantingTicketStorage);
 
 		CommonUtils.assertTrue(proxyChains != null || acceptAnyProxy,
 				"proxyChains cannot be null or acceptAnyProxy must be true.");

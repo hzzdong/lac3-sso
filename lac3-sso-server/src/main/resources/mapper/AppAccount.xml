@@ -41,6 +41,15 @@
 			u.appId=#{appId} and u.loginname=#{ssoLoginName}
 	</select>
 	
+	<select id="fetchByAppCode" resultType="com.linkallcloud.sso.domain.AppAccount">
+		select
+			<include refid="Base_Column_List" />
+		from 
+			tab_app_account u 
+		where 
+			u.appCode=#{appCode} and u.loginname=#{ssoLoginName}
+	</select>
+	
 	<select id="findByIds" resultType="com.linkallcloud.sso.domain.AppAccount">
 		select
 			<include refid="Base_Column_List" />

@@ -20,18 +20,19 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	}
 
 	/** Constructs a new, immutable proxy ticket. */
-	public ProxyTicket(ProxyGrantingTicket t, String appCode, String service, String siteUser, int siteMaping) {
-		super(t, appCode, service, false, siteUser, siteMaping);
+	public ProxyTicket(ProxyGrantingTicket t, int appClazz, String appCode, String service, String siteUser,
+			int siteMaping) {
+		super(t, appClazz, appCode, service, false, siteUser, siteMaping);
 	}
 
 	/** Constructs a new, immutable proxy ticket. */
-	public ProxyTicket(ProxyGrantingTicket t, String appCode, String service) {
+	public ProxyTicket(ProxyGrantingTicket t, int appClazz, String appCode, String service) {
 		/*
 		 * By convention, a proxy ticket is never taken to proceed from an initial
 		 * login. (That is, "renew=true" will always fail for a proxy ticket.) Because
 		 * of this, we pass "false" to the parent class's constructor.
 		 */
-		super(t, appCode, service, false);
+		super(t, appClazz, appCode, service, false);
 	}
 
 	/** Retrieves the proxy ticket's lineage -- its chain of "trust." */
@@ -50,7 +51,7 @@ public class ProxyTicket extends ActiveTicket<ProxyGrantingTicket> {
 	public void setGrantor(ProxyGrantingTicket grantor) {
 		this.grantor = grantor;
 	}
-	
+
 	public void loadReference(RedisTicketCache<? extends Ticket> cache) {
 		if (!Strings.isBlank(this.getGrantorId())) {
 			ProxyGrantingTicket pgt = cache.getTicket(this.getGrantorId(), ProxyGrantingTicket.class);

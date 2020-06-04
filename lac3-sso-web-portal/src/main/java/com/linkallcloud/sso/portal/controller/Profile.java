@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.linkallcloud.core.busilog.annotation.Module;
 import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
+import com.linkallcloud.sso.domain.Account;
 import com.linkallcloud.sso.exception.AccountException;
 import com.linkallcloud.sso.manager.IAccountManager;
+import com.linkallcloud.sso.manager.IKhAccountManager;
+import com.linkallcloud.sso.manager.IYwAccountManager;
+import com.linkallcloud.sso.portal.kiss.um.KhUserKiss;
 import com.linkallcloud.sso.portal.kiss.um.YwUserKiss;
 import com.linkallcloud.sso.portal.utils.LacSessionValidateCode;
 import com.linkallcloud.sso.ticket.TicketGrantingTicket;
-import com.linkallcloud.um.domain.party.YwUser;
+import com.linkallcloud.um.domain.party.User;
 import com.linkallcloud.web.utils.Controllers;
 
 @Controller
@@ -32,17 +36,23 @@ public class Profile extends BaseController {
 	private YwUserKiss ywUserKiss;
 
 	@Autowired
+	private KhUserKiss KhUserKiss;
+
+	@Autowired
 	private LacSessionValidateCode sessionValidateCode;
 
 	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
-	private IAccountManager accountManager;
+	private IYwAccountManager ywAccountManager;
+
+	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private IKhAccountManager khAccountManager;
 
 	@RequestMapping(value = "/me", method = RequestMethod.GET)
 	public String me(HttpServletRequest request, ModelMap modelMap, Trace t) {
 		TicketGrantingTicket tgt = getTgc(request);
 		if (tgt != null) {
 			modelMap.put("userName", tgt.getUsername());
-			YwUser user = ywUserKiss.fecthByAccount(t, tgt.getUsername());
+			User user = fecthByAccount(t, tgt.getAppClazz(), tgt.getUsername());
 			if (user != null) {
 				modelMap.put("user", user);
 			}
@@ -57,7 +67,7 @@ public class Profile extends BaseController {
 		TicketGrantingTicket tgt = getTgc(request);
 		if (tgt != null) {
 			modelMap.put("userName", tgt.getUsername());
-			YwUser user = ywUserKiss.fecthByAccount(t, tgt.getUsername());
+			User user = fecthByAccount(t, tgt.getAppClazz(), tgt.getUsername());
 			if (user != null) {
 				modelMap.put("user", user);
 			}
@@ -80,12 +90,29 @@ public class Profile extends BaseController {
 
 		TicketGrantingTicket tgt = getTgc(request);
 		if (tgt != null) {
-			boolean ret = accountManager.updatePassword(t, tgt.getUsername(), oldPassword, password);
+			boolean ret = getAccountManager(tgt.getAppClazz()).updatePassword(t, tgt.getUsername(), oldPassword,
+					password);
 			return new Result<Object>(!ret, "MP-pwd", "修改密码失败，可能是能提供的原密码错误，请重试。");
 		} else {
 			return Controllers.redirect("/login");
 		}
 
+	}
+
+	private IAccountManager<? extends Account> getAccountManager(int appClazz) {
+		if (appClazz == 0) {
+			return ywAccountManager;
+		} else {
+			return khAccountManager;
+		}
+	}
+
+	private User fecthByAccount(Trace t, int appClazz, String account) {
+		if (appClazz == 0) {
+			return ywUserKiss.fecthByAccount(t, account);
+		} else {
+			return KhUserKiss.fecthByAccount(t, account);
+		}
 	}
 
 }

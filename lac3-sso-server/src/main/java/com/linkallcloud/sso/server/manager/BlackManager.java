@@ -44,8 +44,8 @@ public class BlackManager extends BaseManager<Black, IBlackService> implements I
 	}
 
 	@Override
-	public void check(Trace t, String blackTarget) throws BlackListException {
-		service().check(t, blackTarget);
+	public void check(Trace t, int appClazz, String blackTarget) throws BlackListException {
+		service().check(t, appClazz, blackTarget);
 	}
 
 }

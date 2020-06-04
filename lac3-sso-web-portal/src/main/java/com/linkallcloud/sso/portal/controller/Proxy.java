@@ -18,6 +18,7 @@ import com.linkallcloud.sso.oapi.dto.ProxyResult;
 import com.linkallcloud.sso.ticket.ProxyGrantingTicket;
 import com.linkallcloud.sso.ticket.ProxyTicket;
 import com.linkallcloud.sso.ticket.cache.ProxyTicketCache;
+import com.linkallcloud.um.domain.sys.Application;
 
 @Controller
 @RequestMapping
@@ -42,12 +43,17 @@ public class Proxy extends BaseController {
 					"'pgt', 'targetAppCode' and 'targetService' parameters are both required");
 		} else {
 			ProxyGrantingTicket pgt = (ProxyGrantingTicket) pgtCache.getTicket(pgtId);
-			if (pgt == null)
+			if (pgt == null) {
 				return proxyFailure(BAD_PGT, "unrecognized pgt: '" + pgtId + "'");
-			else {
-				ProxyTicket pt = new ProxyTicket(pgt, targetAppCode, targetService);
-				String token = ptCache.addTicket(pt);
-				return proxySuccess(token);
+			} else {
+				try {
+					Application app = checkSiteCanPass(t, targetAppCode, targetService);
+					ProxyTicket pt = new ProxyTicket(pgt, app.getClazz(), targetAppCode, targetService);
+					String token = ptCache.addTicket(pt);
+					return proxySuccess(token);
+				} catch (SiteException e) {
+					return proxyFailure(BAD_PGT, "unrecognized pgt: '" + pgtId + "'");
+				}
 			}
 		}
 	}

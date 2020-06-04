@@ -15,6 +15,7 @@ public class LockHis extends Domain {
 
 	private Long hisId;// ID
 	private String lockedTarget;// 锁定目标
+	private int appClazz;// 锁定应用类别，0：运维，1：客户
 	private int type;// 锁定类型
 	private int count;// 锁定次数
 	private int err;// 错误次数
@@ -33,6 +34,7 @@ public class LockHis extends Domain {
 		this.hisId = lock.getId();
 		this.status = lock.getStatus();
 		this.lockedTarget = lock.getLockedTarget();
+		this.appClazz = lock.getAppClazz();
 		this.type = lock.getType();
 		this.count = lock.getCount();
 		this.err = lock.getErr();
@@ -56,6 +58,14 @@ public class LockHis extends Domain {
 
 	public void setLockedTarget(String lockedTarget) {
 		this.lockedTarget = lockedTarget;
+	}
+
+	public int getAppClazz() {
+		return appClazz;
+	}
+
+	public void setAppClazz(int appClazz) {
+		this.appClazz = appClazz;
 	}
 
 	public int getType() {

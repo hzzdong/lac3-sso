@@ -42,19 +42,20 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 	 */
 	private final String proxyCallbackUrl;
 
-	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServer) {
-		this(siteCode, serverName, ssoServer, null);
+	public AuthenticationFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String ssoServer) {
+		this(siteClazz, siteCode, serverName, ssoServer, null);
 	}
 
-	public AuthenticationFilter(final String siteCode, final String serverName, final String ssoServer,
-			final List<String> ignoreRes) {
-		this(siteCode, serverName, null, true, ssoServer, null, false, false, ignoreRes, false);
+	public AuthenticationFilter(final int siteClazz, final String siteCode, final String serverName,
+			final String ssoServer, final List<String> ignoreRes) {
+		this(siteClazz, siteCode, serverName, null, true, ssoServer, null, false, false, ignoreRes, false);
 	}
 
-	public AuthenticationFilter(String siteCode, String serverName, String serviceUrl, boolean useSession,
-			String ssoServer, String proxyCallbackUrl, boolean renew, boolean gateway, List<String> ignoreRes,
-			boolean override) {
-		super(siteCode, serverName, serviceUrl, useSession, ignoreRes, override);
+	public AuthenticationFilter(final int siteClazz, String siteCode, String serverName, String serviceUrl,
+			boolean useSession, String ssoServer, String proxyCallbackUrl, boolean renew, boolean gateway,
+			List<String> ignoreRes, boolean override) {
+		super(siteClazz, siteCode, serverName, serviceUrl, useSession, ignoreRes, override);
 		CommonUtils.assertNotNull(ssoServer, "the SSO Server Login URL cannot be null.");
 		if (ssoServer.endsWith("/login")) {
 			this.ssoServerLoginUrl = ssoServer;
@@ -91,7 +92,7 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 		final HttpSession session = request.getSession(isUseSession());
 		final String ticket = request.getParameter(PARAM_TICKET);
 		final Assertion assertion = session != null
-				? (Assertion) session.getAttribute(siteCode + Assertion.ASSERTION_KEY)
+				? (Assertion) session.getAttribute(this.getSiteCode() + Assertion.ASSERTION_KEY)
 				: null;
 		final boolean wasGatewayed = session != null && session.getAttribute(CONST_GATEWAY) != null;
 
@@ -104,7 +105,7 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 
 			final String serviceUrl = constructServiceUrl(request, response);
 			final String urlToRedirectTo = this.ssoServerLoginUrl + "?service=" + URLEncoder.encode(serviceUrl, "UTF-8")
-					+ "&from=" + this.siteCode + (this.renew ? "&renew=true" : "")
+					+ "&from=" + this.getSiteCode() + (this.renew ? "&renew=true" : "")
 					+ (this.gateway ? "&gateway=true" : "");
 
 			if (log.isDebugEnabled()) {

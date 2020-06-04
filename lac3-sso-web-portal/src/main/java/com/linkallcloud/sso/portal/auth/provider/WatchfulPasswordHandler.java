@@ -73,14 +73,15 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 	 */
 	@Override
 	public synchronized Account authenticate(Trace t, javax.servlet.ServletRequest request, String netid,
-			String password) {
+			String password, int appClazz) {
 		if (getFailures(request.getRemoteAddr()) < FAILURE_THRESHOLD) {
-			return doAuthenticate(t, request, netid, password);
+			return doAuthenticate(t, request, netid, password, appClazz);
 		}
 		throw new AuthException(AuthException.ARG_CODE_AUTH, "您的IP错误次数太多，请稍后再试！");
 	}
 
-	protected abstract Account doAuthenticate(Trace t, ServletRequest request, String netid, String password);
+	protected abstract Account doAuthenticate(Trace t, ServletRequest request, String netid, String password,
+			int appClazz);
 
 	/** Registers a login failure initiated by the given address. */
 	protected synchronized void registerFailure(javax.servlet.ServletRequest r) {

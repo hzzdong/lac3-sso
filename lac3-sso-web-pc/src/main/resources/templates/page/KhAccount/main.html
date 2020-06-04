@@ -31,7 +31,7 @@
 			<div class="pull-right">
 				<ul>
 					<li>
-						<button class="btn-permed btn_entiy_add btn btn-block btn-primary btn-sm" data-res="Account"><i class="fa fa-plus"></i>&nbsp;新增账号</button>
+						<button class="btn-permed btn_entiy_add btn btn-block btn-primary btn-sm" data-res="KhAccount"><i class="fa fa-plus"></i>&nbsp;新增账号</button>
 					</li>
 					<li>
 						<button class="btn-superSearch btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button>
@@ -255,25 +255,25 @@
 		    });
 
 		$(".btn_entiy_add").on("click", function() {		
-			LAC.addRow4DataTable(dtable, ctx + '/Account/add', 'Account-edit', '新增账号');
+			LAC.addRow4DataTable(dtable, ctx + '/KhAccount/add', 'KhAccount-edit', '新增账号');
 		});
 
 		$('#dt_entity tbody').on('click', 'button.btn-entity-edit', function(event) {
 			var tr = $(this).parents('tr');
 			var td0 = tr.children("td:first");
 			curRow = dtable.row(tr);
-			LAC.editCurRow4DataTable(curRow, ctx + '/Account/edit', 'Account-edit', '编辑账号', td0);
+			LAC.editCurRow4DataTable(curRow, ctx + '/KhAccount/edit', 'KhAccount-edit', '编辑账号', td0);
 		});
 
 		$('#dt_entity tbody').on('click', 'button.btn-entity-del', function(event) {
 			curRow = dtable.row($(this).parents('tr'));
-			LAC.delete4DataTable(curRow, ctx + '/Account/delete');
+			LAC.delete4DataTable(curRow, ctx + '/KhAccount/delete');
 		});
 
 		$('#dt_entity tbody').on('click', 'button.btn-entity-status1', function(event) {
 			curRow = dtable.row($(this).parents('tr'));
 			var data = curRow.data();
-			var url = ctx + '/Account/changeStatus?status=1&id='+data.id+"&uuid="+data.uuid;
+			var url = ctx + '/KhAccount/changeStatus?status=1&id='+data.id+"&uuid="+data.uuid;
 			LAC.confirmExecute(url, {}, function(ret) {
 				if (ret) {
 					dtable.draw();
@@ -286,7 +286,7 @@
 		$('#dt_entity tbody').on('click', 'button.btn-entity-status0', function(event) {
 			curRow = dtable.row($(this).parents('tr'));
 			var data = curRow.data();
-			var url = ctx + '/Account/changeStatus?status=0&id='+data.id+"&uuid="+data.uuid;
+			var url = ctx + '/KhAccount/changeStatus?status=0&id='+data.id+"&uuid="+data.uuid;
 			LAC.confirmExecute(url, {}, function(ret) {
 				if (ret) {
 					dtable.draw();
@@ -302,7 +302,7 @@
 		dtable = $('#dt_entity').LacDTable(
 						{
 							order : [ [ 1, "desc" ] ],
-							url : ctx + "/Account/page",
+							url : ctx + "/KhAccount/page",
 							autoSequence : true,
 							columns : [
 								{
@@ -362,13 +362,13 @@
 									"searchable" : false,
 									"sClass" : "text-center",
 									"render" : function(data, type, row) {
-										var ret = '<button class="btn-permed btn-entity-edit icon-btn" data-res="Account" title="账号修改"><i class="fa fa-pencil text-green"></i></button>';
+										var ret = '<button class="btn-permed btn-entity-edit icon-btn" data-res="KhAccount" title="账号修改"><i class="fa fa-pencil text-green"></i></button>';
 										if (row.status == 0) {
-											ret += '<button class="btn-permed btn-entity-status1 icon-btn" data-res="Account" title="账号禁用"><i class="fa fa-lock text-yellow"></i></button>';
+											ret += '<button class="btn-permed btn-entity-status1 icon-btn" data-res="KhAccount" title="账号禁用"><i class="fa fa-lock text-yellow"></i></button>';
 										} else if (row.status == 1){
-											ret += '<button class="btn-permed btn-entity-status0 icon-btn" data-res="Account" title="账号启用"><i class="fa fa-unlock text-yellow"></i></button>';
+											ret += '<button class="btn-permed btn-entity-status0 icon-btn" data-res="KhAccount" title="账号启用"><i class="fa fa-unlock text-yellow"></i></button>';
 										}
-										ret += '<button class="btn-permed btn-entity-del icon-btn" data-res="Account" title="账号删除"><i class="fa fa-trash-o text-red"></i></button>';
+										ret += '<button class="btn-permed btn-entity-del icon-btn" data-res="KhAccount" title="账号删除"><i class="fa fa-trash-o text-red"></i></button>';
 										return ret;
 									}
 								}],

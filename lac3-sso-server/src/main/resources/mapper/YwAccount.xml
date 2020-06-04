@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.linkallcloud.sso.server.dao.IAccountDao">
+<mapper namespace="com.linkallcloud.sso.server.dao.IYwAccountDao">
 
 	<sql id="Base_Column_List">
 		u.id,u.uuid,u.status,u.createTime,u.updateTime
@@ -21,84 +21,84 @@
 		,u.remark
 	</sql>
 	
-	<select id="fetchById" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.YwAccount">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			um_account u
+			um_yw_account u
 		where 
 			u.id=#{id}
 	</select>
 	
-	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			um_yw_account u 
 		WHERE
 			u.id = #{id} and u.uuid=#{uuid} 
 	</select>
 	
-	<select id="fetchByLoginname" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchByLoginname" resultType="com.linkallcloud.sso.domain.YwAccount">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			um_account u 
+			um_yw_account u 
 		where 
 			u.loginname=#{loginname}
 	</select>
 	
-	<select id="fecthByMobile" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchByMobile" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			um_yw_account u
 		WHERE
 			u.mobile = #{mobile}
 	</select>
 	
-	<select id="fecthByEmail" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fecthByEmail" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			um_yw_account u
 		WHERE
 			u.email = #{email}
 	</select>
 	
-	<select id="fechByWechatOpenId" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fechByWechatOpenId" resultType="com.linkallcloud.sso.domain.YwAccount">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			um_account u 
+			um_yw_account u 
 		where 
 			u.wechatOpenId=#{openid}
 	</select>
 	
-	<select id="fetchByAlipayOpenId" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="fetchByAlipayOpenId" resultType="com.linkallcloud.sso.domain.YwAccount">
 		select
 			<include refid="Base_Column_List" />
 		from 
-			um_account u 
+			um_yw_account u 
 		where 
 			u.alipayOpenId=#{openid}
 	</select>
 	
-	<select id="findByIds" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findByIds" resultType="com.linkallcloud.sso.domain.YwAccount">
 		select
 			<include refid="Base_Column_List" />
-		from um_account u 
+		from um_yw_account u 
 		where u.status &lt;&gt; 9 and  u.id in
 			<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
 				#{id}
 			</foreach>
 	</select>
 	
-	<select id="findPage" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findPage" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			um_yw_account u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
@@ -127,11 +127,11 @@
 		</choose>
 	</select>
 	
-	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="findPage4Select" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u 
+			um_yw_account u 
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="page.cnds!=null and page.cnds.status != null"> AND u.status = #{page.cnds.status}</if>
@@ -160,11 +160,11 @@
 		</choose>
 	</select>
 	
-	<select id="find" resultType="com.linkallcloud.sso.domain.Account">
+	<select id="find" resultType="com.linkallcloud.sso.domain.YwAccount">
 		SELECT
 			<include refid="Base_Column_List" />
 		FROM
-			um_account u
+			um_yw_account u
 		WHERE
 			u.status &lt;&gt; 9 
 			<if test="query!=null and query.cnds!=null and query.cnds.status != null"> AND u.status = #{query.cnds.status}</if>
@@ -193,8 +193,8 @@
 		</choose>
 	</select>
 	
-	<insert id="insert" parameterType="com.linkallcloud.sso.domain.Account" useGeneratedKeys="true" keyProperty="entity.id">
-		insert into um_account 
+	<insert id="insert" parameterType="com.linkallcloud.sso.domain.YwAccount" useGeneratedKeys="true" keyProperty="entity.id">
+		insert into um_yw_account 
 			(uuid,status,createTime,updateTime
 			,loginname
 			,name
@@ -234,7 +234,7 @@
 	
 	<update id="update">
 		update 
-			um_account 
+			um_yw_account 
 		set 
 			updateTime=now()
 			,name=#{entity.name}
@@ -251,7 +251,7 @@
 	
 	<update id="updatePassword">
 		update 
-			um_account 
+			um_yw_account 
 		set 
 			updateTime=now(),passwd=#{entity.passwd},salt=#{entity.salt},oldPasswds=#{entity.oldPasswds},lastPasswdDate=now()
 		where 
@@ -260,7 +260,7 @@
 	
 	<delete id="delete">
 		update 
-			um_account 
+			um_yw_account 
 		set
 			status=9,updateTime=now()
 		where
@@ -269,7 +269,7 @@
 
 	<update id="updateStatus">
 		update
-			um_account
+			um_yw_account
 		set
 			status=#{status},updateTime=now()
 		where
@@ -278,7 +278,7 @@
 	
 	<update id="updateLastLoginDate">
 		update 
-			um_account 
+			um_yw_account 
 		set 
 			lastLoginDate=now()
 		where 
@@ -287,7 +287,7 @@
 	
 	<update id="updateWechatOpenId">
 		update 
-			um_account 
+			um_yw_account 
 		set 
 			updateTime=now(),wechatOpenId=#{openid}
 		where 
@@ -296,7 +296,7 @@
 	
 	<update id="updateAlipayOpenId">
 		update 
-			um_account 
+			um_yw_account 
 		set 
 			updateTime=now(),alipayOpenId=#{openid}
 		where 

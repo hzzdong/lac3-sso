@@ -32,17 +32,18 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 	// private final ProxyRetriever proxyRetriever;
 
 	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew) {
-		this(ssoServerUrl, renew, null, null, null);
+		this(ssoServerUrl, renew, null, null, 0, null);
 	}
 
 	public ServiceTicketValidator(final String ssoServerUrl, final boolean renew, final String proxyCallbackUrl,
-			final String proxyAppCode, final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {
+			final String proxyAppCode, final int proxyAppClazz,
+			final ProxyGrantingTicketStorage proxyGrantingTicketStorage) {
 		super(ssoServerUrl, renew);
 
 		if (proxyCallbackUrl != null && proxyAppCode != null) {
 			CommonUtils.assertNotNull(proxyGrantingTicketStorage, "proxyGrantingTicketStorage cannot be null");
 			// CommonUtils.assertNotNull(proxyRetriever, "proxyRetriever cannot be null.");
-			this.proxyCallback = new SimpleService(proxyCallbackUrl, proxyAppCode);
+			this.proxyCallback = new SimpleService(proxyCallbackUrl, proxyAppCode, proxyAppClazz);
 		} else {
 			this.proxyCallback = null;
 		}

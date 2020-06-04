@@ -47,9 +47,9 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 
 	private void blackCache(Trace t, Black b) {
 		if (BlackStatus.Black.getCode().equals(b.getStatus())) {// 加黑
-			lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getBlackTarget()), b.getBlackTime());
+			lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getAppClazz(), b.getBlackTarget()), b.getBlackTime());
 		} else {// 除黑
-			lockBlackCache.remove(RedisLockBlackCache.getBlackKey(b.getBlackTarget()));
+			lockBlackCache.remove(RedisLockBlackCache.getBlackKey(b.getAppClazz(), b.getBlackTarget()));
 		}
 	}
 
@@ -134,7 +134,8 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 					dbEntity.setRemark(remark);
 					dbEntity.setStatus(BlackStatus.Black.getCode());
 
-					lockBlackCache.put(RedisLockBlackCache.getBlackKey(dbEntity.getBlackTarget()),
+					lockBlackCache.put(
+							RedisLockBlackCache.getBlackKey(dbEntity.getAppClazz(), dbEntity.getBlackTarget()),
 							dbEntity.getBlackTime());
 					activity().update(t, dbEntity);
 					// saveBlackHis(t, dbEntity);
@@ -158,7 +159,8 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 					dbEntity.setRemark(remark);
 					dbEntity.setStatus(BlackStatus.UnBlack.getCode());
 
-					lockBlackCache.remove(RedisLockBlackCache.getBlackKey(dbEntity.getBlackTarget()));
+					lockBlackCache
+							.remove(RedisLockBlackCache.getBlackKey(dbEntity.getAppClazz(), dbEntity.getBlackTarget()));
 					activity().update(t, dbEntity);
 					// saveBlackHis(t, dbEntity);
 				}
@@ -174,15 +176,16 @@ public class BlackService extends BaseService<Black, IBlackActivity> implements 
 		List<Black> all = findExistBlacks(t, null, null);
 		if (all != null && !all.isEmpty()) {
 			for (Black b : all) {
-				lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getBlackTarget()), b.getBlackTime());
+				lockBlackCache.put(RedisLockBlackCache.getBlackKey(b.getAppClazz(), b.getBlackTarget()),
+						b.getBlackTime());
 			}
 		}
 	}
 
 	@Override
-	public void check(Trace t, String blackTarget) throws BlackListException {
+	public void check(Trace t, int appClazz, String blackTarget) throws BlackListException {
 		if (!Strings.isBlank(blackTarget)) {
-			String key = RedisLockBlackCache.getBlackKey(blackTarget);
+			String key = RedisLockBlackCache.getBlackKey(appClazz, blackTarget);
 			if (lockBlackCache.exists(key)) {
 				throw new BlackListException();
 			}

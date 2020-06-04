@@ -14,8 +14,8 @@ public interface ILockManager extends IManager<Lock> {
 
 	boolean unLocks(Trace t, Map<String, Long> uuidIds, String remark, AppVisitor av);
 
-	void check(Trace t, String lockedTarget) throws LockException;
+	void check(Trace t, int appClazz, String lockedTarget) throws LockException;
 
-	void dealAutoLock(Trace t, boolean success, String account, String ip, String remark);
+	void dealAutoLock(Trace t, boolean success, int appClazz, String account, String ip, String remark);
 
 }

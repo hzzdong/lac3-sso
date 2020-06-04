@@ -127,6 +127,13 @@
 									<img src="../img/lock.png" alt="" th:src="@{{path}/app/img/lock.png(path=${static_server})}"> 
 									<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 								</div>
+								<div class="flex-r form-item flex-center" th:if="${clazz == -1 }">
+									<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}"> 
+									<select id="appClazz" name="appClazz" style="width:100%;height:35px;border:0;border:none;margin-left:5px;">
+										<option value="1">客户应用</option>
+										<option value="0">运维应用</option>
+									</select>
+								</div>
 								<div class="flex-r form-item flex-center lastInput">
 									<img src="../img/code.png" alt="" th:src="@{{path}/app/img/code.png(path=${static_server})}"> 
 									<input type="text" id="vcode" placeholder="请输入验证码"> 
@@ -162,5 +169,5 @@
 <script src="../static/lac/json2.js" th:src="@{{path}/lac/json2.js(path=${static_server},v=${static_res_version})}"></script>
 <script type="text/javascript" src="../static/client/mobile-detect.min.js" th:src="@{{path}/client/mobile-detect.min.js(path=${static_server},v=${static_res_version})}"></script>
 <script type="text/javascript" src="../static/client/browserOs.js" th:src="@{{path}/client/browserOs.js(path=${static_server},v=${static_res_version})}"></script>
-<script src="../static/pad/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
+<script src="../app/js/login.js" th:src="@{{path}/app/js/login.js(path=${static_server},v=${static_res_version})}"></script>
 </html>

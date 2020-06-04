@@ -1,0 +1,330 @@
+<section class="find-tools">
+	<div class="searchBox">
+		<div class="pull-left">
+			<i class="fa fa-list"></i>&nbsp;账号列表
+		</div>
+		<div class="pull-right">
+			<ul>
+				<li th:if="${multi == true}"><button class="btn-account-selects btn btn-block btn-primary btn-sm"><i class="fa fa-check"></i>&nbsp;选择账号</button></li>
+				<li><button class="btn-superSearch-account btn btn-block btn-default btn-sm"><i class="fa fa-search-plus"></i></button></li>
+				<li><button class="btn_account_search btn btn-block btn-default btn-sm"><i class="fa fa-search"></i></button></li>
+				<li>
+					<form id="f_account_search" class="form-inline">
+						<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="登录名快速查询">
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="superSearch">
+		<form id="f_account_search_s" class="form-inline">
+			
+					
+			<div class="form-group">
+				<label class="control-label">登录名：</label>
+				<div class="control-inline">
+					<input type="text" id="loginname" name="loginname" oper="eq" stype="S" class="form-control form-search" placeholder="登录名精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">密码：</label>
+				<div class="control-inline">
+					<input type="text" id="passwd" name="passwd" oper="eq" stype="S" class="form-control form-search" placeholder="密码精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">名称：</label>
+				<div class="control-inline">
+					<input type="text" id="name" name="name" oper="eq" stype="S" class="form-control form-search" placeholder="名称精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">手机：</label>
+				<div class="control-inline">
+					<input type="text" id="mobile" name="mobile" oper="eq" stype="S" class="form-control form-search" placeholder="手机精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">邮箱：</label>
+				<div class="control-inline">
+					<input type="text" id="email" name="email" oper="eq" stype="S" class="form-control form-search" placeholder="邮箱精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label>生日范围:</label>
+				<div class="input-group">
+					<input type="text" class="form-control pull-right" id="birthdayPeriod" placeholder="请选择生日">
+					<input type="hidden" id="birthdayGe" name="birthdayGe" oper="ge" stype="D">
+					<input type="hidden" id="birthdayLe" name="birthdayLe" oper="le" stype="D">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">描述：</label>
+				<div class="control-inline">
+					<input type="text" id="remark" name="remark" oper="eq" stype="S" class="form-control form-search" placeholder="描述精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label class="control-label">老密码：</label>
+				<div class="control-inline">
+					<input type="text" id="oldPasswds" name="oldPasswds" oper="eq" stype="S" class="form-control form-search" placeholder="老密码精确匹配">
+				</div>
+			</div>
+					
+					
+			<div class="form-group">
+				<label>改密时间范围:</label>
+				<div class="input-group">
+					<input type="text" class="form-control pull-right" id="lastPasswdDatePeriod" placeholder="请选择改密时间">
+					<input type="hidden" id="lastPasswdDateGe" name="lastPasswdDateGe" oper="ge" stype="D">
+					<input type="hidden" id="lastPasswdDateLe" name="lastPasswdDateLe" oper="le" stype="D">
+				</div>
+			</div>
+					
+			
+			<div class="form-group">
+				<label class="control-label">状态：</label>
+				<div class="control-inline">
+					<select class="form-control form-search" id="status" name="status" oper="eq" stype="I">
+						<option value="">全部</option>
+						<option value="0">启用</option>
+						<option value="1">禁用</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<button type="button" class="btn btn-primary btn-sm btn_account_search_s">查询</button>
+				<button type="reset" class="btn btn-default btn-sm btn_account_search_reset">重置</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<section class="content">
+	<table id="dt_account" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+						<th>登录名</th>
+						<th>密码</th>
+						<th>名称</th>
+						<th>手机</th>
+						<th>邮箱</th>
+						<th>生日</th>
+						<th>描述</th>
+						<th>老密码</th>
+						<th>改密时间</th>
+				<th>状态</th>
+				<th th:if="${multi != true}">操作</th>
+			</tr>
+		</thead>
+	</table>
+
+</section>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var rules4KhAccount = /*[[${cnds}]]*/'';
+	var multi4KhAccount = /*[[${multi}]]*/'';
+	/*]]>*/
+
+	var dtable4KhAccount, curRow4KhAccount;
+
+	function getCnds4KhAccount() {
+		return rules4KhAccount || [];
+	}
+
+	$(function() {
+			
+		$("#birthdayGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#birthdayLe").val(moment().format('YYYY-MM-DD'));
+		$('#birthdayPeriod').daterangepicker({
+		    "ranges": {
+		    	  '今天': [moment(), moment()],
+	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	              '最近7天': [moment().subtract(6, 'days'), moment()],
+	              '最近30天': [moment().subtract(29, 'days'), moment()],
+	              '本月': [moment().startOf('month'), moment().endOf('month')],
+	              '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		    },
+		    "startDate": moment().subtract(6, 'days'),
+		    "endDate": moment()
+		}, function(start, end, label) {
+			$("#birthdayGe").val(start.format('YYYY-MM-DD'));
+			$("#birthdayLe").val(end.format('YYYY-MM-DD'));
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+		});
+		
+			
+		$("#lastPasswdDateGe").val(moment().subtract(6, 'days').format('YYYY-MM-DD'));
+		$("#lastPasswdDateLe").val(moment().format('YYYY-MM-DD'));
+		$('#lastPasswdDatePeriod').daterangepicker({
+		    "ranges": {
+		    	  '今天': [moment(), moment()],
+	              '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	              '最近7天': [moment().subtract(6, 'days'), moment()],
+	              '最近30天': [moment().subtract(29, 'days'), moment()],
+	              '本月': [moment().startOf('month'), moment().endOf('month')],
+	              '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		    },
+		    "startDate": moment().subtract(6, 'days'),
+		    "endDate": moment()
+		}, function(start, end, label) {
+			$("#lastPasswdDateGe").val(start.format('YYYY-MM-DD'));
+			$("#lastPasswdDateLe").val(end.format('YYYY-MM-DD'));
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+		});
+		
+		
+		initDataTable4KhAccount();
+		bindEvents4DataTable4KhAccount();
+	});
+
+	function bindEvents4DataTable4KhAccount() {
+		/* 快速查询 */
+		$(".btn_account_search").on(
+				"click",
+				function() {
+					$('.btn-superSearch-account').removeClass('active');
+					$('.superSearch').css('display', 'none');
+					$("#f_account_search").search4DataTable(dtable4KhAccount, rules4KhAccount);
+				});
+
+		$(".btn_account_search_s").on(
+				"click",
+				function() {
+					$("#f_account_search_s").search4DataTable(dtable4KhAccount, rules4KhAccount);
+				});
+				
+		$(".btn_account_search_reset").on("click", function() {
+				
+			$("#birthdayGe").val("");
+			$("#birthdayLe").val("");
+			
+				
+			$("#lastPasswdDateGe").val("");
+			$("#lastPasswdDateLe").val("");
+			
+		});
+
+		$('.btn-superSearch-account').on(
+				'click',
+				function() {
+					$('.btn_account_search').removeClass('active');
+					$(this).toggleClass('active');
+					if ($(this).hasClass('active')) {
+						$("#f_account_search").hide();
+						$(".btn_account_search").hide();
+					} else {
+						$("#f_account_search").show();
+						$(".btn_account_search").show();
+					}
+					$(this).parents('.find-tools').find('.superSearch').slideToggle('fast');
+				});
+
+		$('#dt_account tbody').on(
+			'click',
+			'.btn-account-select',
+			function(event) {
+				curRow4KhAccount = dtable4KhAccount.row($(this).parents('tr'));
+				var rowData = curRow4KhAccount.data();
+				if (multi4KhAccount == true) {
+					var rows = [];
+					rows.push(rowData);
+					LAC.getModel("dlg_account_select").getCallback()(rows);
+				} else {
+					LAC.getModel("dlg_account_select").getCallback()(rowData);
+				}
+		});
+
+		$(".btn-account-selects").on("click", function() {
+			var rows = dtable4KhAccount.rows('.selected').data();
+			if (rows && rows.length < 1) {
+				LAC.showWarn("请至少选择一行。");
+			} else {
+				LAC.getModel("dlg_account_select").getCallback()(rows);
+			}
+		});
+
+	}
+
+	function initDataTable4KhAccount() {
+		var options = {
+			order : [ [ 1, "desc" ] ],
+			url : ctx + "/KhAccount/page4Select",
+			autoCheckBox : multi4KhAccount ? true : false,
+			cnds : getCnds4KhAccount,
+			columns : [
+					{
+						"data" : "id",
+						"visible" : false
+					},
+					{
+						"data" : "name",
+						"width" : "120px",
+						"defaultContent" : "",
+						"render" : function(data, type, row) {
+							return '<i class="text-light-blue btn-account-select" style="cursor:pointer">' + data + '</i>';
+						}
+					},
+					{
+						"data" : "phone",
+						"width" : "60px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "areaName",
+						"width" : "150px",
+						"defaultContent" : ""
+					},
+					{
+						"data" : "agentName",
+						"orderable" : false,
+						"defaultContent" : ""
+					},
+					{
+						"data" : "status",
+						"width" : "40px",
+						"render" : function(data, type, row) {
+							if (data == 0) {
+								return '<span class="badge bg-green">正常</span>';
+							} else if (data == 1) {
+								return '<span class="badge bg-yellow">停用</span>';
+							} else {
+								return "";
+							}
+						}
+					},
+					{
+						"data" : null,
+						"defaultContent" : "",
+						"width" : "30px",
+						"orderable" : false,
+						"searchable" : false,
+						"render" : function(data, type, row) {
+							return '<span class="badge bg-light-blue btn-block btn-account-select" style="cursor:pointer">选择</span>';
+						}
+					} ]
+		};
+
+		if (multi4KhAccount == true) {
+			options.columns.splice(6, 1);
+		}
+		dtable4KhAccount = $('#dt_account').LacDTable(options);
+	}
+</script>

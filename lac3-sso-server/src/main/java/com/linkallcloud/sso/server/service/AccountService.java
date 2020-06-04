@@ -1,9 +1,5 @@
 package com.linkallcloud.sso.server.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.lang.Strings;
 import com.linkallcloud.core.service.BaseService;
@@ -13,35 +9,26 @@ import com.linkallcloud.sso.exception.ArgException;
 import com.linkallcloud.sso.exception.AuthException;
 import com.linkallcloud.sso.service.IAccountService;
 
-@Service
-@Transactional(rollbackFor = Exception.class)
-public class AccountService extends BaseService<Account, IAccountActivity> implements IAccountService {
-
-	@Autowired
-	private IAccountActivity accountActivity;
+public abstract class AccountService<T extends Account, TA extends IAccountActivity<T>> extends BaseService<T, TA>
+		implements IAccountService<T> {
 
 	@Override
-	public IAccountActivity activity() {
-		return accountActivity;
-	}
-
-	@Override
-	public Account fetchByLoginAccount(Trace t, String loginAccount) {
+	public T fetchByLoginAccount(Trace t, String loginAccount) {
 		if (Strings.isBlank(loginAccount)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "loginAccount不能为空");
 		}
-		Account dbAccount = activity().fetchByLoginname(t, loginAccount);
+		T dbAccount = activity().fetchByLoginname(t, loginAccount);
 		if (dbAccount == null) {
 			dbAccount = activity().fetchByMobile(t, loginAccount);
 		}
-		if (dbAccount == null) {
-			dbAccount = activity().fetchByEmail(t, loginAccount);
-		}
+//		if (dbAccount == null) {
+//			dbAccount = activity().fetchByEmail(t, loginAccount);
+//		}
 		return dbAccount;
 	}
 
 	@Override
-	public Account fetchByLoginname(Trace t, String loginname) {
+	public T fetchByLoginname(Trace t, String loginname) {
 		if (Strings.isBlank(loginname)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "loginname不能为空");
 		}
@@ -49,7 +36,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 	}
 
 	@Override
-	public Account fetchByMobile(Trace t, String mobile) {
+	public T fetchByMobile(Trace t, String mobile) {
 		if (Strings.isBlank(mobile)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "mobile不能为空");
 		}
@@ -57,7 +44,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 	}
 
 	@Override
-	public Account fetchByEmail(Trace t, String email) {
+	public T fetchByEmail(Trace t, String email) {
 		if (Strings.isBlank(email)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "email不能为空");
 		}
@@ -65,7 +52,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 	}
 
 	@Override
-	public Account loginValidate(Trace t, String account, String password) {
+	public T loginValidate(Trace t, String account, String password) {
 		if (Strings.isBlank(account)) {
 			throw new AuthException(ArgException.ARG_CODE_ARG, "登录名或者密码错误，请重新输入！");
 		}
@@ -73,7 +60,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 			throw new AuthException(ArgException.ARG_CODE_ARG, "登录名或者密码错误，请重新输入！");
 		}
 
-		Account dbAccount = fetchByLoginAccount(t, account);
+		T dbAccount = fetchByLoginAccount(t, account);
 		if (dbAccount == null) {
 			throw new AuthException(ArgException.ARG_CODE_ARG, "登录名或者密码错误，请重新输入！");
 		}
@@ -90,7 +77,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 			throw new ArgException(ArgException.ARG_CODE_ARG, "oldPwd和newPwd都不能为空");
 		}
 
-		Account da = activity().fetchByIdUuid(t, id, uuid);
+		T da = activity().fetchByIdUuid(t, id, uuid);
 		if (da == null) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "id,uuid参数错误，对应的账号不存在");
 		}
@@ -102,7 +89,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 		if (Strings.isBlank(oldPwd) || Strings.isBlank(newPwd)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "oldPwd和newPwd都不能为空");
 		}
-		Account da = activity().fetchByLoginname(t, loginname);
+		T da = activity().fetchByLoginname(t, loginname);
 		if (da == null) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "loginname参数错误，对应的账号不存在");
 		}
@@ -110,7 +97,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 	}
 
 	@Override
-	public Account fetchByWechatOpenId(Trace t, String openid) {
+	public T fetchByWechatOpenId(Trace t, String openid) {
 		if (Strings.isBlank(openid)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "openid不能为空");
 		}
@@ -126,7 +113,7 @@ public class AccountService extends BaseService<Account, IAccountActivity> imple
 	}
 
 	@Override
-	public Account fetchByAlipayOpenId(Trace t, String openid) {
+	public T fetchByAlipayOpenId(Trace t, String openid) {
 		if (Strings.isBlank(openid)) {
 			throw new ArgException(ArgException.ARG_CODE_ARG, "openid不能为空");
 		}

@@ -16,6 +16,6 @@ public interface IBlackManager extends IManager<Black> {
 
 	boolean unBlacks(Trace t, Map<String, Long> uuidIds, String remark, AppVisitor av);
 	
-	public void check(Trace t, String blackTarget) throws BlackListException;
+	public void check(Trace t, int appClazz, String blackTarget) throws BlackListException;
 
 }
