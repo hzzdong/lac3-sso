@@ -72,6 +72,13 @@
 					<img src="../img/lock.png" alt="" th:src="@{{path}/mobile/img/lock.png(path=${static_server})}"> 
 					<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 				</div>
+				<div class="flex-r form-item flex-center" th:if="${clazz == -1 }">
+					<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}"> 
+					<select id="appClazz" name="appClazz" style="width:100%;height:35px;border:none;margin-left:5px;background-color:white;">
+						<option value="1">我是客户</option>
+						<option value="0">我是运维人员</option>
+					</select>
+				</div>
 				<div class="flex-r form-item flex-center flex-between posi-re lastInput"
 					style="padding-right: 0;">
 					<div class="flex-r flex-center">

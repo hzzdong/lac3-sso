@@ -163,7 +163,7 @@
         
         if(browserOsInfo.mobile){
         	//修正微信访问
-        	var wechatInfo = sUserAgent.match(/MicroMessenger\/([\d\.]+)/i) ;
+        	var wechatInfo = navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i) ;
         	if(wechatInfo){
         		browserOsInfo.browser = "微信";
         		if(wechatInfo.length >= 2){

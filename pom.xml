@@ -12,7 +12,7 @@
 
 	<groupId>com.linkallcloud</groupId>
 	<artifactId>lac3-sso</artifactId>
-	<version>0.2.6</version>
+	<version>0.2.7</version>
 	<packaging>pom</packaging>
 
 	<name>Linkallcloud Project sso</name>
@@ -53,7 +53,7 @@
 		<lac3-handshake.version>0.4.5</lac3-handshake.version>
 		<lac3-web.version>0.4.5</lac3-web.version>
 
-		<lac3-um.version>0.2.1</lac3-um.version>
+		<lac3-um.version>0.2.2</lac3-um.version>
 
 		<dubbo.version>2.7.3</dubbo.version>
 		<curator.version>4.2.0</curator.version>
