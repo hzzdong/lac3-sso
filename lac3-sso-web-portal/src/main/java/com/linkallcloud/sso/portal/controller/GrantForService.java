@@ -68,6 +68,7 @@ public class GrantForService extends BaseController {
 					apps = applicationKiss.findByKhUserId(t, user.getId());
 				}
 				modelMap.put("apps", apps);
+				modelMap.put("appClazz", tgt.getAppClazz());
 				modelMap.put("user", user);
 			}
 			return "generic";

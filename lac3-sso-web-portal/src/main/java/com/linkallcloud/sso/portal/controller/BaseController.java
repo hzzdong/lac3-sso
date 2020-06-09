@@ -338,7 +338,9 @@ public abstract class BaseController {
 	private String parseAppServieId(String serviceId, int fromAppClazz) {
 		String appServiceId = serviceId;
 		try {
-			appServiceId = new UrlPattern(serviceId).append("clazz", fromAppClazz + "").url();
+			if (serviceId.indexOf("clazz") == -1) {
+				appServiceId = new UrlPattern(serviceId).append("clazz", fromAppClazz + "").url();
+			}
 		} catch (UnsupportedEncodingException e1) {
 		}
 		return appServiceId;

@@ -15,12 +15,13 @@ public class ProxyAuthenticationResult extends ServiceAuthenticationResult {
 		this.setCode("0");
 	}
 
-	public ProxyAuthenticationResult(String ssoUser, String siteUser, int mapingType) {
-		this(ssoUser, siteUser, mapingType, null);
+	public ProxyAuthenticationResult(String ssoUser, String siteUser, int siteClazz, int mapingType) {
+		this(ssoUser, siteUser, siteClazz, mapingType, null);
 	}
 
-	public ProxyAuthenticationResult(String ssoUser, String siteUser, int mapingType, String proxyGrantingTicket) {
-		super(ssoUser, siteUser, mapingType, proxyGrantingTicket);
+	public ProxyAuthenticationResult(String ssoUser, String siteUser, int siteClazz, int mapingType,
+			String proxyGrantingTicket) {
+		super(ssoUser, siteUser, siteClazz, mapingType, proxyGrantingTicket);
 	}
 
 	public ProxyAuthenticationResult(String errorCode, String errorMessage) {

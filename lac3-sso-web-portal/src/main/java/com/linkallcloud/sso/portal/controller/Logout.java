@@ -37,6 +37,7 @@ public class Logout extends BaseController {
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout(@RequestParam(value = "from", required = false) String appCode,
+			@RequestParam(value = "clazz", required = false) Integer appClazz,
 			@RequestParam(value = "service", required = false) String appUrl, HttpServletRequest request,
 			HttpServletResponse response, ModelMap modelMap, Trace t) {
 		// avoid caching (in the stupidly numerous ways we must)
@@ -80,7 +81,8 @@ public class Logout extends BaseController {
 				serviceUrl = URLEncoder.encode(serviceUrl, "UTF-8");
 			} catch (Exception e) {
 			}
-			return Controllers.redirect("/login?from=" + appCode + "&service=" + serviceUrl);
+			return Controllers.redirect("/login?from=" + appCode + "&service=" + serviceUrl
+					+ (appClazz != null ? ("&clazz=" + appClazz) : ""));
 		}
 	}
 

@@ -54,6 +54,9 @@
 	.lastInput {
 		padding-right: 0px;
 	}
+	.hide {
+		display: none;
+	}
 </style>
 </head>
 <body>
@@ -83,7 +86,7 @@
 										<img src="../img/lock.png" alt="" th:src="@{{path}/pad/img/lock.png(path=${static_server})}"> 
 										<input type="password" id="password" placeholder="请输入您的登录密码" style="width: 100%;"> 
 									</div>
-									<div class="flex-r form-item flex-center" th:if="${clazz == -1 }">
+									<div class="flex-r form-item flex-center" th:classappend="${clazz != -1}? 'hide'">
 										<img src="../img/user.png" alt="" th:src="@{{path}/app/img/user.png(path=${static_server})}"> 
 										<select id="appClazz" name="appClazz" style="width:100%;height:35px;border:none;margin-left:5px;">
 											<option value="1">我是客户</option>

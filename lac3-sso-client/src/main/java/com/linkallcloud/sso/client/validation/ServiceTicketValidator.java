@@ -89,11 +89,13 @@ public class ServiceTicketValidator extends AbstractUrlBasedTicketValidator {
 	protected final Assertion getAssertionBasedOnProxyGrantingTicketIou(final ServiceAuthenticationResult str) {
 		if (CommonUtils.isNotBlank(str.getProxyGrantingTicket())) {
 			// this.proxyRetriever,
-			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()), null,
+			return new AssertionImpl(
+					new SimplePrincipal(str.getId(), str.getSiteId(), str.getSiteClazz(), str.getMappingType()), null,
 					this.proxyGrantingTicketStorage == null ? null
 							: this.proxyGrantingTicketStorage.retrieve(str.getProxyGrantingTicket()));
 		} else {
-			return new AssertionImpl(new SimplePrincipal(str.getId(), str.getSiteId(), str.getMappingType()));
+			return new AssertionImpl(
+					new SimplePrincipal(str.getId(), str.getSiteId(), str.getSiteClazz(), str.getMappingType()));
 		}
 	}
 

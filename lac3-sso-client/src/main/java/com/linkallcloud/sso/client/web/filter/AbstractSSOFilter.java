@@ -278,5 +278,17 @@ public abstract class AbstractSSOFilter implements Filter {
 	public String getSiteCode() {
 		return siteCode;
 	}
+	
+	protected int parseAppClazz(HttpServletRequest request) {
+		int appClazz = this.getSiteClazz();
+		String thisAppClazzParam = request.getParameter("clazz");
+		if (!Strings.isBlank(thisAppClazzParam)) {
+			try {
+				appClazz = Integer.parseInt(thisAppClazzParam);
+			} catch (Throwable e) {
+			}
+		}
+		return appClazz;
+	}
 
 }

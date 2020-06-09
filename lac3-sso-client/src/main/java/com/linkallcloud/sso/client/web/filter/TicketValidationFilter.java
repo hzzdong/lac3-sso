@@ -99,6 +99,7 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 			final FilterChain filterChain) throws IOException, ServletException {
 		final String ticket = request.getParameter(PARAM_TICKET);
+		final int appClazz = parseAppClazz(request);
 
 		if (CommonUtils.isNotBlank(ticket)) {
 			if (log.isDebugEnabled()) {
@@ -106,8 +107,8 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 			}
 
 			try {
-				final Assertion assertion = this.ticketValidator.validate(ticket, new SimpleService(
-						constructServiceUrl(request, response), this.getSiteCode(), this.getSiteClazz()));
+				final Assertion assertion = this.ticketValidator.validate(ticket,
+						new SimpleService(constructServiceUrl(request, response), this.getSiteCode(), appClazz));
 
 				if (log.isDebugEnabled()) {
 					log.debug("Successfully authenticated user: " + assertion.getPrincipal().getId());

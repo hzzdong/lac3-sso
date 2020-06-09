@@ -79,7 +79,7 @@ public class ServiceValidate extends BaseController {
 		appLoginAuthSuccess(t, st, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
 
 		ServiceAuthenticationResult result = new ServiceAuthenticationResult(st.getUsername(), st.getSiteUser(),
-				st.getSiteMaping());
+				st.getAppClazz(), st.getSiteMaping());
 		if (pgtIOU != null && !Strings.isBlank(pgtIOU.getId())) {
 			result.setProxyGrantingTicket(pgtIOU.getId());
 		}

@@ -78,7 +78,7 @@ public class ProxyValidate extends BaseController {
 		appProxyAuthSuccess(t, pt, appCode, appUrl, pgtIOU, pgtAppCode, pgtUrl);
 
 		ProxyAuthenticationResult result = new ProxyAuthenticationResult(pt.getUsername(), pt.getSiteUser(),
-				pt.getSiteMaping());
+				pt.getAppClazz(), pt.getSiteMaping());
 		if (pgtIOU != null && !Strings.isBlank(pgtIOU.getId())) {
 			result.setProxyGrantingTicket(pgtIOU.getId());
 		}

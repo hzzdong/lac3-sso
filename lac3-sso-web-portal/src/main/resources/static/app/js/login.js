@@ -11,6 +11,11 @@ $(function() {
 		return connetor+"t="+(new Date()).getTime();
 	}
 	
+	function appendParam2URL(url, name, value) {
+		url += (url.match(/\?/) ? "&" : "?") + name + "=" + value;
+		return url;
+	}
+	
 	$(".refresh-code").on('click', function() {
 		refreshImageCode();
 	});
@@ -27,16 +32,21 @@ $(function() {
 		$(".agile-field-error").show();
 	}
 
+	$("select#appClazz").change(function(){
+		$("#clazz").val($(this).val());
+		console.log($(this).val());
+	});
+
 	$('#btn_login').on('click', function() {
 		var username = $.trim($("#username").val());
 		var password = $.trim($("#password").val());
 		var vcode = $.trim($("#vcode").val());
 		var rememberMe = $("#rememberMe").is(":checked") ? "1" : "0";
-		
 		var clazz = -1;
-		try {
-			clazz = $("#appClazz").val()
-		} catch(err) {
+		if($("#appClazz").is(":hidden")){
+			clazz = $("#clazz").val();
+		} else {
+			clazz = $("#appClazz").val();
 		}
 
 		if (vcode == "") {

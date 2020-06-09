@@ -126,18 +126,6 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private int parseAppClazz(HttpServletRequest request) {
-		int appClazz = this.getSiteClazz();
-		String thisAppClazzParam = request.getParameter("clazz");
-		if (!Strings.isBlank(thisAppClazzParam)) {
-			try {
-				appClazz = Integer.parseInt(thisAppClazzParam);
-			} catch (Throwable e) {
-			}
-		}
-		return appClazz;
-	}
-
 	/**
 	 * Is this a request for the proxy callback listener?
 	 * 

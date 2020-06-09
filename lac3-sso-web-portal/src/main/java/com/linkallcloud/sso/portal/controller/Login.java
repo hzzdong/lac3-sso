@@ -74,10 +74,8 @@ public class Login extends BaseController {
 
 		// The servie can pass?
 		Application app = checkSiteCanPass(t, appCode, appUrl);
-		if (app != null) {
-			appClazz = app.getClazz();
-		} else if (appClazz == null) {
-			appClazz = -1;
+		if (appClazz == null) {
+			appClazz = (app != null) ? app.getClazz() : -1;
 		}
 
 		// check to see whether we've been sent a valid TGC
@@ -160,7 +158,7 @@ public class Login extends BaseController {
 
 		// The servie can pass?
 		Application app = checkSiteCanPass(t, lvo.getFrom(), lvo.getService());
-		Integer appClazz = app != null ? app.getClazz() : lvo.getClazz();
+		Integer appClazz = lvo.getClazz() == null ? (app != null ? app.getClazz() : null) : lvo.getClazz();
 		if (appClazz == null || !(appClazz == 0 || appClazz == 1)) {
 			log.error("未知的应用类别， " + appClazz);
 			return authFailure(t, request, lvo.getLoginName(), "AppClazz", "未知的应用类别", appClazz, lvo.getFrom(),

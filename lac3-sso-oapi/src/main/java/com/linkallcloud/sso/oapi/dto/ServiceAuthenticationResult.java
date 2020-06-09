@@ -13,6 +13,9 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 	/** The unique identifier for the site account loginname. */
 	private String siteId;
 
+	/** The site app clazz. 0：运维，1：客户 */
+	private int siteClazz;
+
 	/** The account mapping type. */
 	private int mappingType;
 
@@ -29,9 +32,10 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 		this.id = user;
 	}
 
-	public ServiceAuthenticationResult(String user, String siteUser, int siteMaping) {
+	public ServiceAuthenticationResult(String user, String siteUser, int siteClazz, int siteMaping) {
 		this(user);
 		this.siteId = siteUser;
+		this.siteClazz = siteClazz;
 		if (AccountMapping.Mapping.getCode().intValue() == siteMaping) {
 			this.mappingType = siteMaping;
 		} else {
@@ -39,8 +43,9 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 		}
 	}
 
-	public ServiceAuthenticationResult(String user, String siteUser, int siteMaping, String proxyGrantingTicket) {
-		this(user, siteUser, siteMaping);
+	public ServiceAuthenticationResult(String user, String siteUser, int siteClazz, int siteMaping,
+			String proxyGrantingTicket) {
+		this(user, siteUser, siteClazz, siteMaping);
 		this.proxyGrantingTicket = proxyGrantingTicket;
 	}
 
@@ -83,6 +88,15 @@ public class ServiceAuthenticationResult extends Result<String> implements Princ
 	@Override
 	public int getMappingType() {
 		return mappingType;
+	}
+
+	@Override
+	public int getSiteClazz() {
+		return siteClazz;
+	}
+
+	public void setSiteClazz(int siteClazz) {
+		this.siteClazz = siteClazz;
 	}
 
 }
