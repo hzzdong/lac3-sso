@@ -335,51 +335,64 @@ public abstract class BaseController {
 		return false;
 	}
 
+	private String parseAppServieId(String serviceId, int fromAppClazz) {
+		String appServiceId = serviceId;
+		try {
+			appServiceId = new UrlPattern(serviceId).append("clazz", fromAppClazz + "").url();
+		} catch (UnsupportedEncodingException e1) {
+		}
+		return appServiceId;
+	}
+
 	protected void doGrantForService(Trace t, HttpServletRequest request, TicketGrantingTicket tgt, int fromAppClazz,
 			String fromAppCode, String serviceId, boolean first, Map<String, Object> result) {
+		String appServiceId = parseAppServieId(serviceId, fromAppClazz);
+
 		try {
 			if (Strings.isBlank(serviceId) || Strings.isBlank(fromAppCode)) {
 				result.put("go", request.getContextPath() + "/generic");// "/sso/generic";
 				result.put("redirect", Controllers.redirect("/generic"));// "/generic";
 			} else {
 				ServiceTicket st = null;
-				String service = serviceId;
+				String service = appServiceId;
 				try {
-					service = URLEncoder.encode(serviceId, "UTF-8");
+					service = URLEncoder.encode(appServiceId, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
 				}
 
 				if (fromAppCode.startsWith(Util.APP_TYPE_MAPPING)) {// AccountMapping.Mapping.getCode().equals(fromApp.getMappingType())
 					AppAccount appAccount = appAccountManager.fetchByAppCode(t, fromAppCode, tgt.getUsername());
 					if (appAccount != null) {
-						st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, serviceId, first,
+						st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, appServiceId, first,
 								appAccount.getAppLoginName(), AccountMapping.Mapping.getCode());
 					} else {
 						String gourl = new UrlPattern("/bind").append("serviceId", service).append("from", fromAppCode)
-								.url();
+								.append("clazz", fromAppClazz + "").url();
 						result.put("go", request.getContextPath() + gourl);
 						result.put("redirect", Controllers.redirect(gourl));// "/bind";
 						return;
 					}
 				} else {
-					st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, serviceId, first);
+					st = new ServiceTicket(tgt, fromAppClazz, fromAppCode, appServiceId, first);
 				}
 
 				String token = stCache.addTicket(st);
 				result.put("from", fromAppCode);
-				result.put("serviceId", serviceId);
+				result.put("serviceId", appServiceId);
 				result.put("token", token);
 				if (!first) {
 					if (privacyRequested(request)) {
 						String gourl = new UrlPattern(request.getContextPath() + "/confirm")
-								.append("serviceId", service).append("from", fromAppCode).append("token", token).url();
+								.append("serviceId", service).append("from", fromAppCode)
+								.append("clazz", fromAppClazz + "").append("token", token).url();
 						result.put("go", gourl);// "/sso/confirm";
 
 						result.put("goPage", "confirm");// "page/confirm";
-						String goPageGo = new UrlPattern(serviceId).append("token", token).url();
+						String goPageGo = new UrlPattern(appServiceId).append("token", token).url();
 						result.put("goPageGo", goPageGo);
 					} else {
-						String gourl = new UrlPattern(serviceId).append("ticket", token).append("first", "false").url();
+						String gourl = new UrlPattern(appServiceId).append("ticket", token).append("first", "false")
+								.url();
 						result.put("go", gourl);// "/sso/service";
 
 						result.put("first", "false");
@@ -387,7 +400,7 @@ public abstract class BaseController {
 						result.put("goPageGo", gourl);
 					}
 				} else {
-					String gourl = new UrlPattern(serviceId).append("ticket", token).append("first", "true").url();
+					String gourl = new UrlPattern(appServiceId).append("ticket", token).append("first", "true").url();
 					result.put("go", gourl);// "/sso/service";
 
 					result.put("first", "true");

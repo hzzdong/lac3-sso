@@ -104,8 +104,9 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 			}
 
 			final String serviceUrl = constructServiceUrl(request, response);
+			final int appClazz = parseAppClazz(request);
 			final String urlToRedirectTo = this.ssoServerLoginUrl + "?service=" + URLEncoder.encode(serviceUrl, "UTF-8")
-					+ "&from=" + this.getSiteCode() + (this.renew ? "&renew=true" : "")
+					+ "&from=" + this.getSiteCode() + "&clazz=" + appClazz + (this.renew ? "&renew=true" : "")
 					+ (this.gateway ? "&gateway=true" : "");
 
 			if (log.isDebugEnabled()) {
@@ -123,6 +124,18 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 		}
 
 		filterChain.doFilter(request, response);
+	}
+
+	private int parseAppClazz(HttpServletRequest request) {
+		int appClazz = this.getSiteClazz();
+		String thisAppClazzParam = request.getParameter("clazz");
+		if (!Strings.isBlank(thisAppClazzParam)) {
+			try {
+				appClazz = Integer.parseInt(thisAppClazzParam);
+			} catch (Throwable e) {
+			}
+		}
+		return appClazz;
 	}
 
 	/**
