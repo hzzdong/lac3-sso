@@ -11,6 +11,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -278,17 +279,52 @@ public abstract class AbstractSSOFilter implements Filter {
 	public String getSiteCode() {
 		return siteCode;
 	}
-	
-	protected int parseAppClazz(HttpServletRequest request) {
+
+	protected int parseAppClazz(HttpServletRequest request, HttpServletResponse response) {
 		int appClazz = this.getSiteClazz();
 		String thisAppClazzParam = request.getParameter("clazz");
 		if (!Strings.isBlank(thisAppClazzParam)) {
 			try {
 				appClazz = Integer.parseInt(thisAppClazzParam);
+				sendAppClazzCookie(appClazz, request, response);
 			} catch (Throwable e) {
+			}
+		} else {
+			Integer appClazzCookie = getAppClazzFromCookie(request);
+			if (appClazzCookie != null) {
+				appClazz = appClazzCookie.intValue();
 			}
 		}
 		return appClazz;
+	}
+
+	protected void sendAppClazzCookie(int appClazz, HttpServletRequest request, HttpServletResponse response) {
+		Integer seted = getAppClazzFromCookie(request);
+		if (seted == null || seted.intValue() != appClazz) {
+			Cookie acc = new Cookie("APP_CLAZZ_ID", appClazz + "");
+			if (request.isSecure()) {
+				acc.setSecure(true);
+			}
+			acc.setMaxAge(-1);
+			acc.setPath(request.getContextPath());
+			response.addCookie(acc);
+		}
+	}
+
+	protected Integer getAppClazzFromCookie(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				if (cookies[i].getName().equals("APP_CLAZZ_ID")) {
+					String appClazzCookie = cookies[i].getValue();
+					if (Strings.isBlank(appClazzCookie)) {
+						continue;
+					}
+					return Integer.parseInt(appClazzCookie);
+				}
+			}
+		}
+		return null;
 	}
 
 }

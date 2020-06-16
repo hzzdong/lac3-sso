@@ -99,7 +99,7 @@ public final class TicketValidationFilter extends AbstractSSOFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 			final FilterChain filterChain) throws IOException, ServletException {
 		final String ticket = request.getParameter(PARAM_TICKET);
-		final int appClazz = parseAppClazz(request);
+		final int appClazz = parseAppClazz(request, response);
 
 		if (CommonUtils.isNotBlank(ticket)) {
 			if (log.isDebugEnabled()) {

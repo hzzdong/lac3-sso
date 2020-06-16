@@ -35,5 +35,7 @@ public interface IParams {
 
     public static final String REMEMBER_COOKIE = "rEmEmBeEmE";
     public static final String REMEMBER = "rememberMe";
+    
+    public static final String APP_CLAZZ_ID = "APP_CLAZZ_ID";
 
 }

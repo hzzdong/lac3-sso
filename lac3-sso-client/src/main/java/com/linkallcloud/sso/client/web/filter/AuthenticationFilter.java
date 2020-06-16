@@ -104,7 +104,7 @@ public final class AuthenticationFilter extends AbstractSSOFilter {
 			}
 
 			final String serviceUrl = constructServiceUrl(request, response);
-			final int appClazz = parseAppClazz(request);
+			final int appClazz = parseAppClazz(request, response);
 			final String urlToRedirectTo = this.ssoServerLoginUrl + "?service=" + URLEncoder.encode(serviceUrl, "UTF-8")
 					+ "&from=" + this.getSiteCode() + "&clazz=" + appClazz + (this.renew ? "&renew=true" : "")
 					+ (this.gateway ? "&gateway=true" : "");
