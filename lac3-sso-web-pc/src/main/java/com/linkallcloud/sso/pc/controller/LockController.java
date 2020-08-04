@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.linkallcloud.core.busilog.annotation.WebLog;
+import com.linkallcloud.core.busilog.annotation.LacLog;
 import com.linkallcloud.core.dto.AppVisitor;
 import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
@@ -22,15 +22,15 @@ import com.linkallcloud.core.pagination.Page;
 import com.linkallcloud.core.pagination.WebPage;
 import com.linkallcloud.core.query.rule.desc.StringRuleDescriptor;
 import com.linkallcloud.sso.domain.Lock;
+import com.linkallcloud.sso.enums.LockBlackType;
 import com.linkallcloud.sso.enums.LockReson;
 import com.linkallcloud.sso.enums.LockStatus;
-import com.linkallcloud.sso.enums.LockBlackType;
 import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.web.controller.BaseLController;
 
 public abstract class LockController extends BaseLController<Lock, ILockManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ILockManager lockManager;
 
 	@Override
@@ -86,7 +86,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 	protected abstract String getUnLockPage();
 
 	@RequestMapping(value = "/unLockDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> unLockDo(@RequestBody @Valid Lock entity, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {
 			return new Result<Object>(Exceptions.CODE_ERROR_AUTH_PERMISSION, "Referer验证未通过");
@@ -114,7 +114,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 	protected abstract String getLocksPage();
 
 	@RequestMapping(value = "/locksDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> locksDo(@RequestParam(value = "remark") String remark,
 			@RequestBody Map<String, Long> uuidIds, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {
@@ -133,7 +133,7 @@ public abstract class LockController extends BaseLController<Lock, ILockManager>
 	protected abstract String getunLocksPage();
 
 	@RequestMapping(value = "/unLocksDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> unLocksDo(@RequestParam(value = "remark") String remark,
 			@RequestBody Map<String, Long> uuidIds, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {

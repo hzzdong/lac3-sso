@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.linkallcloud.core.busilog.annotation.LacLog;
 import com.linkallcloud.core.busilog.annotation.Module;
-import com.linkallcloud.core.busilog.annotation.WebLog;
 import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.log.Log;
@@ -39,7 +39,7 @@ public class LoginController extends BaseManagerController {
 	@Value("${lac.appcode}")
 	private String myAppCode;
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private IManagerManager managerManager;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -51,7 +51,7 @@ public class LoginController extends BaseManagerController {
 		return Controllers.redirect(getIndexUrl());
 	}
 
-	@WebLog(db = true, desc = "用户([(${lvo.loginName})])登录系统,TID:[(${t.tid})].")
+	@LacLog(desc = "用户([(${lvo.loginName})])登录系统,TID:[(${t.tid})].")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public @ResponseBody Result<String> postLcLogin(@RequestBody LoginVo lvo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session, Trace t) {

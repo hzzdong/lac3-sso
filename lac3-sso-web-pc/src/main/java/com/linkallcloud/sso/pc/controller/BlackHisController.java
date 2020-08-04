@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.pc.controller;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ import com.linkallcloud.web.controller.BaseLController;
 @Module(name = "黑名单历史")
 public class BlackHisController extends BaseLController<BlackHis, IBlackHisManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private IBlackHisManager blackHisManager;
 
 	@Override

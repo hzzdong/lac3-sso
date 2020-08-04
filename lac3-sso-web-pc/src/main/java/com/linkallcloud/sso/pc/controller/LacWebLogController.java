@@ -7,7 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,13 +20,13 @@ import com.linkallcloud.core.query.Query;
 import com.linkallcloud.sso.domain.LacWebLog;
 import com.linkallcloud.sso.manager.ILacWebLogManager;
 import com.linkallcloud.sso.pc.utils.FileUtil;
-import com.linkallcloud.web.controller.BaseFullWebBusiLogController;
+import com.linkallcloud.web.controller.BaseLacLogController;
 
 @Controller
 @RequestMapping(value = "/log", method = RequestMethod.POST)
-public class LacWebLogController extends BaseFullWebBusiLogController<LacWebLog, ILacWebLogManager> {
+public class LacWebLogController extends BaseLacLogController<LacWebLog, ILacWebLogManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ILacWebLogManager lacWebLogManager;
 
 	@Override

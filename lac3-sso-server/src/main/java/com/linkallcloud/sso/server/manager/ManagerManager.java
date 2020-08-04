@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.server.manager;
 
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,18 +11,18 @@ import com.linkallcloud.sso.domain.Manager;
 import com.linkallcloud.sso.manager.IManagerManager;
 import com.linkallcloud.sso.service.IManagerService;
 
-@Service(interfaceClass = IManagerManager.class, version = "${dubbo.service.version}")
+@DubboService(interfaceClass = IManagerManager.class, version = "${dubbo.service.version}")
 @Component
 @Module(name = "管理员")
 public class ManagerManager extends BaseManager<Manager, IManagerService> implements IManagerManager {
 
-    @Autowired
-    private IManagerService managerService;
+	@Autowired
+	private IManagerService managerService;
 
-    @Override
-    protected IManagerService service() {
-        return managerService;
-    }
+	@Override
+	protected IManagerService service() {
+		return managerService;
+	}
 
 	@Override
 	public Manager fecthByMobile(Trace t, String mobile) {

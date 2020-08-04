@@ -86,7 +86,7 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 	/** Registers a login failure initiated by the given address. */
 	protected synchronized void registerFailure(javax.servlet.ServletRequest r) {
 		String address = r.getRemoteAddr();
-		offenders.put(address, new Integer(getFailures(address) + 1));
+		offenders.put(address, Integer.valueOf(getFailures(address) + 1));
 	}
 
 	/** Returns the number of "active" failures for the given address. */
@@ -115,7 +115,7 @@ public abstract class WatchfulPasswordHandler implements PasswordHandler {
 			String address = (String) l.get(i);
 			int failures = getFailures(address) - 1;
 			if (failures > 0)
-				offenders.put(address, new Integer(failures));
+				offenders.put(address, Integer.valueOf(failures));
 			else
 				offenders.remove(address);
 		}

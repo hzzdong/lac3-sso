@@ -97,14 +97,24 @@
 			<version>${dubbo.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-framework</artifactId>
-			<version>${curator.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-recipes</artifactId>
-			<version>${curator.version}</version>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-dependencies-zookeeper</artifactId>
+			<version>${dubbo.version}</version>
+			<type>pom</type>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -119,18 +129,77 @@
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
+			<artifactId>lac-log-logback</artifactId>
+			<version>${lac3-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-iapi</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-cache</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-handshake</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-oapi</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-cache</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-handshake</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-client</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-cache</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-handshake</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
@@ -141,29 +210,21 @@
 					<groupId>com.linkallcloud</groupId>
 					<artifactId>lac3-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-cache</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.linkallcloud</groupId>
+					<artifactId>lac3-handshake</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.zookeeper</groupId>
-			<artifactId>zookeeper</artifactId>
-			<version>${zookeeper.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-framework</artifactId>
-			<version>${curator.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>

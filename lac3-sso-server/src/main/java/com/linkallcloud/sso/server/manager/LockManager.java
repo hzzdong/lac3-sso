@@ -2,7 +2,7 @@ package com.linkallcloud.sso.server.manager;
 
 import java.util.Map;
 
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import com.linkallcloud.sso.manager.ILockManager;
 import com.linkallcloud.sso.server.configure.LockConfigure;
 import com.linkallcloud.sso.service.ILockService;
 
-@Service(interfaceClass = ILockManager.class, version = "${dubbo.service.version}")
+@DubboService(interfaceClass = ILockManager.class, version = "${dubbo.service.version}")
 @Component
 @Module(name = "锁")
 public class LockManager extends BaseManager<Lock, ILockService> implements ILockManager {

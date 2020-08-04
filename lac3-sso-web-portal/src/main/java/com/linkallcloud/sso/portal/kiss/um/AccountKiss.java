@@ -1,18 +1,17 @@
 package com.linkallcloud.sso.portal.kiss.um;
 
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.TypeReference;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.face.message.response.ObjectFaceResponse;
 import com.linkallcloud.core.www.utils.HttpClientFactory;
-import com.linkallcloud.sso.portal.kiss.BaseKiss;
+import com.linkallcloud.sso.portal.kiss.UmBaseKiss;
 import com.linkallcloud.um.domain.sys.Account;
 import com.linkallcloud.um.face.account.AccountValidateRequest;
 import com.linkallcloud.um.face.account.ModifyPasswordRequest;
 
-@Component
-public class AccountKiss extends BaseKiss {
+public abstract class AccountKiss<T extends Account> extends UmBaseKiss {
+
+	protected abstract String getAccountOapiUrl();
 
 	/**
 	 * 根据账号名获取Account
@@ -20,11 +19,10 @@ public class AccountKiss extends BaseKiss {
 	 * @param account
 	 * @return
 	 */
-	public Account fetchByAccount(Trace t, String account) {
+	public T fetchByAccount(Trace t, String account) {
 		String sendMsgPkg = packMessage(t, account);
-		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Account/fetchByAccount",
-				sendMsgPkg);
-		Account result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Account>>() {
+		String responseJson = HttpClientFactory.me(false).post(getAccountOapiUrl() + "/fetchByAccount", sendMsgPkg);
+		T result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<T>>() {
 		});
 		return result;
 	}
@@ -35,11 +33,10 @@ public class AccountKiss extends BaseKiss {
 	 * @param mobile
 	 * @return
 	 */
-	public Account fetchByMobile(Trace t, String mobile) {
+	public T fetchByMobile(Trace t, String mobile) {
 		String sendMsgPkg = packMessage(t, mobile);
-		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Account/fetchByMobile",
-				sendMsgPkg);
-		Account result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Account>>() {
+		String responseJson = HttpClientFactory.me(false).post(getAccountOapiUrl() + "/fetchByMobile", sendMsgPkg);
+		T result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<T>>() {
 		});
 		return result;
 	}
@@ -50,11 +47,10 @@ public class AccountKiss extends BaseKiss {
 	 * @param req
 	 * @return
 	 */
-	public Account loginValidate(Trace t, AccountValidateRequest req) {
+	public T loginValidate(Trace t, AccountValidateRequest req) {
 		String sendMsgPkg = packMessage(t, req);
-		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Account/loginValidate",
-				sendMsgPkg);
-		Account result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Account>>() {
+		String responseJson = HttpClientFactory.me(false).post(getAccountOapiUrl() + "/loginValidate", sendMsgPkg);
+		T result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<T>>() {
 		});
 		return result;
 	}
@@ -67,8 +63,7 @@ public class AccountKiss extends BaseKiss {
 	 */
 	public Boolean modifyPassword(Trace t, ModifyPasswordRequest req) {
 		String sendMsgPkg = packMessage(t, req);
-		String responseJson = HttpClientFactory.me(false).post(umBaseUrl + "/face/Account/modifyPassword",
-				sendMsgPkg);
+		String responseJson = HttpClientFactory.me(false).post(getAccountOapiUrl() + "/modifyPassword", sendMsgPkg);
 		Boolean result = unpackMessage(responseJson, new TypeReference<ObjectFaceResponse<Boolean>>() {
 		});
 		return result;

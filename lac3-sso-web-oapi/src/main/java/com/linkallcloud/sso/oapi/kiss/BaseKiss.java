@@ -15,11 +15,7 @@ import com.linkallcloud.sh.sm.SignatureMessage;
 import com.linkallcloud.um.domain.sys.Application;
 
 public abstract class BaseKiss {
-
 	protected static Log log = Logs.get();
-
-	@Value("${oapi.url.um}")
-	protected String umBaseUrl;
 
 	@Value("${oapi.appcode}")
 	protected String myAppCode;// 签名者ID(appKey)//用code替代
@@ -55,8 +51,8 @@ public abstract class BaseKiss {
 	public String packMessage(Trace t, Object message) {
 		try {
 			FaceRequest request = convertToFaceRequest(t, message);
-			ISignatureMessage sendSM = new SignatureMessage(request, myAppCode, signatureAlg);
-			sendSM.sign(signatureKey);// 签名
+			ISignatureMessage sendSM = new SignatureMessage(request, getMyAppCode(), getSignatureAlg());
+			sendSM.sign(getSignatureKey());// 签名
 			String sendMsgPkg = sendSM.packMessage();// 打包后的安全消息
 			log.debug("*********** 打包后准备发送数据包：" + sendMsgPkg);
 			return sendMsgPkg;
@@ -70,7 +66,7 @@ public abstract class BaseKiss {
 		log.debug("*********** 接收到数据包：" + responseJson);
 		try {
 			ISignatureMessage receivedSM = SignatureMessage.from(responseJson);
-			receivedSM.verifyStrict(myAppCode, signatureKey, signatureAlg);
+			receivedSM.verifyStrict(getMyAppCode(), getSignatureKey(), getSignatureAlg());
 			ObjectFaceResponse<T> res = receivedSM.unpackMessage(tr.getType());
 			if (res.getCode().equals("0")) {
 				return res.getData();
@@ -83,7 +79,7 @@ public abstract class BaseKiss {
 
 	public String packMessage4App(Trace t, Object message, Application app) {
 		try {
-			FaceRequest request = convertToFaceRequest(t,message);
+			FaceRequest request = convertToFaceRequest(t, message);
 			ISignatureMessage sendSM = new SignatureMessage(request, app.getCode(), app.getSignatureAlg());
 			sendSM.sign(app.getSignatureKey());// 签名
 			String sendMsgPkg = sendSM.packMessage();// 打包后的安全消息
@@ -109,10 +105,8 @@ public abstract class BaseKiss {
 		}
 		return null;
 	}
-
-	public String getUmOapiUrl() {
-		return umBaseUrl;
-	}
+	
+	public abstract String getOapiUrl();
 
 	public String getMyAppCode() {
 		return myAppCode;

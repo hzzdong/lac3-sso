@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -15,6 +16,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.linkallcloud.core.log.Log;
+import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
 import com.linkallcloud.web.support.TraceArgumentResolver;
@@ -22,7 +25,8 @@ import com.linkallcloud.web.support.TraceArgumentResolver;
 @EnableDubbo(multipleConfig = true)
 @Configuration
 @SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.oapi" })
-public class WebOapiApplication implements WebMvcConfigurer {
+public class WebOapiApplication implements WebMvcConfigurer , CommandLineRunner {
+    private static final Log log = Logs.get();
 
 	@Value("${lac.static.server}")
 	private String staticServer;
@@ -62,6 +66,11 @@ public class WebOapiApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebOapiApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		log.error("Track:WebOapiApplication服务器启动完成!");
 	}
 
 }

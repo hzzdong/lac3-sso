@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.pc.controller;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,7 +15,7 @@ import com.linkallcloud.web.controller.BaseLController;
 @Module(name = "系统设置")
 public class SysSetupController extends BaseLController<SysSetup, ISysSetupManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ISysSetupManager sysSetupManager;
 
 	@Override

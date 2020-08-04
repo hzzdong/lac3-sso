@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.pc.controller;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ import com.linkallcloud.web.controller.BaseLController;
 @Module(name = "锁/解锁历史")
 public class LockHisController extends BaseLController<LockHis, ILockHisManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ILockHisManager lockHisManager;
 
 	@Override

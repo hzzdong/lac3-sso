@@ -2,7 +2,7 @@ package com.linkallcloud.sso.server.manager;
 
 import java.util.Map;
 
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import com.linkallcloud.sso.exception.BlackListException;
 import com.linkallcloud.sso.manager.IBlackManager;
 import com.linkallcloud.sso.service.IBlackService;
 
-@Service(interfaceClass = IBlackManager.class, version = "${dubbo.service.version}")
+@DubboService(interfaceClass = IBlackManager.class, version = "${dubbo.service.version}")
 @Component
 @Module(name = "黑名单")
 public class BlackManager extends BaseManager<Black, IBlackService> implements IBlackManager {

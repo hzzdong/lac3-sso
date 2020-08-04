@@ -6,6 +6,7 @@ import javax.servlet.MultipartConfigElement;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -23,6 +24,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.linkallcloud.core.log.Log;
+import com.linkallcloud.core.log.Logs;
 import com.linkallcloud.web.interceptors.LacEnvInterceptor;
 import com.linkallcloud.web.support.AppVisitorArgumentResolver;
 import com.linkallcloud.web.support.TraceArgumentResolver;
@@ -31,7 +34,8 @@ import com.linkallcloud.web.support.TraceArgumentResolver;
 @Configuration
 @SpringBootApplication(scanBasePackages = { "com.linkallcloud.sso.redis", "com.linkallcloud.sso.ticket",
 		"com.linkallcloud.sso.portal" })
-public class WebPortalApplication implements WebMvcConfigurer {
+public class WebPortalApplication implements WebMvcConfigurer, CommandLineRunner {
+    private static final Log log = Logs.get();
 
 	@Value("${lac.static.server}")
 	private String staticServer;
@@ -102,6 +106,11 @@ public class WebPortalApplication implements WebMvcConfigurer {
 		// 设置总上传数据总大小
 		factory.setMaxRequestSize(DataSize.parse("102400KB"));
 		return factory.createMultipartConfig();
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		log.error("Track:WebPortalApplication服务器启动完成!");
 	}
 
 }

@@ -8,6 +8,15 @@
 		orgId,orgType,operatorId,operatorAccount,ip,url,mobile,mobileBrand,os,osVersion,browser,browserVersion,ua
 	</sql>
 
+	<select id="fetchById" resultType="com.linkallcloud.sso.domain.LacWebLog">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			tab_web_log u
+		WHERE
+			u.id = #{id} 
+	</select>
+	
 	<select id="fetchByIdUuid" resultType="com.linkallcloud.sso.domain.LacWebLog">
 		SELECT
 			<include refid="Base_Column_List" />

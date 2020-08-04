@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.linkallcloud.core.busilog.annotation.ServLog;
+import com.linkallcloud.core.busilog.annotation.LacLog;
 import com.linkallcloud.core.dto.Trace;
 import com.linkallcloud.core.service.BaseService;
 import com.linkallcloud.sso.activity.ISysSetupActivity;
@@ -67,7 +67,7 @@ public class SysSetupService extends BaseService<SysSetup, ISysSetupActivity> im
 
 	//@CacheEvict(value = "SysSetup", key = "#entity.code")
 	@Override
-	@ServLog(db = true)
+	@LacLog
 	@Transactional(readOnly = false)
 	public SysSetup save(Trace t, SysSetup entity) {
 		return super.save(t, entity);

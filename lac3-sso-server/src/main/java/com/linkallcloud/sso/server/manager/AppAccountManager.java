@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.server.manager;
 
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import com.linkallcloud.sso.domain.AppAccount;
 import com.linkallcloud.sso.manager.IAppAccountManager;
 import com.linkallcloud.sso.service.IAppAccountService;
 
-@Service(interfaceClass = IAppAccountManager.class, version = "${dubbo.service.version}")
+@DubboService(interfaceClass = IAppAccountManager.class, version = "${dubbo.service.version}")
 @Component
 @Module(name = "应用账号")
 public class AppAccountManager extends BaseManager<AppAccount, IAppAccountService> implements IAppAccountManager {

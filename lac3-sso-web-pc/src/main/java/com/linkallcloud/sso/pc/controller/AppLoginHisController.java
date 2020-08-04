@@ -2,7 +2,7 @@ package com.linkallcloud.sso.pc.controller;
 
 import java.util.List;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,15 +23,15 @@ import com.linkallcloud.web.controller.BaseLController;
 @Module(name = "应用登录日志")
 public class AppLoginHisController extends BaseLController<AppLoginHis, IAppLoginHisManager> {
 
-    @Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
-    private IAppLoginHisManager appLoginHisManager;
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private IAppLoginHisManager appLoginHisManager;
 
-    @Override
-    protected IAppLoginHisManager manager() {
-        return appLoginHisManager;
-    }
-    
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+	@Override
+	protected IAppLoginHisManager manager() {
+		return appLoginHisManager;
+	}
+
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public @ResponseBody Result<List<Tree>> list(@RequestParam(value = "ut") String tgt, Trace t, AppVisitor av) {
 		List<Tree> result = manager().findByTgt(t, tgt);
 		return new Result<List<Tree>>(result);

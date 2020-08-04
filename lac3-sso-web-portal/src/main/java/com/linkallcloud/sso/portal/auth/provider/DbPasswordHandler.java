@@ -2,7 +2,7 @@ package com.linkallcloud.sso.portal.auth.provider;
 
 import javax.servlet.ServletRequest;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
 import com.linkallcloud.core.dto.Trace;
@@ -15,10 +15,10 @@ import com.linkallcloud.sso.manager.IYwAccountManager;
 @Component
 public class DbPasswordHandler extends WatchfulPasswordHandler {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private IYwAccountManager ywAccountManager;
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private IKhAccountManager khAccountManager;
 
 	private IAccountManager<? extends Account> getAccountManager(int appClazz) {

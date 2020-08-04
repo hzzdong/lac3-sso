@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.pc.controller;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.linkallcloud.core.busilog.annotation.LacLog;
 import com.linkallcloud.core.busilog.annotation.Module;
-import com.linkallcloud.core.busilog.annotation.WebLog;
 import com.linkallcloud.core.dto.AppVisitor;
 import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
@@ -27,7 +27,7 @@ import com.linkallcloud.web.controller.BaseLController;
 @Module(name = "登录日志")
 public class LoginHisController extends BaseLController<LoginHis, ILoginHisManager> {
 
-	@Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
 	private ILoginHisManager loginHisManager;
 
 	@Override
@@ -55,7 +55,7 @@ public class LoginHisController extends BaseLController<LoginHis, ILoginHisManag
 		return new Result<Object>(page);
 	}
 
-	@WebLog(db = true, desc = "管理员([(${visitor.name})])强制下线了用户，登录日志([(${id})]), TID:[(${t.tid})]")
+	@LacLog(desc = "管理员([(${visitor.name})])强制下线了用户，登录日志([(${id})]), TID:[(${t.tid})]")
 	@RequestMapping(value = "/offline", method = RequestMethod.POST)
 	public @ResponseBody Result<Object> offline(@RequestParam(value = "id") Long id,
 			@RequestParam(value = "uuid") String uuid, Trace t, AppVisitor av) {

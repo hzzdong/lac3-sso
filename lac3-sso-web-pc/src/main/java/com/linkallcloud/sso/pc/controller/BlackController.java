@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.linkallcloud.core.busilog.annotation.WebLog;
+import com.linkallcloud.core.busilog.annotation.LacLog;
 import com.linkallcloud.core.dto.AppVisitor;
 import com.linkallcloud.core.dto.Result;
 import com.linkallcloud.core.dto.Trace;
@@ -30,14 +30,13 @@ import com.linkallcloud.web.controller.BaseLController;
 
 public abstract class BlackController extends BaseLController<Black, IBlackManager> {
 
-    @Reference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
-    private IBlackManager blackManager;
+	@DubboReference(version = "${dubbo.service.version}", application = "${dubbo.application.id}")
+	private IBlackManager blackManager;
 
-    @Override
-    protected IBlackManager manager() {
-        return blackManager;
-    }
-    
+	@Override
+	protected IBlackManager manager() {
+		return blackManager;
+	}
 
 	protected abstract LockBlackType getBlackType();
 
@@ -86,7 +85,7 @@ public abstract class BlackController extends BaseLController<Black, IBlackManag
 	protected abstract String getUnBlackPage();
 
 	@RequestMapping(value = "/unBlackDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> unBlackDo(@RequestBody @Valid Black entity, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {
 			return new Result<Object>(Exceptions.CODE_ERROR_AUTH_PERMISSION, "Referer验证未通过");
@@ -114,7 +113,7 @@ public abstract class BlackController extends BaseLController<Black, IBlackManag
 	protected abstract String getBlacksPage();
 
 	@RequestMapping(value = "/blacksDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> blacksDo(@RequestParam(value = "remark") String remark,
 			@RequestBody Map<String, Long> uuidIds, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {
@@ -133,7 +132,7 @@ public abstract class BlackController extends BaseLController<Black, IBlackManag
 	protected abstract String getunBlacksPage();
 
 	@RequestMapping(value = "/unBlacksDo", method = RequestMethod.POST)
-	@WebLog(db = true)
+	@LacLog
 	public @ResponseBody Result<Object> unBlacksDo(@RequestParam(value = "remark") String remark,
 			@RequestBody Map<String, Long> uuidIds, Trace t, AppVisitor av) {
 		if (!checkReferer(true)) {

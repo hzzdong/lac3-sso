@@ -1,6 +1,6 @@
 package com.linkallcloud.sso.server.manager;
 
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import com.linkallcloud.sso.domain.SysSetup;
 import com.linkallcloud.sso.manager.ISysSetupManager;
 import com.linkallcloud.sso.service.ISysSetupService;
 
-@Service(interfaceClass = ISysSetupManager.class, version = "${dubbo.service.version}")
+@DubboService(interfaceClass = ISysSetupManager.class, version = "${dubbo.service.version}")
 @Component
 @Module(name = "系统设置")
 public class SysSetupManager extends BaseManager<SysSetup, ISysSetupService> implements ISysSetupManager {
