@@ -141,70 +141,16 @@
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-iapi</artifactId>
 			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-cache</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-handshake</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-oapi</artifactId>
 			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-cache</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-handshake</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
 			<artifactId>lac3-sso-client</artifactId>
 			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-cache</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.linkallcloud</groupId>
-					<artifactId>lac3-handshake</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.linkallcloud</groupId>
