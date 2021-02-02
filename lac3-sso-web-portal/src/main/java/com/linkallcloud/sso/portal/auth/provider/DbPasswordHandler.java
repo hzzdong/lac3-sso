@@ -39,6 +39,7 @@ public class DbPasswordHandler extends WatchfulPasswordHandler {
 			}
 		} catch (Throwable e) {
 		}
+		registerFailure(request);
 		throw new AuthException(AuthException.ARG_CODE_AUTH, "登录名或者密码错误，请重新输入！");
 	}
 
