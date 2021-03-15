@@ -38,6 +38,8 @@ $(function() {
 	});
 
 	$('#btn_login').on('click', function() {
+		var encrypt = new JSEncrypt()
+		encrypt.setPublicKey($.trim($("#publicKey").val()));
 		var username = $.trim($("#username").val());
 		var password = $.trim($("#password").val());
 		var vcode = $.trim($("#vcode").val());
@@ -72,7 +74,7 @@ $(function() {
 				from : $("#from").val(),
 				service : $("#service").val(),
 				loginName : username,
-				password : mpass,
+				password :encrypt.encrypt(mpass),
 				lt : $("#lt").val(),
 				warn : $("#warn").val(),
 				pwdStrength: pwdStrength,

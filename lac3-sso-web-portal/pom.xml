@@ -232,8 +232,18 @@
 			<version>1.3.3</version>
 		</dependency>
 		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>${hutool.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -263,6 +273,24 @@
 			<id>jh</id>
 			<properties>
 				<activatedProperties>jh</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>sjjtest</id>
+			<properties>
+				<activatedProperties>sjjtest</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>lsjy</id>
+			<properties>
+				<activatedProperties>lsjy</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>kdzs</id>
+			<properties>
+				<activatedProperties>kdzs</activatedProperties>
 			</properties>
 		</profile>
 	</profiles>

@@ -282,6 +282,24 @@
 				<activatedProperties>jh</activatedProperties>
 			</properties>
 		</profile>
+		<profile>
+			<id>sjjtest</id>
+			<properties>
+				<activatedProperties>sjjtest</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>lsjy</id>
+			<properties>
+				<activatedProperties>lsjy</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>kdzs</id>
+			<properties>
+				<activatedProperties>kdzs</activatedProperties>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>
